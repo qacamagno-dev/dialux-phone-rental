@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+
+  <title>DiaLux – Technician Dashboard</title>
+
+  <link
+    rel="icon"
+    href="assets/dialux-logo.png"
+  />
+
+  <link
+    rel="preconnect"
+    href="https://fonts.googleapis.com"
+  />
+
+  <link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+  />
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
+
+  <link
+    rel="stylesheet"
+    href="css/styles.css"
+  />
+
+  <link
+    rel="stylesheet"
+    href="css/enhancements.css"
+  />
+
+  <link
+    rel="stylesheet"
+    href="css/features.css"
+  />
+
+  <style>
+    .tech-dashboard {
+      padding-bottom: 90px;
+    }
+
+    .tech-queue-panel,
+    .tech-inspection-panel {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 18px;
+    }
+
+    .tech-panel-title {
+      margin: 0 0 6px;
+      font-size: 1rem;
+    }
+
+    .tech-panel-subtitle {
+      margin: 0 0 18px;
+      color: var(--ink-muted);
+      font-size: .8rem;
+      line-height: 1.5;
+    }
+
+    .tech-empty {
+      padding: 30px 12px;
+      text-align: center;
+      color: var(--ink-muted);
+      font-size: .85rem;
+    }
+
+    .tech-order {
+      text-align: left;
+      width: 100%;
+    }
+
+    .tech-order-meta {
+      display: grid;
+      gap: 3px;
+    }
+
+    .tech-order-status {
+      display: inline-flex;
+      margin-top: 8px;
+    }
+
+    .tech-inspection-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .tech-inspection-head h2 {
+      margin: 0 0 4px;
+      font-size: 1.2rem;
+    }
+
+    .tech-inspection-head p {
+      margin: 0;
+      color: var(--ink-muted);
+      font-size: .8rem;
+    }
+
+    .tech-device-box {
+      background: var(--surface-alt);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 18px;
+    }
+
+    .tech-device-box strong {
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .tech-device-box p {
+      margin: 3px 0;
+      color: var(--ink-muted);
+      font-size: .8rem;
+    }
+
+    .tech-section {
+      border-top: 1px solid var(--line);
+      padding-top: 18px;
+      margin-top: 18px;
+    }
+
+    .tech-section h3 {
+      margin: 0 0 12px;
+      font-size: .9rem;
+    }
+
+    .inspection-check {
+      padding: 10px 12px;
+      margin: 0;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--surface);
+    }
+
+    .inspection-check input {
+      width: 17px;
+      height: 17px;
+      accent-color: var(--accent);
+    }
+
+    .tech-field {
+      display: grid;
+      gap: 7px;
+      margin-bottom: 14px;
+    }
+
+    .tech-field label {
+      font-size: .78rem;
+      font-weight: 700;
+    }
+
+    .tech-field input,
+    .tech-field textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--surface);
+      color: var(--ink);
+      font: inherit;
+      padding: 10px 12px;
+    }
+
+    .tech-field textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .tech-result-preview {
+      border-radius: 12px;
+      background: var(--surface-alt);
+      padding: 14px;
+      margin: 16px 0;
+      display: grid;
+      gap: 6px;
+      font-size: .8rem;
+    }
+
+    .tech-result-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .tech-result-row span {
+      color: var(--ink-muted);
+    }
+
+    .tech-result-row strong {
+      text-align: right;
+    }
+
+    .tech-inspection-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+
+    .tech-photo-preview {
+      max-width: 220px;
+      max-height: 160px;
+      object-fit: cover;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      margin-top: 8px;
+      display: none;
+    }
+
+    .tech-warning {
+      background: rgba(245, 158, 11, .1);
+      border: 1px solid rgba(245, 158, 11, .25);
+      color: var(--ink);
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: .78rem;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 860px) {
+      .tech-inspection-head {
+        display: block;
+      }
+
+      .inspection-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="toast"></div>
+  <div id="siteHeader"></div>
+
+  <main class="tech-dashboard">
+    <section
+      class="section"
+      style="padding-bottom:0;"
+    >
+      <div class="container">
+
+        <div class="section-header">
+          <span class="badge">
+            Technician
+          </span>
+
+          <h1>
+            Device Inspection
+          </h1>
+
+          <p>
+            Inspect returned devices and settle the customer deposit.
+          </p>
+        </div>
+
+        <div
+          id="technicianDashWrap"
+          class="technician-layout"
+        ></div>
+
+      </div>
+    </section>
+  </main>
+
+  <div id="siteFooter"></div>
+
+  <script
+    type="module"
+    src="js/pages/technician.js"
+  ></script>
+</body>
+</html>

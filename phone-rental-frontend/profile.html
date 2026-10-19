@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DiaLux – Profile</title>
+  <link rel="icon" href="assets/dialux-logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/enhancements.css" />
+  <link rel="stylesheet" href="css/features.css" />
+</head>
+<body>
+  <div id="toast"></div>
+  <div id="siteHeader"></div>
+
+  <main>
+    <!-- Account details + password. Both cards are rendered by
+         pages/profile.js so the sign-in prompt can replace them wholesale. -->
+    <section class="section" style="padding-bottom:0;">
+      <div class="container">
+        <div class="section-header">
+          <span class="badge">Account</span>
+          <h1>My Profile</h1>
+          <p>Manage your personal details, password and delivery addresses.</p>
+        </div>
+        <div id="accountContent" class="account-grid"></div>
+      </div>
+    </section>
+
+    <!-- Multiple delivery addresses, one of which is the checkout default. -->
+    <section class="section" id="addresses" style="padding-top:34px;padding-bottom:0;">
+      <div class="container">
+        <div class="section-header">
+          <span class="badge">Delivery</span>
+          <h2>Address book</h2>
+          <p>Save the places you rent to. Checkout preselects your default and lets you switch.</p>
+        </div>
+        <div id="addressBook"></div>
+      </div>
+    </section>
+
+    <section class="section" id="orders" style="padding-top:34px;padding-bottom:0;">
+      <div class="container">
+        <div class="section-header">
+          <span class="badge">Orders</span>
+          <h2>My Rentals</h2>
+          <p>Track current bookings, open an invoice, request returns, or extend a rental.</p>
+        </div>
+        <div id="ordersList"></div>
+      </div>
+    </section>
+
+    <!-- Support threads: everything sent through the contact form, with
+         staff replies inline. -->
+    <section class="section" id="support" style="padding-top:34px;">
+      <div class="container">
+        <div class="section-header">
+          <span class="badge">Support</span>
+          <h2>Support requests</h2>
+          <p>Your messages to our team, and every reply, in one thread.</p>
+        </div>
+        <div id="supportList"></div>
+      </div>
+    </section>
+  </main>
+
+  <div id="siteFooter"></div>
+  <script type="module" src="js/pages/profile.js"></script>
+</body>
+</html>

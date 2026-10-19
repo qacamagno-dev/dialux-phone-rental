@@ -1,0 +1,189 @@
+# ============================================================
+# DiaLux — CI
+#
+# Runs on every push and pull request: checks that every source file parses,
+# that the two copies of the pricing function still agree, and that the
+# Docker image builds. On a push to main it also boots the built image
+# against a real MongoDB and exercises the API end to end.
+#
+# Deployment is a separate, opt-in job at the bottom — it stays skipped
+# until the repository has the secrets it needs.
+# ============================================================
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  # ----------------------------------------------------------
+  # 1. Static checks — fast, no services needed.
+  # ----------------------------------------------------------
+  check:
+    name: Syntax & consistency
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: phone-rental-backend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: phone-rental-backend
+        run: npm ci
+
+      - name: Parse every backend file
+        working-directory: phone-rental-backend
+        run: |
+          fail=0
+          while IFS= read -r f; do
+            node --check "$f" || { echo "::error file=$f::syntax error"; fail=1; }
+          done < <(find src -name '*.js')
+          exit $fail
+
+      - name: Parse every frontend module
+        run: |
+          fail=0
+          while IFS= read -r f; do
+            node --input-type=module --check < "$f" \
+              || { echo "::error file=$f::syntax error"; fail=1; }
+          done < <(find phone-rental-frontend/js -name '*.js')
+          exit $fail
+
+      # bestValue() is deliberately duplicated — the server prices the charge,
+      # the browser prices the quote. If they drift, customers are shown one
+      # number and billed another, so CI compares them directly.
+      - name: Pricing parity (server vs browser)
+        run: node phone-rental-backend/scripts/check-pricing-parity.mjs
+
+      - name: Every page module referenced by the HTML exists
+        run: node phone-rental-backend/scripts/check-page-modules.mjs
+
+  # ----------------------------------------------------------
+  # 2. Build the image.
+  # ----------------------------------------------------------
+  build:
+    name: Docker build
+    runs-on: ubuntu-latest
+    needs: check
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: phone-rental-backend/Dockerfile
+          push: false
+          load: true
+          tags: dialux:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Save image for the smoke job
+        if: github.event_name == 'push'
+        run: docker save dialux:ci | gzip > /tmp/dialux.tar.gz
+
+      - uses: actions/upload-artifact@v4
+        if: github.event_name == 'push'
+        with:
+          name: dialux-image
+          path: /tmp/dialux.tar.gz
+          retention-days: 1
+
+  # ----------------------------------------------------------
+  # 3. Boot it for real and exercise the API.
+  # ----------------------------------------------------------
+  smoke:
+    name: API smoke test
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'push'
+
+    services:
+      mongo:
+        image: mongo:7
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --quiet --eval 'db.adminCommand({ping:1}).ok'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 6
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: dialux-image
+          path: /tmp
+
+      - name: Load image
+        run: docker load < /tmp/dialux.tar.gz
+
+      - name: Start the server
+        run: |
+          docker run -d --name dialux --network host \
+            -e NODE_ENV=production \
+            -e PORT=5000 \
+            -e MONGODB_URI=mongodb://127.0.0.1:27017/dialux-ci \
+            -e JWT_SECRET=ci-only-secret-not-used-anywhere-real \
+            dialux:ci
+
+      - name: Wait for health
+        run: |
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:5000/api/health | grep -q '"db":"connected"'; then
+              echo "server is up"; exit 0
+            fi
+            sleep 2
+          done
+          echo "::error::server never became healthy"
+          docker logs dialux
+          exit 1
+
+      - name: Exercise the API
+        run: bash phone-rental-backend/scripts/smoke.sh http://127.0.0.1:5000
+
+      - name: Server log
+        if: always()
+        run: docker logs dialux
+
+  # ----------------------------------------------------------
+  # 4. Deploy — opt-in.
+  #
+  # Skipped entirely until DEPLOY_HOOK_URL is set in the repository's
+  # secrets (Settings → Secrets and variables → Actions). That covers
+  # Render, Railway, Fly and anything else with a deploy webhook.
+  # ----------------------------------------------------------
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs: smoke
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment: production
+
+    steps:
+      - name: Trigger the host's deploy hook
+        env:
+          HOOK: ${{ secrets.DEPLOY_HOOK_URL }}
+        run: |
+          if [ -z "$HOOK" ]; then
+            echo "No DEPLOY_HOOK_URL secret set — nothing to deploy to yet."
+            echo "See README.md § Deployment for how to point this at a host."
+            exit 0
+          fi
+          curl -fsS -X POST "$HOOK"
+          echo "Deploy triggered."

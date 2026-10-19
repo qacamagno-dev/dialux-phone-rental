@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DiaLux – Devices</title>
+  <link rel="icon" href="assets/dialux-logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/enhancements.css" />
+  <link rel="stylesheet" href="css/features.css" />
+</head>
+<body>
+  <div id="toast"></div>
+  <div id="siteHeader"></div>
+
+  <main>
+    <!-- ===== CATALOG ===== -->
+    <section class="section" id="catalogView">
+      <div class="container">
+        <div class="section-header">
+          <span class="badge">Catalog</span>
+          <h1>Every device, one catalog.</h1>
+          <p>Search and compare by category, brand, condition, and price.</p>
+        </div>
+
+        <div class="cat-tabs" id="catTabs"></div>
+        <div class="filter-panel" id="filterPanel"></div>
+        <div class="catalog-meta" id="catalogMeta"></div>
+        <div id="deviceGrid" class="device-grid stagger"></div>
+      </div>
+    </section>
+
+    <!-- ===== DEVICE DETAIL (shown at #device-<id>) ===== -->
+    <section class="hidden" id="detailView"></section>
+  </main>
+
+  <div id="siteFooter"></div>
+  <script type="module" src="js/pages/products.js"></script>
+</body>
+</html>

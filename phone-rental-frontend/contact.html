@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact DiaLux – Customer Support</title>
+  <link rel="icon" href="assets/dialux-logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/enhancements.css" />
+  <link rel="stylesheet" href="css/features.css" />
+  <meta name="google-client-id" content="807409726791-spvai3mdu194n9l2tt2hoh3r5uan2mvf.apps.googleusercontent.com" />
+</head>
+<body data-cms-slug="contact">
+  <div id="toast"></div>
+
+  <!-- Shared header: nav, wishlist, notification bell, cart badge and the
+       account menu. Rendered by core/ui.js. -->
+  <div id="siteHeader"></div>
+
+  <!-- ===== MAIN ===== -->
+  <main>
+    <section class="section">
+      <div class="container">
+        <div class="section-header">
+          <span class="badge">Contact</span>
+          <h1 id="cmsTitle">Get in Touch</h1>
+          <p id="cmsIntro">Questions about a booking, device, or return? We're here to help.</p>
+        </div>
+
+        <div class="contact-grid">
+          <!-- Editable from the admin dashboard (Pages tab). Until an
+               administrator saves an edit, this hand-written copy is what shows. -->
+          <div class="info-card" id="cmsContent">
+            <h2>Customer support</h2>
+            <p><strong>Email:</strong> <span id="supportEmail">support@dialux.ph</span></p>
+            <p><strong>Phone:</strong> +63 900 000 0000</p>
+            <p><strong>Service area:</strong> Quezon City, Metro Manila</p>
+
+            <h3>Before contacting support</h3>
+            <ul>
+              <li>Have your booking reference ready — the 6-character code on your booking.</li>
+              <li>For device issues, describe the problem and when it started.</li>
+              <li>For returns, check the status on your <a href="/profile.html#orders">My rentals</a> page first.</li>
+            </ul>
+
+            <div class="info-highlight">
+              <p>📋 <strong>Already sent something?</strong><br />
+                Every message and reply is threaded under
+                <a href="/profile.html#support">Support requests</a> in your profile.</p>
+            </div>
+          </div>
+
+          <!-- pages/contact.js renders the live form here — it posts to
+               /api/support, which creates a ticket the desk can answer. -->
+          <div class="form-card" id="contactFormCard"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="siteFooter"></div>
+
+  <script type="module" src="js/pages/contact.js"></script>
+</body>
+</html>

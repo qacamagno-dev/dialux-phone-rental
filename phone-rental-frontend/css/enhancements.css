@@ -1,0 +1,265 @@
+/* =========================================================
+   DIALUX — 3D / IMMERSIVE ENHANCEMENT LAYER
+   Load AFTER styles.css. Pure CSS3 + vanilla JS, no deps.
+   ========================================================= */
+:root{
+  --glass-bg: rgba(255,255,255,0.6);
+  --glass-bg-dark: rgba(18,19,26,0.55);
+  --glass-border: rgba(16,19,43,0.12);
+  --tilt-max: 10deg;
+  --card-depth: 40px;
+  --ease-out-back: cubic-bezier(.2,.9,.25,1.2);
+  --ease-smooth: cubic-bezier(.4,0,.2,1);
+}
+html:not(.js-3d) .tilt-glare,
+html:not(.js-3d) .flip-hint{ display:none !important; }
+@media (prefers-reduced-motion: reduce){
+  *, *::before, *::after{
+    animation-duration:.001ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.001ms !important;
+    scroll-behavior:auto !important;
+  }
+  .hero-particles, .blob{ display:none !important; }
+  /* .stagger children start at opacity:0 and are only brought up by their
+     animation, so they must be shown explicitly here — collapsing the
+     duration alone leaves them mid-animation on first paint. */
+  .stagger > *{ opacity:1 !important; transform:none !important; }
+}
+.tilt-card{ perspective: 900px; -webkit-tap-highlight-color: transparent; }
+.tilt-card-inner{
+  --rx: 0deg; --ry: 0deg; --mx: 50%; --my: 50%;
+  transform-style: preserve-3d;
+  transform: rotateX(var(--rx)) rotateY(var(--ry)) translateZ(0);
+  transition: transform .5s var(--ease-out-back), box-shadow .4s ease;
+  will-change: transform;
+  position: relative;
+  isolation: isolate;
+}
+.tilt-card:hover .tilt-card-inner,
+.tilt-card:focus-within .tilt-card-inner{
+  box-shadow: 0 30px 60px -20px rgba(20,20,50,.35), 0 10px 25px -10px rgba(20,20,50,.2);
+}
+.tilt-card.tilting .tilt-card-inner{ transition: transform .08s linear; }
+.tilt-glare{
+  position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+  background: radial-gradient(circle at var(--mx) var(--my), rgba(255,255,255,.5), transparent 45%);
+  opacity:0; transition: opacity .3s ease; mix-blend-mode: overlay; z-index:5;
+}
+.tilt-card:hover .tilt-glare{ opacity:1; }
+.pop-layer{ transform: translateZ(var(--card-depth)); transform-style:preserve-3d; }
+@media (hover:none), (pointer:coarse){
+  .tilt-card-inner{ transform:none !important; }
+  .tilt-glare{ display:none; }
+}
+.flip-card{ perspective: 1400px; }
+.flip-card-inner{
+  position: relative;
+  width: 100%; height: 100%;
+  transform-style: preserve-3d;
+  transition: transform .7s var(--ease-out-back);
+}
+.flip-card.flipped .flip-card-inner{ transform: rotateY(180deg); }
+.flip-face{
+  position:absolute; inset:0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: inherit;
+  display:flex; flex-direction:column;
+}
+.flip-back{
+  transform: rotateY(180deg);
+  background: var(--surface, #fff);
+  overflow-y:auto;
+}
+.flip-hint{
+  position:absolute; top:12px; right:12px; z-index:6;
+  width:30px; height:30px; border-radius:50%;
+  background: var(--glass-bg); backdrop-filter: blur(6px);
+  border:1px solid var(--glass-border);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; transition: transform .25s ease, background .25s ease;
+}
+.flip-hint:hover{ transform: scale(1.1) rotate(180deg); background:rgba(255,255,255,.2); }
+.flip-hint svg{ width:14px; height:14px; }
+@media (hover:none), (pointer:coarse){ .flip-card-inner{ transition-duration: .5s; } }
+.glass{
+  background: var(--glass-bg);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  border: 1px solid var(--glass-border);
+}
+.glass-dark{
+  background: var(--glass-bg-dark);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  border: 1px solid rgba(255,255,255,.12);
+  color:#fff;
+}
+header.glass-nav{
+  background: rgba(255,255,255,.72) !important;
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+}
+.hero-3d-stage{
+  position: relative;
+  min-height: 460px;
+  display:flex; align-items:center; justify-content:center;
+  perspective: 1600px;
+}
+.hero-particles{
+  position:absolute; inset:-20% -10%; z-index:0;
+  pointer-events:none; overflow:hidden; filter: blur(2px);
+}
+.blob{
+  position:absolute; border-radius:50%;
+  filter: blur(50px); opacity:.28;
+  animation: drift 14s ease-in-out infinite alternate;
+}
+.blob-a{ width:280px; height:280px; left:8%; top:10%; background: radial-gradient(circle, #4FA8FF, transparent 70%); animation-duration: 16s; }
+.blob-b{ width:220px; height:220px; right:10%; top:35%; background: radial-gradient(circle, #1FAE8A, transparent 70%); animation-duration: 12s; animation-delay: -4s; }
+.blob-c{ width:200px; height:200px; left:30%; bottom:0; background: radial-gradient(circle, #2F6FED, transparent 70%); animation-duration: 18s; animation-delay: -8s; }
+@keyframes drift{
+  0%{ transform: translate(0,0) scale(1); }
+  50%{ transform: translate(4%,-6%) scale(1.12); }
+  100%{ transform: translate(-5%,4%) scale(.96); }
+}
+/* ===== HERO SLIDER =====
+   Replaces the old 3D phone rig. Lives on the same #heroStage, layered
+   above the ambient .blob glows. Slides are stacked in one CSS-grid cell
+   and crossfaded by pages/home.js — only .active is visible, and the cell
+   auto-sizes to the tallest slide so switching never jumps the layout. */
+.hero-slider{
+  position:relative; z-index:2;
+  width:100%; max-width:400px; margin:0 auto;
+}
+.hero-track{ display:grid; }
+.hero-slide{
+  grid-area:1 / 1;
+  display:flex; flex-direction:column; gap:14px;
+  opacity:0; transform: translateY(10px) scale(.985);
+  transition: opacity .55s var(--ease-smooth), transform .55s var(--ease-smooth);
+  pointer-events:none;
+}
+.hero-slide.active{ opacity:1; transform:none; pointer-events:auto; }
+.hero-slide-media{
+  height:210px; border-radius:22px; overflow:hidden;
+  display:flex; align-items:center; justify-content:center;
+  background: linear-gradient(180deg,#EEF2FB,#E3E8F5);
+  border:1px solid var(--line,#E1E5F0);
+  box-shadow: 0 24px 55px rgba(16,19,43,.14);
+}
+.hero-slide-media img{ width:100%; height:100%; object-fit:cover; }
+.hero-slide-media.thumb-fallback svg{ width:64px; height:64px; color:var(--accent,#2F6FED); opacity:.6; }
+.hero-slide-info{ border-radius:20px; padding:16px 18px; display:flex; flex-direction:column; gap:8px; }
+.hero-slide-tags{ display:flex; align-items:center; gap:10px; }
+.hero-rating{ font-family:'IBM Plex Mono',monospace; font-size:.76rem; font-weight:600; color:var(--signal,#2DD4BF); }
+.hero-slide-info h3{ margin:0; font-family:'Space Grotesk',sans-serif; font-size:1.3rem; line-height:1.12; color:var(--ink,#ECEEF9); }
+.hero-slide-cat{ font-size:.82rem; color:var(--ink-muted,#A6AAC6); }
+.hero-slide-price{ margin-top:2px; font-family:'Space Grotesk',sans-serif; font-size:1.5rem; font-weight:700; color:var(--ink,#ECEEF9); }
+.hero-slide-price span{ font-size:.8rem; font-weight:500; color:var(--ink-faint,#6E7291); }
+.hero-slide-actions{ display:flex; gap:10px; margin-top:8px; flex-wrap:wrap; }
+.hero-slide-actions .btn{ flex:1 1 auto; justify-content:center; }
+.hero-controls{ display:flex; align-items:center; justify-content:center; gap:14px; margin-top:18px; }
+.hero-arrow{
+  width:38px; height:38px; border-radius:50%; padding:0;
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.4rem; line-height:1; cursor:pointer;
+  color:var(--ink,#ECEEF9);
+  background:var(--glass-bg); border:1px solid var(--glass-border);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  transition: transform .2s ease, background .2s ease, border-color .2s ease, color .2s ease;
+}
+.hero-arrow:hover{ transform: translateY(-2px); border-color:var(--accent,#2F6FED); color:var(--accent,#2F6FED); }
+.hero-dots{ display:flex; align-items:center; gap:8px; }
+.hero-dot{
+  width:9px; height:9px; border-radius:50%; padding:0; cursor:pointer;
+  border:none; background:var(--hero-line,#33355E);
+  transition: transform .2s ease, background .2s ease, width .2s ease;
+}
+.hero-dot.active{ width:24px; border-radius:99px; background:var(--accent,#2F6FED); }
+.hero-dot:hover{ transform: scale(1.15); }
+@media (max-width: 992px){ .hero-slider{ margin-top:12px; } }
+@media (max-width: 480px){ .hero-slide-media{ height:180px; } }
+.btn{ position:relative; overflow:hidden; }
+.btn:active{ transform: scale(.96); }
+.btn .ripple{
+  position:absolute; border-radius:50%; pointer-events:none;
+  background: rgba(255,255,255,.55);
+  transform: scale(0); animation: rippleAnim .6s ease-out forwards;
+}
+.btn-outline .ripple, .btn-ghost .ripple{ background: rgba(47,111,237,.25); }
+@keyframes rippleAnim{ to{ transform: scale(2.6); opacity:0; } }
+.spinner{
+  width:18px; height:18px; border-radius:50%;
+  border:2.5px solid rgba(255,255,255,.35); border-top-color:#fff;
+  animation: spin .7s linear infinite; display:inline-block;
+}
+.spinner-dark{ border-color: rgba(18,19,26,.2); border-top-color: var(--accent,#2F6FED); }
+@keyframes spin{ to{ transform: rotate(360deg); } }
+.btn-loading{ pointer-events:none; opacity:.85; display:inline-flex; align-items:center; gap:8px; }
+.stagger > *{
+  opacity:0; transform: translateY(16px);
+  animation: staggerIn .6s var(--ease-out-back) forwards;
+  animation-delay: calc(var(--i,0) * 70ms);
+}
+@keyframes staggerIn{ to{ opacity:1; transform: translateY(0); } }
+body{ transition: opacity .28s var(--ease-smooth), transform .28s var(--ease-smooth); }
+body.page-leave{ opacity:0; transform: translateY(6px); }
+body.page-enter{ opacity:0; transform: translateY(10px); }
+/* Rest at transform:none, NOT translateY(0): a lingering transform on <body>
+   makes it the containing block for every position:fixed child (the toast, the
+   chatbot button) and disturbs the sticky nav — they'd anchor to the page
+   instead of the viewport. `none` still animates smoothly from the enter offset. */
+body.page-enter-active{ opacity:1; transform: none; }
+.device-card-3d{ border-radius: 18px; }
+.device-card-3d .flip-front, .device-card-3d .flip-back{ padding:20px; }
+.device-card-3d .card-specs-row{
+  display:flex; justify-content:space-between; font-size:.78rem;
+  padding:7px 0; border-bottom:1px dashed var(--line,#E1E3ED); color: var(--ink-muted,#5B5E70);
+}
+.device-card-3d .card-specs-row:last-child{ border-bottom:0; }
+
+/* =========================================================
+   9. LAYOUT CORRECTIONS
+   ========================================================= */
+
+/* .flip-face is position:absolute, so neither face contributes
+   height and .flip-card-inner{height:100%} resolves against
+   nothing — the card collapsed to 0px. Give it an explicit height. */
+.device-card-3d{ height: 480px; }
+.device-card-3d .flip-front{ overflow:hidden; }
+.device-card-3d .flip-back{ padding-top:46px; }
+.device-card-3d .card-actions{ margin-top:auto; }
+
+/* Clamp the blurb so cards stay a uniform height regardless of
+   description length. */
+.device-card-3d .device-desc{
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
+  overflow:hidden; min-height:36px;
+}
+
+/* styles.css declares position:absolute on the bare .badge (for the
+   cart-count pill on .icon-btn). .section-header .badge overrides
+   display but not position, so every section eyebrow was being ripped
+   out of flow and pinned to the section's top-right corner. */
+.section-header .badge{ position:static; }
+
+/* Placeholder artwork: assets/products/ is empty, so ui.js swaps a
+   failed <img> for the category icon. Style the resulting holders. */
+.thumb-fallback{ display:flex; align-items:center; justify-content:center; }
+.device-thumb.thumb-fallback svg{ width:54px; height:54px; color:var(--accent,#2F6FED); opacity:.65; }
+.cart-thumb.thumb-fallback svg{ width:26px; height:26px; color:var(--accent,#2F6FED); }
+.product-gallery.thumb-fallback{ aspect-ratio:1/1; }
+.product-gallery.thumb-fallback svg{ width:36%; height:auto; color:var(--accent,#2F6FED); opacity:.5; }
+
+/* The cart badge hides itself at zero via JS; keep it centred. */
+#cartBadge{ pointer-events:none; }
+
+/* Admin form controls sit in .pf-grid alongside .mini-select inputs. */
+textarea.mini-select{ font-family:inherit; resize:vertical; width:100%; }
+input.mini-select{ width:100%; font-family:inherit; }
+
+@media (max-width: 600px){
+  .device-card-3d{ height: 460px; }
+}

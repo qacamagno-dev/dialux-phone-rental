@@ -1,0 +1,622 @@
+<title>DiaLux Build Status</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+  /* ---- light (default, un-stamped) ---- */
+  :root{
+    --bg:#F5F6FB;
+    --surface:#FFFFFF;
+    --surface-alt:#EEF0F8;
+    --ink:#161831;
+    --ink-muted:#565A79;
+    --ink-faint:#82869F;
+    --line:#E0E3EF;
+    --line-soft:#EDEFF6;
+
+    --accent:#4F4CE0;
+    --accent-soft:#EAE9FC;
+
+    --done:#0E9C86;
+    --done-soft:#DBF5EF;
+    --part:#B87608;
+    --part-soft:#FCEFD6;
+    --gone:#C33B3B;
+    --gone-soft:#FBE4E4;
+
+    --shadow:0 1px 2px rgba(22,24,49,.05), 0 8px 24px -16px rgba(22,24,49,.18);
+  }
+  /* ---- dark (system default, unless explicitly light) — DiaLux's own palette ---- */
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0E0F1C;
+      --surface:#1B1E36;
+      --surface-alt:#15172C;
+      --ink:#ECEEF9;
+      --ink-muted:#A6AAC6;
+      --ink-faint:#6E7291;
+      --line:#2A2D4A;
+      --line-soft:#22253F;
+
+      --accent:#8A88F8;
+      --accent-soft:#262a4d;
+
+      --done:#2DD4BF;
+      --done-soft:#123a38;
+      --part:#F5A524;
+      --part-soft:#3d2f13;
+      --gone:#F06A6A;
+      --gone-soft:#3b1f22;
+
+      --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 30px -18px rgba(0,0,0,.8);
+    }
+  }
+  /* ---- dark (explicit) ---- */
+  :root[data-theme="dark"]{
+    --bg:#0E0F1C;
+    --surface:#1B1E36;
+    --surface-alt:#15172C;
+    --ink:#ECEEF9;
+    --ink-muted:#A6AAC6;
+    --ink-faint:#6E7291;
+    --line:#2A2D4A;
+    --line-soft:#22253F;
+
+    --accent:#8A88F8;
+    --accent-soft:#262a4d;
+
+    --done:#2DD4BF;
+    --done-soft:#123a38;
+    --part:#F5A524;
+    --part-soft:#3d2f13;
+    --gone:#F06A6A;
+    --gone-soft:#3b1f22;
+
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 30px -18px rgba(0,0,0,.8);
+  }
+
+  *{box-sizing:border-box;}
+
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter',system-ui,-apple-system,sans-serif;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    padding:40px 20px 72px;
+  }
+
+  .wrap{max-width:1000px;margin:0 auto;}
+
+  h1,h2,h3,h4{font-family:'Space Grotesk','Inter',system-ui,sans-serif;margin:0;letter-spacing:-.015em;text-wrap:balance;}
+  .mono{font-family:'IBM Plex Mono',ui-monospace,monospace;}
+
+  /* ---------- masthead ---------- */
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--accent);font-weight:600;
+  }
+  .masthead{
+    display:flex;flex-wrap:wrap;gap:20px 32px;align-items:flex-end;
+    justify-content:space-between;
+    padding-bottom:26px;margin-bottom:30px;
+    border-bottom:1px solid var(--line);
+  }
+  .masthead h1{font-size:2.15rem;font-weight:700;margin:8px 0 6px;}
+  .masthead p{margin:0;color:var(--ink-muted);font-size:.94rem;max-width:56ch;}
+  .stamp{
+    font-family:'IBM Plex Mono',monospace;font-size:.74rem;color:var(--ink-faint);
+    text-align:right;line-height:1.9;white-space:nowrap;
+  }
+  .stamp b{display:block;color:var(--ink);font-weight:600;}
+
+  /* ---------- headline tiles ---------- */
+  .tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px;}
+  .tile{
+    background:var(--surface);border:1px solid var(--line);border-radius:12px;
+    padding:16px 18px;box-shadow:var(--shadow);
+  }
+  .tile span{
+    display:block;font-family:'IBM Plex Mono',monospace;font-size:.68rem;
+    letter-spacing:.09em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:9px;
+  }
+  .tile b{
+    font-family:'Space Grotesk',sans-serif;font-size:2rem;font-weight:700;
+    line-height:1;display:block;font-variant-numeric:tabular-nums;
+  }
+  .tile small{display:block;font-size:.76rem;color:var(--ink-muted);margin-top:7px;}
+  .tile.t-done{border-top:3px solid var(--done);}
+  .tile.t-done b{color:var(--done);}
+  .tile.t-part{border-top:3px solid var(--part);}
+  .tile.t-part b{color:var(--part);}
+  .tile.t-gone{border-top:3px solid var(--gone);}
+  .tile.t-gone b{color:var(--gone);}
+  .tile.t-mob{border-top:3px solid var(--ink-faint);}
+
+  .readout{
+    font-size:.86rem;color:var(--ink-muted);margin:0 0 34px;
+    padding:12px 16px;background:var(--surface-alt);border-radius:10px;
+    border-left:3px solid var(--accent);
+  }
+  .readout b{color:var(--ink);font-weight:600;}
+
+  /* ---------- sections ---------- */
+  .sec{margin-bottom:34px;}
+  .sec-head{
+    display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;
+    margin-bottom:6px;
+  }
+  .sec-num{
+    font-family:'IBM Plex Mono',monospace;font-size:.8rem;font-weight:600;
+    color:var(--accent);
+  }
+  .sec-head h2{font-size:1.28rem;font-weight:600;}
+  .sec-tally{
+    margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:.75rem;
+    color:var(--ink-faint);font-variant-numeric:tabular-nums;
+  }
+  /* segmented completion bar — one scale, three states */
+  .bar{
+    display:flex;height:5px;border-radius:99px;overflow:hidden;
+    background:var(--line-soft);margin-bottom:16px;
+  }
+  .bar i{display:block;height:100%;}
+  .bar .b-done{background:var(--done);}
+  .bar .b-part{background:var(--part);}
+  .bar .b-gone{background:var(--gone);}
+
+  .group{margin-bottom:18px;}
+  .group > h3{
+    font-size:.83rem;font-weight:600;color:var(--ink-muted);
+    text-transform:uppercase;letter-spacing:.07em;
+    font-family:'IBM Plex Mono',monospace;
+    margin-bottom:8px;
+  }
+
+  .rows{
+    background:var(--surface);border:1px solid var(--line);
+    border-radius:11px;overflow:hidden;box-shadow:var(--shadow);
+  }
+  .row{
+    display:grid;grid-template-columns:1fr auto;gap:4px 16px;
+    padding:12px 16px;border-bottom:1px solid var(--line-soft);
+    align-items:start;
+  }
+  .row:last-child{border-bottom:0;}
+  .row .what{font-size:.92rem;font-weight:500;}
+  .row .ev{
+    grid-column:1/2;font-family:'IBM Plex Mono',monospace;font-size:.74rem;
+    color:var(--ink-faint);line-height:1.7;word-break:break-word;
+  }
+  .row .ev em{font-style:normal;color:var(--ink-muted);}
+
+  .chip{
+    font-family:'IBM Plex Mono',monospace;font-size:.66rem;font-weight:600;
+    letter-spacing:.05em;text-transform:uppercase;
+    padding:4px 9px;border-radius:99px;white-space:nowrap;
+    grid-row:1/2;grid-column:2/3;
+  }
+  .c-done{background:var(--done-soft);color:var(--done);}
+  .c-part{background:var(--part-soft);color:var(--part);}
+  .c-gone{background:var(--gone-soft);color:var(--gone);}
+
+  /* ---------- mobile section ---------- */
+  .void{
+    background:var(--surface);border:1px dashed var(--gone);
+    border-radius:11px;padding:20px 22px;
+  }
+  .void p{margin:0 0 16px;font-size:.92rem;color:var(--ink-muted);}
+  .void p b{color:var(--ink);}
+  .void-grid{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px;
+  }
+  .void-item{
+    display:flex;justify-content:space-between;align-items:center;gap:10px;
+    background:var(--surface-alt);border-radius:7px;padding:8px 11px;
+    font-size:.82rem;color:var(--ink-muted);
+  }
+  .void-item span{
+    font-family:'IBM Plex Mono',monospace;font-size:.68rem;color:var(--gone);
+    font-variant-numeric:tabular-nums;
+  }
+
+  /* ---------- next steps ---------- */
+  .next{
+    background:var(--surface);border:1px solid var(--line);
+    border-radius:12px;padding:22px 24px;box-shadow:var(--shadow);
+  }
+  .next h2{font-size:1.15rem;margin-bottom:4px;}
+  .next > p{margin:0 0 18px;color:var(--ink-muted);font-size:.88rem;}
+  .step{
+    display:grid;grid-template-columns:auto 1fr;gap:14px;
+    padding:13px 0;border-top:1px solid var(--line-soft);
+  }
+  .cost{
+    font-family:'IBM Plex Mono',monospace;font-size:.64rem;font-weight:600;
+    letter-spacing:.05em;text-transform:uppercase;
+    padding:4px 8px;border-radius:5px;height:fit-content;white-space:nowrap;
+    background:var(--accent-soft);color:var(--accent);
+  }
+  .step h4{font-size:.93rem;font-weight:600;margin-bottom:3px;}
+  .step p{margin:0;font-size:.85rem;color:var(--ink-muted);}
+  .step code{
+    font-family:'IBM Plex Mono',monospace;font-size:.78rem;
+    background:var(--surface-alt);padding:1px 5px;border-radius:4px;color:var(--ink-muted);
+  }
+
+  footer.note{
+    margin-top:30px;padding-top:18px;border-top:1px solid var(--line);
+    font-size:.79rem;color:var(--ink-faint);line-height:1.75;
+  }
+
+  @media (max-width:720px){
+    .tiles{grid-template-columns:repeat(2,1fr);}
+    .stamp{text-align:left;}
+    .masthead h1{font-size:1.7rem;}
+  }
+</style>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <div>
+      <div class="eyebrow">Requirements audit</div>
+      <h1>DiaLux Build Status</h1>
+      <p>Every line of the project checklist, checked against what is actually in the repository. Each row cites the file that backs it up.</p>
+    </div>
+    <div class="stamp">
+      <b>5 Sep 2026</b>
+      commit d8941c3<br>
+      46 products seeded<br>
+      IT 009 · TIP QC
+    </div>
+  </header>
+
+  <div class="tiles">
+    <div class="tile t-done"><span>Built</span><b>23</b><small>working end to end</small></div>
+    <div class="tile t-part"><span>Partial</span><b>12</b><small>started, gaps remain</small></div>
+    <div class="tile t-gone"><span>Missing</span><b>10</b><small>no code at all</small></div>
+    <div class="tile t-mob"><span>Mobile app</span><b>0<span style="font-size:1rem;color:var(--ink-faint);"> / 40</span></b><small>section IV untouched</small></div>
+  </div>
+
+  <p class="readout">
+    The <b>web platform is roughly two-thirds complete</b> — 23 of 45 items fully built, 12 partial.
+    The customer site and admin dashboard are the strong parts. The <b>mobile app does not exist in any
+    form</b>, which alone is 40 unchecked items, and <b>nothing is deployed</b>. Counting mobile, the
+    whole checklist sits near one third.
+  </p>
+
+  <!-- ============ I ============ -->
+  <section class="sec">
+    <div class="sec-head">
+      <span class="sec-num">I</span>
+      <h2>Core Application Architecture</h2>
+      <span class="sec-tally">3 built · 0 partial · 1 missing</span>
+    </div>
+    <div class="bar"><i class="b-done" style="width:75%"></i><i class="b-gone" style="width:25%"></i></div>
+
+    <div class="rows">
+      <div class="row">
+        <div class="what">Modular design</div>
+        <span class="chip c-done">Built</span>
+        <div class="ev">Backend split <em>routes / models / middlewares</em>; frontend split <em>js/core</em> (api, auth, state, ui, page) and <em>js/pages</em></div>
+      </div>
+      <div class="row">
+        <div class="what">API communication between modules</div>
+        <span class="chip c-done">Built</span>
+        <div class="ev">REST API, 5 routers mounted at <em>/api/auth · /api/products · /api/cart · /api/orders · /api/users</em> — src/index.js:58-62</div>
+      </div>
+      <div class="row">
+        <div class="what">Database design</div>
+        <span class="chip c-done">Built</span>
+        <div class="ev">5 Mongoose models — User, Product, Cart, Order, Review. Compound + text indexes, soft delete, denormalized review aggregates — models/Product.js:32-33</div>
+      </div>
+      <div class="row">
+        <div class="what">Deployment strategy</div>
+        <span class="chip c-gone">Missing</span>
+        <div class="ev">No Dockerfile, CI, or host config anywhere in the repo. API base URL falls back to <em>http://localhost:5000/api</em> — js/core/api.js:12. Runs only on a dev machine.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ II ============ -->
+  <section class="sec">
+    <div class="sec-head">
+      <span class="sec-num">II</span>
+      <h2>Customer Site</h2>
+      <span class="sec-tally">12 built · 5 partial · 3 missing</span>
+    </div>
+    <div class="bar"><i class="b-done" style="width:60%"></i><i class="b-part" style="width:25%"></i><i class="b-gone" style="width:15%"></i></div>
+
+    <div class="group">
+      <h3>1 · Home &amp; discovery</h3>
+      <div class="rows">
+        <div class="row">
+          <div class="what">Landing page with dynamic content</div>
+          <span class="chip c-part">Partial</span>
+          <div class="ev">Hero slider of top-rated devices and a featured grid are live — pages/home.js:71,150. But featured is just <em>products.slice(0, 4)</em> (home.js:154): no promotions system and no new-arrivals logic.</div>
+        </div>
+        <div class="row">
+          <div class="what">Clear navigation — categories, search, login, cart</div>
+          <span class="chip c-done">Built</span>
+          <div class="ev">Shared header with live cart badge and role-aware admin link — core/ui.js:267-289</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="group">
+      <h3>2 · User management</h3>
+      <div class="rows">
+        <div class="row">
+          <div class="what">Registration / login</div>
+          <span class="chip c-done">Built</span>
+          <div class="ev">bcrypt + JWT (7-day expiry) — routes/auth.js:27,56. <em>Bonus beyond the checklist:</em> Google OAuth sign-in — auth.js:80</div>
+        </div>
+        <div class="row">
+          <div class="what">User profile — personal info, addresses, billing</div>
+          <span class="chip c-part">Partial</span>
+          <div class="ev">Name, email and role render <em>read-only</em> — pages/profile.js:40-48. Only the delivery address is editable, and only <em>one</em> address is supported (User.js:4-9). No billing details. No change-password, no forgot-password anywhere in the repo.</div>
+        </div>
+        <div class="row">
+          <div class="what">Wishlist / favourites</div>
+          <span class="chip c-gone">Missing</span>
+          <div class="ev">Zero matches for wishlist or favourite across the whole repository</div>
+        </div>
+        <div class="row">
+          <div class="what">Notifications</div>
+          <span class="chip c-gone">Missing</span>
+          <div class="ev">No notification model, endpoint or UI. No email is sent anywhere in the codebase.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="group">
+      <h3>3 · Product catalog &amp; search</h3>
+      <div class="rows">
+        <div class="row">
+          <div class="what">Product listing page</div>
+          <span class="chip c-done">Built</span>
+          <div class="ev">pages/products.js:153 — with empty and no-match states</div>
+        </div>
+        <div class="row">
+          <div class="what">Keyword search</div>
+          <span class="chip c-done">Built</span>
+          <div class="ev">Debounced client filter over name / brand / description — products.js:41; server-side equivalent with regex escaping — routes/products.js:76-81</div>
+        </div>
+        <div class="row">
+          <div class="what">Filtering — category, price, attributes</div>
+          <span class="chip c-done">Built</span>
+          <div class="ev">Category tabs plus brand, condition grade and max weekly rate — products.js:37-40</div>
+        </div>
+        <div class="row">
+          <div class="what">Sorting</div>
+          <span class="chip c-done">Built</span>
+          <div class="ev">5 orders — featured, price ↑, price ↓, name A–Z, most available — products.js:45-50</div>
+        </div>
+        <div class="row">
+          <div class="what">Product details — images, specs, add to cart</div>
+          <span class="chip c-part">Partial</span>
+          <div class="ev">Full spec table, included-items list, plan picker and add-to-cart — products.js:230-296. But <em>one image per product only</em> (products.js:240) — the checklist asks for multiple images / videos.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="group">
+      <h3>4 · Cart &amp; checkout</h3>
+      <div class="rows">
+        <div class="row">
+          <div class="what">Add to cart</div>
+          <span class="chip c-done">Built</span>
+          <div class="ev">Stock-checked server-side, guest carts merge on login — routes/cart.js:108,213</div>
+        </div>
+        <div class="row">
+          <div class="what">View cart — quantity, removal, subtotal</div>
+          <span class="chip c-done">Built</span>
+          <div class="ev">pages/cart.js:22-50, with a rental date range that re-prices the whole cart</div>
+        </div>
+        <div class="row">
+          <div class="what">Step-by-step checkout process</div>
+          <span class="chip c-part">Partial</span>
+          <div class="ev">Works, but it is a <em>single summary card</em>, not the staged Shipping → Payment → Review flow the checklist describes — cart.js:80-112. The address is pulled from the saved profile rather than entered at checkout.</div>
+        </div>
+        <div class="row">
+          <div class="what">Payment integration</div>
+          <span class="chip c-part">Simulated</span>
+          <div class="ev">Mock gateway by design — generates a <em>PAY-xxxxxxxx</em> reference and flips the order to payment-confirmed (routes/orders.js:284-311). GCash / card / cash are selectable. Counts only if your brief allows a simulated gateway.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="group">
+      <h3>5 · Order history &amp; tracking</h3>
+      <div class="rows">
+        <div class="row">
+          <div class="what">List of past orders</div>
+          <span class="chip c-done">Built</span>
+          <div class="ev">routes/orders.js:170 → rendered at pages/profile.js:169</div>
+        </div>
+        <div class="row">
+          <div class="what">Order detail — items, cost, status</div>
+          <span class="chip c-done">Built</span>
+          <div class="ev">Per-booking card with items, dates, deposit and delivery address — profile.js:127-167</div>
+        </div>
+        <div class="row">
+          <div class="what">Order tracking</div>
+          <span class="chip c-done">Built</span>
+          <div class="ev">Six-stage visual timeline driven by a persisted <em>statusHistory</em> array — profile.js:98-107, models/Order.js:49. Customers can also pay, cancel, extend and request returns.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="group">
+      <h3>6 · Customer support</h3>
+      <div class="rows">
+        <div class="row">
+          <div class="what">Contact form, help centre or live chat</div>
+          <span class="chip c-gone">Missing</span>
+          <div class="ev">Nothing exists. Worse — the homepage footer links to <em>/about.html, /team.html, /contact.html, /help.html, /terms.html, /privacy.html</em> (index.html:287-295) and <em>none of those files exist</em>; the catch-all at index.js:76 quietly serves the homepage instead. Visible in a demo.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="group">
+      <h3>7 · Review &amp; rating system</h3>
+      <div class="rows">
+        <div class="row">
+          <div class="what">Submit reviews and ratings for rented products</div>
+          <span class="chip c-done">Built</span>
+          <div class="ev">1–5 stars with comments, gated to verified renters — a caller must own an order for that device at <em>delivered</em> or later (routes/products.js:137-144). Re-reviewing updates in place; averages recomputed by aggregation (products.js:15-24).</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ III ============ -->
+  <section class="sec">
+    <div class="sec-head">
+      <span class="sec-num">III</span>
+      <h2>Admin Site</h2>
+      <span class="sec-tally">8 built · 7 partial · 6 missing</span>
+    </div>
+    <div class="bar"><i class="b-done" style="width:38%"></i><i class="b-part" style="width:33%"></i><i class="b-gone" style="width:29%"></i></div>
+
+    <div class="rows">
+      <div class="row">
+        <div class="what">1 · Admin login</div>
+        <span class="chip c-done">Built</span>
+        <div class="ev">Role-gated server-side on every write (middlewares/admin.js); UI hides the dashboard and stays deliberately vague for non-admins — pages/admin.js:50-59</div>
+      </div>
+      <div class="row">
+        <div class="what">2 · Product management — add, edit, delete, status</div>
+        <span class="chip c-done">Built</span>
+        <div class="ev">Full CRUD form incl. specs and included-items parsing — admin.js:129-296. Delete is a <em>soft</em> delete so order history survives (routes/products.js:208). Images are URL-only — no upload. No explicit active/inactive toggle beyond delete.</div>
+      </div>
+      <div class="row">
+        <div class="what">3 · Order management — view, detail, status, invoices, returns</div>
+        <span class="chip c-part">Partial</span>
+        <div class="ev">All orders in a table with a 12-status dropdown, and closing an order auto-restocks (admin.js:301-364, orders.js:376). <em>Missing:</em> a drill-in detail view, and any invoice or packing-slip printing. Returns are a status label only — "refunded" never moves money.</div>
+      </div>
+      <div class="row">
+        <div class="what">4 · Inventory — stock levels, low-stock alerts</div>
+        <span class="chip c-part">Partial</span>
+        <div class="ev">Per-device on-shelf vs rented-out counts with ±1 adjustment — admin.js:368-432. Low stock (≤2) and out-of-stock are <em>passively displayed</em>; nothing actively alerts anyone.</div>
+      </div>
+      <div class="row">
+        <div class="what">5 · User management — customers and admins</div>
+        <span class="chip c-part">Backend only</span>
+        <div class="ev">The endpoints exist and work — list users (routes/users.js:40) and promote/demote with a last-admin guard (users.js:47-73) — but there is <em>no Users tab</em> in the dashboard (only Products, Orders, Inventory, Reports at admin.js:20-25) and no client method (core/api.js:242-250 has only saveProfile). No suspend or ban.</div>
+      </div>
+      <div class="row">
+        <div class="what">6 · Sales &amp; analytics reports</div>
+        <span class="chip c-done">Built</span>
+        <div class="ev">Strongest admin area. Revenue, deposits held, active rentals, revenue over time with week/month/year toggle, plus breakdowns by device, category, status and grade — routes/orders.js:190-258, charted at admin.js:483-537. Customer insights are the one gap.</div>
+      </div>
+      <div class="row">
+        <div class="what">7 · Content management (static pages, banners, promos)</div>
+        <span class="chip c-gone">Missing</span>
+        <div class="ev">No CMS of any kind. Ties directly to the six dead footer links above.</div>
+      </div>
+      <div class="row">
+        <div class="what">8 · Settings &amp; configuration</div>
+        <span class="chip c-gone">Missing</span>
+        <div class="ev">No settings screen. Delivery fee is a hard-coded constant — <em>DELIVERY_FEE = 150</em>, constants.js:49. Currency, shipping and payment options are not configurable.</div>
+      </div>
+      <div class="row">
+        <div class="what">9 · Notification management</div>
+        <span class="chip c-gone">Missing</span>
+        <div class="ev">No mail transport, template or queue. Order confirmations are never sent.</div>
+      </div>
+      <div class="row">
+        <div class="what">10 · Audit trail</div>
+        <span class="chip c-part">Partial</span>
+        <div class="ev">Orders keep a timestamped <em>statusHistory</em> (models/Order.js:49) — real, but scoped to orders. No log of admin actions such as price edits, deletions or role changes.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ IV ============ -->
+  <section class="sec">
+    <div class="sec-head">
+      <span class="sec-num">IV</span>
+      <h2>Mobile Application</h2>
+      <span class="sec-tally">0 built · 0 partial · 40 missing</span>
+    </div>
+    <div class="bar"><i class="b-gone" style="width:100%"></i></div>
+
+    <div class="void">
+      <p>
+        <b>No mobile application exists.</b> There is no mobile project directory, no React Native or
+        Flutter dependency, and no native source anywhere in the repository. The web frontend has
+        responsive CSS breakpoints, which is <em>not</em> the same as the mobile app this section asks for.
+        All eleven groups are unstarted:
+      </p>
+      <div class="void-grid">
+        <div class="void-item">Mobile authentication <span>0/4</span></div>
+        <div class="void-item">Home screen <span>0/4</span></div>
+        <div class="void-item">Product browsing <span>0/5</span></div>
+        <div class="void-item">Shopping cart <span>0/4</span></div>
+        <div class="void-item">Mobile checkout <span>0/4</span></div>
+        <div class="void-item">Order management <span>0/4</span></div>
+        <div class="void-item">Customer profile <span>0/3</span></div>
+        <div class="void-item">Wishlist <span>0/3</span></div>
+        <div class="void-item">Push notifications <span>0/3</span></div>
+        <div class="void-item">Reviews &amp; ratings <span>0/3</span></div>
+        <div class="void-item">Customer support <span>0/3</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ next ============ -->
+  <section class="next">
+    <h2>Where the cheap points are</h2>
+    <p>Ordered by effort, not by checklist position — what buys the most ticks per hour of work.</p>
+
+    <div class="step">
+      <span class="cost">~1 hour</span>
+      <div>
+        <h4>Add the Users tab to the admin dashboard</h4>
+        <p>The hardest part is already done — <code>GET /api/users</code> and <code>PATCH /api/users/:id/role</code> work today. This needs a <code>usersApi</code> method and a fifth tab, and it converts checklist item III-5 from a gap into a tick.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="cost">~2 hours</span>
+      <div>
+        <h4>Write the six missing static pages</h4>
+        <p>About, Team, Contact, Help, Terms, Privacy are already linked from the footer and currently go nowhere. A contact form on <code>contact.html</code> also closes II-6, and an FAQ covers part of the support requirement.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="cost">~2 hours</span>
+      <div>
+        <h4>Deploy it</h4>
+        <p>MongoDB is already on Atlas, and Express already serves the frontend — so one host handles both. Make the API base URL in <code>js/core/api.js:12</code> environment-aware, then push. A live URL demos far better than localhost.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="cost">~3 hours</span>
+      <div>
+        <h4>Wishlist, end to end</h4>
+        <p>An array of product ids on the User model, two endpoints, a heart button on the product card, and a section in the profile page. Closes II-2 and, if you build the mobile app, IV-8 too.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="cost">Decision</span>
+      <div>
+        <h4>The mobile app — 40 items, or a scope conversation</h4>
+        <p>This is the single largest gap and cannot be squeezed in late. Either commit to it as its own build, or agree with your professor that the responsive web app satisfies section IV. Worth settling before anything else on this list.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="note">
+    Audited against commit <span class="mono">d8941c3</span> on 5 September 2026 by reading the repository directly — every claim above cites the file that backs it.
+    Counts treat each checklist bullet as one item: 45 across sections I–III, plus 40 in section IV.
+    “Partial” means real working code that does not yet meet the full wording of the requirement.
+  </footer>
+
+</div>

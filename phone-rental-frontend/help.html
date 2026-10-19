@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Help Center – DiaLux</title>
+  <link rel="icon" href="assets/dialux-logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/enhancements.css" />
+  <link rel="stylesheet" href="css/features.css" />
+  <meta name="google-client-id" content="807409726791-spvai3mdu194n9l2tt2hoh3r5uan2mvf.apps.googleusercontent.com" />
+</head>
+<body data-cms-slug="help">
+  <div id="toast"></div>
+
+  <!-- Shared header: nav, wishlist, notification bell, cart badge and the
+       account menu. Rendered by core/ui.js. -->
+  <div id="siteHeader"></div>
+
+  <!-- ===== MAIN ===== -->
+  <main>
+    <section class="section">
+      <div class="container">
+        <div class="section-header">
+          <span class="badge">Help</span>
+          <h1 id="cmsTitle">Help Center</h1>
+          <p id="cmsIntro">Quick answers for common rental questions.</p>
+        </div>
+        <!-- Editable from the admin dashboard (Pages tab). Until an
+             administrator saves an edit, this hand-written copy is what shows. -->
+        <div class="info-card" id="cmsContent">
+          <h3>📱 How do I rent a device?</h3>
+          <p>Choose a device from the <a href="/products.html">catalog</a>, add it to your cart, sign in, select Daily, Weekly, or Monthly rental, choose a start date, and complete checkout.</p>
+
+          <h3>🔄 Can I extend a rental?</h3>
+          <p>Yes. Active rentals have an <strong>"Extend"</strong> action in your <a href="/profile.html#orders">My Rentals</a> page. This adds 7 days to your current rental period.</p>
+
+          <h3>📦 How do returns work?</h3>
+          <p>Request a return from <a href="/profile.html#orders">My Rentals</a>. The device enters the technician queue for inspection, secure data wiping, and deposit‑refund processing.</p>
+
+          <h3>🔐 What happens to my data?</h3>
+          <p>Returned devices are factory‑reset and the wipe is logged before the device becomes available again. Your personal data is never stored on the device after return.</p>
+
+          <h3>💰 What is the security deposit?</h3>
+          <p>The security deposit is shown separately during checkout and is <strong>fully refundable</strong> after the returned device passes inspection.</p>
+
+          <h3>🛡️ What does damage protection cover?</h3>
+          <p>Optional protection can be added at checkout. It reduces the risk of unexpected repair charges during your rental. See our <a href="/terms.html">Terms & Conditions</a> for details.</p>
+
+          <div class="info-highlight">
+            <p>💬 <strong>Still have questions?</strong> Use the AI chat on the homepage or <a href="/contact.html">contact our support team</a>.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="siteFooter"></div>
+
+  <script type="module" src="js/pages/static.js"></script>
+</body>
+</html>

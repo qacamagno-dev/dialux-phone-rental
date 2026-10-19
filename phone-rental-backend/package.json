@@ -1,28 +1,40 @@
 {
-    "name":  "backend",
-    "version":  "1.0.0",
-    "description":  "",
-    "main":  "index.js",
-    "scripts":  {
-                    "test":  "echo \"Error: no test specified\" \u0026\u0026 exit 1",
-                    "dev":  "nodemon src/index.js"
-                },
-    "keywords":  [
-
-                 ],
-    "author":  "",
-    "license":  "ISC",
-    "type":  "commonjs",
-    "dependencies":  {
-                         "bcryptjs":  "^3.0.3",
-                         "cors":  "^2.8.6",
-                         "dotenv":  "^17.4.2",
-                         "express":  "^5.2.1",
-                         "google-auth-library":  "^11.0.0",
-                         "jsonwebtoken":  "^9.0.3",
-                         "mongoose":  "^9.9.1"
-                     },
-    "devDependencies":  {
-                            "nodemon":  "^3.1.14"
-                        }
+  "name": "dialux-backend",
+  "version": "1.1.0",
+  "description": "DiaLux API \u2014 auth, catalog, wishlist, cart, orders, support, CMS, settings, audit and reporting",
+  "main": "src/index.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "seed": "node src/seed.js",
+    "check": "node scripts/check-pricing-parity.mjs && node scripts/check-page-modules.mjs",
+    "check:pricing": "node scripts/check-pricing-parity.mjs",
+    "check:links": "node scripts/check-page-modules.mjs",
+    "smoke": "bash scripts/smoke.sh",
+    "docker:build": "docker build -f Dockerfile -t dialux ..",
+    "test": "npm run check",
+    "mail:test": "node scripts/test-email.js"
+  },
+  "keywords": [
+    "rental",
+    "express",
+    "mongodb"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@getbrevo/brevo": "^6.0.3",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "google-auth-library": "^11.0.2",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.9.1",
+    "resend": "^6.32.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
 }

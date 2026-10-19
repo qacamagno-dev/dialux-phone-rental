@@ -1,0 +1,61 @@
+# ============================================================
+# DiaLux — local / self-hosted stack
+#
+#   docker compose up --build          start MongoDB + the app
+#   docker compose logs -f api         follow the server log
+#   docker compose exec api node phone-rental-backend/src/seed.js
+#   docker compose down                stop (data survives in the volume)
+#   docker compose down -v             stop and delete the database
+#
+# Then open http://localhost:5000
+#
+# This runs its own MongoDB, so no Atlas account is needed. To use Atlas
+# instead, set MONGODB_URI in .env and remove the `mongo` service plus the
+# depends_on block below.
+# ============================================================
+
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    # Not published to the host by default — only the api container needs it.
+    # Uncomment to inspect with Compass from your machine.
+    # ports:
+    #   - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      # The app must not boot before Mongo can answer, or the first request
+      # after startup hits a disconnected client.
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 20s
+
+  api:
+    build:
+      # Root context: the image needs both the backend and the frontend.
+      context: .
+      dockerfile: phone-rental-backend/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      MONGODB_URI: mongodb://mongo:27017/dialux
+      # Required. Generate one with:
+      #   node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET must be set — put it in a .env file next to this compose file}
+      # Optional.
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      APP_URL: ${APP_URL:-http://localhost:5000}
+      SMTP_URL: ${SMTP_URL:-}
+      MAIL_FROM: ${MAIL_FROM:-DiaLux <no-reply@dialux.test>}
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+volumes:
+  mongo-data:

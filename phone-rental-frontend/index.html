@@ -1,371 +1,298 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PhoneRent — Rent phones, tablets, laptops & pocket Wi-Fi</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DiaLux – Rent premium tech, skip the price tag</title>
+  <link rel="icon" href="assets/dialux-logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/enhancements.css" />
+  <link rel="stylesheet" href="css/features.css" />
+
+  <!-- ===== GOOGLE OAUTH =====
+       The client id lives here only; core/auth.js reads it from this meta
+       tag, then initialises GSI and renders the button itself. It must match
+       GOOGLE_CLIENT_ID in phone-rental-backend/.env. -->
+  <meta name="google-client-id"
+        content="807409726791-spvai3mdu194n9l2tt2hoh3r5uan2mvf.apps.googleusercontent.com" />
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
+  <div id="toast"></div>
 
-<div id="toast"></div>
+  <!-- Shared header: nav, wishlist, notification bell, cart badge and the
+       account menu. Rendered by core/ui.js so every page is identical. -->
+  <div id="siteHeader"></div>
 
-<header>
-  <nav class="wrap">
-    <div class="logo" onclick="switchView('home')">
-      <span class="logo-mark"><img src="assets/phonerent-logo.png" alt="PhoneRent logo"></span>
-      PhoneRent
-    </div>
-    <div class="nav-links" id="navLinks">
-      <button onclick="switchView('home')" data-nav="home">Home</button>
-      <button onclick="switchView('products')" data-nav="products">Devices</button>
-      <button onclick="switchView('team')" data-nav="team">Developers</button>
-    </div>
-    <div class="nav-right">
-      <a class="admin-link" onclick="switchView('technician')" href="javascript:void(0)">Technician</a>
-      <a class="admin-link" onclick="switchView('admin')" href="javascript:void(0)">Admin</a>
-      <button class="icon-btn" onclick="switchView('cart')" title="Cart">
-        <svg viewBox="0 0 24 24" fill="none"><path d="M3 4h2l2.4 12.2a2 2 0 0 0 2 1.6h7.6a2 2 0 0 0 2-1.6L21 8H6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9.5" cy="20.5" r="1.3" fill="currentColor"/><circle cx="17" cy="20.5" r="1.3" fill="currentColor"/></svg>
-        <span class="badge" id="cartBadge">0</span>
-      </button>
-      <div class="acct-wrap">
-        <button class="acct-btn" id="acctBtn" onclick="toggleAcctMenu()">Sign in</button>
-        <div class="acct-menu" id="acctMenu">
-          <a href="javascript:void(0)" onclick="switchView('account');closeAcctMenu()">My account</a>
-          <a href="javascript:void(0)" onclick="switchView('orders');closeAcctMenu()">My rentals</a>
-          <button onclick="doLogout()">Sign out</button>
+  <!-- ===== MAIN ===== -->
+  <main>
+
+    <!-- ===== HERO WITH 3D PHONE RIG ===== -->
+    <section class="hero" data-home-section>
+      <div class="container hero-grid">
+        <div class="hero-text">
+          <span class="tag">✦ Now in QC</span>
+          <h1>Carry the <em>latest phone.</em><br />Skip the price tag.</h1>
+          <p>Rent a smartphone, tablet, laptop, or pocket Wi-Fi on a plan that fits your week, your semester, or your year. Every device is graded, insured, and data-wiped before arrival.</p>
+          <div class="hero-actions">
+            <a href="/products.html" class="btn btn-primary">Browse devices</a>
+            <a href="#how-it-works" class="btn btn-outline">How it works</a>
+          </div>
+          <div class="hero-stats">
+            <div><strong>3</strong> condition grades</div>
+            <div><strong>100%</strong> data wiped</div>
+            <div><strong>₱0</strong> hidden fees</div>
+          </div>
+        </div>
+
+        <div class="hero-3d-stage" id="heroStage">
+          <div class="hero-particles">
+            <span class="blob blob-a"></span>
+            <span class="blob blob-b"></span>
+            <span class="blob blob-c"></span>
+          </div>
+
+          <!-- Best-rental hero slider. pages/home.js fills this from the
+               top-rated devices in the live catalog and runs the carousel;
+               it hides the whole stage if the catalog is empty. -->
+          <div class="hero-slider" id="heroSlider" role="region"
+               aria-roledescription="carousel" aria-label="Top rental devices"></div>
         </div>
       </div>
-    </div>
-  </nav>
-</header>
+    </section>
 
-<main id="app">
-
-<!-- ======================= HOME ======================= -->
-<section class="view" id="view-home">
-  <section class="hero">
-    <div class="wrap hero-grid">
-      <div>
-        <span class="eyebrow"><span class="dot"></span> Now delivering in Quezon City, Metro Manila</span>
-        <h1>Carry the <em>latest phone.</em><br>Skip the price tag.</h1>
-        <p class="lede">PhoneRent gets you a flagship smartphone, tablet, laptop, or pocket Wi-Fi on a plan that fits the moment — a weekend, a semester, or a full year. Every device is graded, sanitized, and insured before it reaches your door.</p>
-        <div class="hero-actions">
-          <button class="btn btn-primary" onclick="switchView('products')">Browse devices</button>
-          <button class="btn btn-ghost" onclick="document.getElementById('home-how').scrollIntoView({behavior:'smooth'})" style="color:#fff;border-color:rgba(255,255,255,0.24)">See how it works</button>
+    <!-- ===== HOW IT WORKS ===== -->
+    <section id="how-it-works" class="section" data-home-section>
+      <div class="container">
+        <div class="section-header">
+          <span class="badge">Process</span>
+          <h2>Renting a device takes three simple steps.</h2>
+          <p>No queues, no long contracts – just pick, book, and receive.</p>
         </div>
-        <div class="hero-stats">
-          <div><b>3 tiers</b><span>Like New · Good · Fair</span></div>
-          <div><b>Daily → yearly</b><span>rental durations</span></div>
-          <div><b>100% wiped</b><span>data before every handoff</span></div>
+        <div class="steps-grid">
+          <div class="step reveal">
+            <div class="step-number">01</div>
+            <h3>Choose your device</h3>
+            <p>Browse by category, brand, or grade. Every listing shows its true condition – not a stock photo. Save the ones you like to your wishlist.</p>
+          </div>
+          <div class="step reveal">
+            <div class="step-number">02</div>
+            <h3>Book &amp; pay</h3>
+            <p>Pick your rental dates, add optional damage protection, and check out securely.</p>
+          </div>
+          <div class="step reveal">
+            <div class="step-number">03</div>
+            <h3>Receive &amp; enjoy</h3>
+            <p>Your device arrives sanitised, charged, and ready to use. Track every stage from your account, then return when you're done.</p>
+          </div>
         </div>
       </div>
-      <div class="phone-stage">
-        <div class="phone-glow"></div>
-        <div class="phone">
-          <div class="phone-screen">
-            <div>
-              <div class="ps-top">DEVICE / 014-A</div>
-              <div class="ps-price">₱249<span>/day</span></div>
-              <div style="margin-top:10px;" class="grade-chip">● Like New</div>
+    </section>
+
+    <!-- ===== FEATURED DEVICES ===== -->
+    <section class="section featured" data-home-section>
+      <div class="container">
+        <div class="section-header">
+          <span class="badge">Featured</span>
+          <h2>Most-rented devices</h2>
+          <p>What people are booking right now. Hover to tilt, tap the ↻ icon to see specs, tap the heart to save it.</p>
+        </div>
+        <div class="featured-grid stagger" id="featuredGrid"></div>
+        <div style="text-align:center; margin-top:2rem;">
+          <a href="/products.html" class="btn btn-outline">View full catalog →</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== TRUST ===== -->
+    <section class="section trust" data-home-section>
+      <div class="container">
+        <div class="section-header">
+          <span class="badge">Why DiaLux</span>
+          <h2>Built around trust, not just inventory.</h2>
+        </div>
+        <div class="trust-grid">
+          <div class="trust-item reveal">
+            <div class="trust-icon">🔐</div>
+            <h4>Verified data wiping</h4>
+            <p>Every device is factory-reset and logged before it goes to the next renter.</p>
+          </div>
+          <div class="trust-item reveal">
+            <div class="trust-icon">🛡️</div>
+            <h4>Optional damage protection</h4>
+            <p>Add coverage at checkout for a small percentage of the rent.</p>
+          </div>
+          <div class="trust-item reveal">
+            <div class="trust-icon">💬</div>
+            <h4>Real support, threaded</h4>
+            <p>Message us and follow every reply from your account — nothing gets lost.</p>
+          </div>
+          <div class="trust-item reveal">
+            <div class="trust-icon">🔄</div>
+            <h4>Flexible durations</h4>
+            <p>Daily, weekly, or monthly – extend or return early whenever you need.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== GRADING ===== -->
+    <section class="section grading" data-home-section>
+      <div class="container grading-grid">
+        <div class="grading-text reveal">
+          <span class="badge">Transparency</span>
+          <h2>We grade every device before it's yours.</h2>
+          <p>No surprises at the door. Each device passes a multi-point inspection and is labelled with one of three honest grades.</p>
+        </div>
+        <div class="grading-bars reveal">
+          <div class="grade-row">
+            <div class="grade-label"><strong>Like New</strong><span>96 / 100</span></div>
+            <div class="bar"><div class="fill" style="width:96%; background:#2ecc71;"></div></div>
+            <p class="grade-desc">No visible wear, full battery health, boxed with accessories.</p>
+          </div>
+          <div class="grade-row">
+            <div class="grade-label"><strong>Good</strong><span>78 / 100</span></div>
+            <div class="bar"><div class="fill" style="width:78%; background:#3498db;"></div></div>
+            <p class="grade-desc">Light signs of use, all functions perfect, battery &gt;85%.</p>
+          </div>
+          <div class="grade-row">
+            <div class="grade-label"><strong>Fair</strong><span>56 / 100</span></div>
+            <div class="bar"><div class="fill" style="width:56%; background:#f1c40f;"></div></div>
+            <p class="grade-desc">Visible cosmetic wear, fully functional – our budget tier.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== CALL TO ACTION ===== -->
+    <section class="section cta" data-home-section>
+      <div class="container cta-box">
+        <h2>Your next device is a booking away.</h2>
+        <p>Create an account, pick a grade you trust, and have it delivered as soon as today.</p>
+        <a href="#auth" class="btn btn-primary">Get started</a>
+      </div>
+    </section>
+
+    <!-- ===== AUTH PANEL (shown at #auth / #signup / #forgot) ===== -->
+    <section class="section hidden" id="authPanel">
+      <div class="container">
+        <div class="form-card">
+          <h2 id="authTitle">Welcome back</h2>
+          <p class="sub" id="authSub">Sign in to book devices and track your rentals.</p>
+
+          <form id="loginForm" novalidate>
+            <div class="field">
+              <label for="li-email">Email</label>
+              <input type="email" id="li-email" autocomplete="email" required />
             </div>
-            <div class="ps-top">Insured · Wiped · Ready today</div>
+            <div class="field">
+              <label for="li-password">Password</label>
+              <input type="password" id="li-password" autocomplete="current-password" required />
+              <small class="field-hint">
+                <a href="#forgot" id="forgotLink" style="color:var(--accent);">Forgot your password?</a>
+              </small>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;">Sign in</button>
+          </form>
+
+          <!-- ===== GOOGLE SIGN-IN BUTTON =====
+               Hidden on the password-reset screen, where it is irrelevant. -->
+          <div id="googleBlock" style="margin: 16px 0; display: flex; justify-content: center; flex-direction: column; align-items: center;">
+            <div style="position: relative; width: 100%; text-align: center;">
+              <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; width: 100%;">
+                <hr style="flex: 1; border: none; border-top: 1px solid rgba(255,255,255,0.08);" />
+                <span style="color: #5E607A; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em;">or continue with</span>
+                <hr style="flex: 1; border: none; border-top: 1px solid rgba(255,255,255,0.08);" />
+              </div>
+              <!-- core/auth.js renders the Google button in here once the
+                   panel is visible (GSI cannot render inside display:none). -->
+              <div id="googleBtn" style="display:flex; justify-content:center; min-height:44px;"></div>
+            </div>
           </div>
+
+          <form id="registerForm" class="hidden" novalidate>
+            <div class="field">
+              <label for="rg-name">Full name</label>
+              <input type="text" id="rg-name" autocomplete="name" required />
+            </div>
+            <div class="field">
+              <label for="rg-email">Email</label>
+              <input type="email" id="rg-email" autocomplete="email" required />
+            </div>
+            <div class="field">
+              <label for="rg-password">Password</label>
+              <input type="password" id="rg-password" autocomplete="new-password" minlength="6" required />
+              <small class="field-hint">At least 6 characters.</small>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;">Create account</button>
+          </form>
+
+          <!-- ===== FORGOT PASSWORD (shown at #forgot) ===== -->
+          <form id="forgotForm" class="hidden" novalidate>
+            <div class="field">
+              <label for="fp-email">Email on your account</label>
+              <input type="email" id="fp-email" autocomplete="email" required />
+              <small class="field-hint">
+                We send a single-use link that expires in an hour. For your security we
+                do not confirm whether an address is registered.
+              </small>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;">Send reset link</button>
+          </form>
+
+          <!-- Filled by pages/home.js with the confirmation, and with the raw
+               link when the server has no mail transport configured. -->
+          <div id="forgotResult"></div>
+
+          <p class="form-switch">
+            <span id="authPrompt">Don't have an account? </span>
+            <button type="button" id="authToggle" data-target="register">Sign up</button>
+          </p>
         </div>
-        <div class="float-card fc-1"><div class="fc-title">Galaxy Tab S9</div><div class="fc-sub">Booked 2 mins ago</div></div>
-        <div class="float-card fc-2"><div class="fc-title">Deposit refunded</div><div class="fc-sub">Return verified ✓</div></div>
       </div>
-    </div>
-  </section>
+    </section>
 
+  </main>
 
-  <section class="sec-pad tight featured-section">
-    <div class="wrap">
-      <div class="featured-head reveal"><div><span class="kicker">Popular right now</span><h2>Devices people rent the most.</h2></div><button class="btn btn-ghost btn-sm" onclick="switchView('products')">View full catalog</button></div>
-      <div class="featured-grid" id="featuredGrid"></div>
-    </div>
-  </section>
+  <div id="siteFooter"></div>
 
-  <section class="sec-pad" id="home-how">
-    <div class="wrap">
-      <div class="sec-head reveal"><span class="kicker">Process</span><h2>Renting a device takes three steps.</h2><p>No queues, no contracts to sign in person — the whole booking lives in your account from checkout to return.</p></div>
-      <div class="steps">
-        <div class="step reveal"><span class="num">01 / Choose</span><h3>Browse & pick a grade</h3><p>Filter by brand, device type, and budget. Every listing shows its real condition grade, not a stock photo promise.</p></div>
-        <div class="step reveal"><span class="num">02 / Book</span><h3>Set your duration & pay</h3><p>Add devices to your cart, choose daily, weekly, or monthly terms, and check out through a secured gateway.</p></div>
-        <div class="step reveal"><span class="num">03 / Receive</span><h3>Delivered, ready to use</h3><p>Your device arrives sanitized and charged. Track your rental or schedule return from your orders page.</p></div>
+  <!-- ===== CHATBOT WIDGET =====
+       Floating AI assistant powered by Groq. Talks to /api/chat.
+       Conversation persists across pages in localStorage. -->
+  <div id="chatbot-widget">
+    <button id="chat-toggle-btn" aria-label="Open DiaLux Assistant chat">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+      </svg>
+    </button>
+    <div id="chat-window" class="hidden">
+      <div class="chat-header">
+        <h4>💬 DiaLux Assistant</h4>
+        <div class="chat-header-actions">
+          <button id="chat-clear-btn" aria-label="Clear chat history" title="Clear chat">🗑️</button>
+          <button id="chat-close-btn" aria-label="Close chat">×</button>
+        </div>
       </div>
-    </div>
-  </section>
-
-  <section class="sec-pad grade-section">
-    <div class="wrap grade-panel">
-      <div class="reveal"><span class="kicker">Transparency</span><h2>We grade every device before it's yours.</h2><p style="color:var(--ink-muted);margin-top:14px;">No surprises at the door. Each listing carries one of three condition grades, tested and logged by our technician team on every return.</p></div>
-      <div class="meter reveal">
-        <div class="meter-row grade-a"><div class="mr-top"><b>Like New</b><span>96 / 100</span></div><div class="bar-track"><div class="bar-fill"></div></div><p class="mr-desc">No visible wear, full battery health, original accessories included.</p></div>
-        <div class="meter-row grade-b"><div class="mr-top"><b>Good</b><span>78 / 100</span></div><div class="bar-track"><div class="bar-fill"></div></div><p class="mr-desc">Light signs of use, fully functional, battery health above 85%.</p></div>
-        <div class="meter-row grade-c"><div class="mr-top"><b>Fair</b><span>56 / 100</span></div><div class="bar-track"><div class="bar-fill"></div></div><p class="mr-desc">Visible cosmetic wear, all core functions tested and working — our budget tier.</p></div>
+      <div id="chat-messages"></div>
+      <div id="chat-suggestions" class="chat-suggestions">
+        <button type="button" data-q="How much does it cost to rent an iPhone?">💰 iPhone prices</button>
+        <button type="button" data-q="What payment methods do you accept?">💳 Payment methods</button>
+        <button type="button" data-q="How does delivery work?">🚚 Delivery options</button>
+        <button type="button" data-q="What is the security deposit and how do I get it back?">🔐 Security deposit</button>
+        <button type="button" data-q="How do I return the device?">↩️ Return process</button>
+        <button type="button" data-q="What are the device condition grades?">⭐ Condition grades</button>
       </div>
-    </div>
-  </section>
-
-  <section class="sec-pad">
-    <div class="wrap">
-      <div class="sec-head reveal"><span class="kicker">Why PhoneRent</span><h2>Built around trust, not just inventory.</h2></div>
-      <div class="feat-grid">
-        <div class="feat reveal"><div class="feat-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z" stroke="currentColor" stroke-width="1.8"/></svg></div><h4>Verified data wiping</h4><p>Every device is factory-reset and audit-logged before it's relisted.</p></div>
-        <div class="feat reveal"><div class="feat-icon"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 10h18" stroke="currentColor" stroke-width="1.8"/></svg></div><h4>Optional damage protection</h4><p>Add coverage at checkout and rent with confidence.</p></div>
-        <div class="feat reveal"><div class="feat-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21c-4-3-8-6.5-8-11a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 4.5-4 8-8 11" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></div><h4>24/7 AI support</h4><p>Troubleshooting and order help, day or night.</p></div>
-        <div class="feat reveal"><div class="feat-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M20 12a8 8 0 1 1-3-6.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M20 4v5h-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h4>Flexible durations</h4><p>Extend, shorten, or upgrade anytime from your dashboard.</p></div>
-      </div>
-    </div>
-  </section>
-
-  <section class="sec-pad">
-    <div class="final-cta reveal">
-      <h2>Your next device is a booking away.</h2>
-      <p>Create an account, pick a grade you trust, and have it delivered as soon as today.</p>
-      <button class="btn btn-primary" onclick="switchView('products')">Get started</button>
-    </div>
-  </section>
-</section>
-
-<!-- ======================= PRODUCTS ======================= -->
-<section class="view hidden" id="view-products">
-  <div class="wrap">
-    <div class="page-head"><h1>Every device, one catalog.</h1><p>Search and compare devices by category, brand, condition, and rental price.</p></div>
-    <div class="cat-tabs">
-      <div class="cat-group" id="catTabs">
-        <div class="cat-tab active" data-filter="all" onclick="setProductFilter('all')">All</div>
-        <div class="cat-tab" data-filter="phone" onclick="setProductFilter('phone')">Smartphones</div>
-        <div class="cat-tab" data-filter="tablet" onclick="setProductFilter('tablet')">Tablets</div>
-        <div class="cat-tab" data-filter="laptop" onclick="setProductFilter('laptop')">Laptops</div>
-        <div class="cat-tab" data-filter="wifi" onclick="setProductFilter('wifi')">Pocket Wi-Fi</div>
-      </div>
-      <div class="search-box">
-        <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-        <input type="text" placeholder="Search devices..." oninput="setProductSearch(this.value)">
-      </div>
-    </div>
-    <div class="filter-panel">
-      <label>Brand<select id="filterBrand" onchange="setAdvancedFilter('brand',this.value)"><option value="all">All brands</option></select></label>
-      <label>Condition<select id="filterGrade" onchange="setAdvancedFilter('grade',this.value)"><option value="all">All conditions</option><option>Like New</option><option>Good</option><option>Fair</option></select></label>
-      <label>Max price/day<select id="filterPrice" onchange="setAdvancedFilter('maxPrice',this.value)"><option value="99999">Any price</option><option value="150">₱150</option><option value="300">₱300</option><option value="500">₱500</option><option value="700">₱700</option></select></label>
-      <label>Sort<select id="filterSort" onchange="setAdvancedFilter('sort',this.value)"><option value="featured">Featured</option><option value="price-asc">Price: low to high</option><option value="price-desc">Price: high to low</option><option value="name">Name A–Z</option></select></label>
-      <button class="clear-filter" onclick="clearProductFilters()">Reset filters</button>
-    </div>
-    <div class="catalog-meta"><span id="catalogCount">0 devices</span><span>All rates shown in Philippine pesos.</span></div>
-    <div class="device-grid" id="deviceGrid"></div>
-  </div>
-</section>
-
-<!-- ======================= PRODUCT DETAILS ======================= -->
-<section class="view hidden" id="view-product">
-  <div class="wrap" id="productDetail"></div>
-</section>
-
-<!-- ======================= CART ======================= -->
-<section class="view hidden" id="view-cart">
-  <div class="wrap">
-    <div class="page-head"><h1>Your cart</h1><p>Review your devices before checking out.</p></div>
-    <div class="cart-layout" id="cartLayout"></div>
-  </div>
-</section>
-
-<!-- ======================= CHECKOUT ======================= -->
-<section class="view hidden" id="view-checkout">
-  <div class="wrap">
-    <div class="page-head"><h1>Checkout</h1><p>Choose your rental dates, review the refundable deposit, and confirm your booking.</p></div>
-    <div class="checkout-layout">
-      <div class="form-card checkout-form-card">
-        <form id="checkoutForm" onsubmit="doCheckout(event)">
-          <h3 class="checkout-section-title">Delivery details</h3>
-          <div class="field"><label>Full name</label><input type="text" id="co-name" required></div>
-          <div class="field"><label>Delivery address</label><textarea id="co-address" rows="2" required placeholder="House/Unit, Street, Barangay, Quezon City, Metro Manila"></textarea><small class="field-hint">Service area: Quezon City, Metro Manila only.</small></div>
-          <div class="field-row">
-            <div class="field"><label>Rental plan</label><select id="co-duration" onchange="updateRentalDates();updateCheckoutTotal()"><option value="Daily">Daily · 1 day</option><option value="Weekly" selected>Weekly · 7 days</option><option value="Monthly">Monthly · 30 days</option></select></div>
-            <div class="field"><label>Start date</label><input type="date" id="co-start" onchange="updateRentalDates();updateCheckoutTotal()" required></div>
-          </div>
-          <div class="field-row">
-            <div class="field"><label>Return date</label><input type="date" id="co-end" readonly></div>
-            <div class="field"><label>Damage protection</label><select id="co-protection" onchange="updateCheckoutTotal()"><option value="No">No protection</option><option value="Yes">Add device protection</option></select></div>
-          </div>
-          <h3 class="checkout-section-title">Payment method</h3>
-          <div class="field"><div class="radio-row">
-            <label class="radio-pill checked"><input type="radio" name="pay" value="GCash" checked onclick="setPayPill(this)">GCash</label>
-            <label class="radio-pill"><input type="radio" name="pay" value="Maya" onclick="setPayPill(this)">Maya</label>
-            <label class="radio-pill"><input type="radio" name="pay" value="Bank Card" onclick="setPayPill(this)">Bank Card</label>
-          </div></div>
-          <label class="terms-check"><input type="checkbox" id="co-terms" onchange="updateCheckoutButton()"> <span>I agree to the <button type="button" onclick="showInfo('rental')">Rental Agreement</button>, <button type="button" onclick="showInfo('damage')">Damage Policy</button>, and <button type="button" onclick="showInfo('privacy')">Data Privacy Policy</button>.</span></label>
-          <button type="submit" id="checkoutBtn" class="btn btn-primary" style="width:100%;justify-content:center;" disabled>Place rental order</button>
-          <p class="demo-note">Simulated payment gateway — no real transaction is processed.</p>
-        </form>
-      </div>
-      <div class="summary-card checkout-summary" id="checkoutSummary"></div>
-    </div>
-  </div>
-</section>
-
-<!-- ======================= LOGIN / REGISTER ======================= -->
-<section class="view hidden" id="view-login">
-  <div class="form-card">
-    <form id="loginForm" onsubmit="doLogin(event)">
-      <h2>Welcome back</h2>
-      <p class="sub">Sign in to book devices and track your rentals.</p>
-      <div class="field"><label>Email</label><input type="email" id="li-email" required></div>
-      <div class="field"><label>Password</label><input type="password" id="li-password" required></div>
-      <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;">Sign in</button>
-      <button type="button" class="btn btn-ghost btn-sm" style="width:100%;justify-content:center;margin-top:10px;" onclick="forgotPasswordDemo()">Forgot password?</button>
-      <p class="demo-note">Demo login — any email & password combination works.</p>
-      <div class="form-switch">New here? <button type="button" onclick="toggleAuthForm()">Create an account</button></div>
-    </form>
-    <form id="registerForm" class="hidden" onsubmit="doRegister(event)">
-      <h2>Create your account</h2>
-      <p class="sub">Sign up to start renting devices.</p>
-      <div class="field"><label>Full name</label><input type="text" id="rg-name" required></div>
-      <div class="field"><label>Email</label><input type="email" id="rg-email" required></div>
-      <div class="field"><label>Password</label><input type="password" id="rg-password" required></div>
-      <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;">Create account</button>
-      <div class="form-switch">Already have an account? <button type="button" onclick="toggleAuthForm()">Sign in</button></div>
-    </form>
-  </div>
-</section>
-
-
-<!-- ======================= ACCOUNT ======================= -->
-<section class="view hidden" id="view-account">
-  <div class="wrap">
-    <div class="page-head"><h1>My account</h1><p>Manage your profile, delivery address, payment preferences, and password.</p></div>
-    <div class="account-grid" id="accountContent"></div>
-  </div>
-</section>
-
-<!-- ======================= ORDERS ======================= -->
-<section class="view hidden" id="view-orders">
-  <div class="wrap">
-    <div class="page-head"><h1>My orders</h1><p>Track the status of your current and past rentals.</p></div>
-    <div style="padding:24px 0 90px;" id="ordersList"></div>
-  </div>
-</section>
-
-<!-- ======================= ADMIN ======================= -->
-<section class="view hidden" id="view-admin">
-  <div class="wrap">
-    <div id="adminLoginWrap" class="form-card">
-      <form id="adminLoginForm" onsubmit="adminLogin(event)">
-        <h2>Admin sign in</h2><p class="sub">Restricted access for PhoneRent staff only.</p>
-        <div class="field"><label>Username</label><input type="text" id="ad-user" required></div>
-        <div class="field"><label>Password</label><input type="password" id="ad-pass" required></div>
-        <button type="submit" class="btn btn-dark" style="width:100%;justify-content:center;">Sign in to admin</button>
-        <p class="demo-note">Demo credentials — username <b>admin</b>, password <b>admin123</b>.</p>
+      <form id="chat-form">
+        <input type="text" id="chat-input" placeholder="Ask about rentals, prices, or policies..." autocomplete="off" />
+        <button type="submit" aria-label="Send message">Send</button>
       </form>
     </div>
-    <div id="adminDashWrap" class="hidden">
-      <div class="page-head" style="padding-top:36px;"><h1>Admin dashboard</h1><p>Manage products, rentals, inventory, and business performance.</p></div>
-      <div class="admin-shell">
-        <div class="admin-side">
-          <button class="active" data-tab="products" onclick="showAdminTab('products')">Product management</button>
-          <button data-tab="orders" onclick="showAdminTab('orders')">Order management</button>
-          <button data-tab="inventory" onclick="showAdminTab('inventory')">Inventory management</button>
-          <button data-tab="reports" onclick="showAdminTab('reports')">Sales reports</button>
-          <button onclick="switchView('technician')">Technician portal</button>
-          <button onclick="adminLogout()" style="color:var(--danger);margin-top:10px;">Sign out</button>
-        </div>
-        <div>
-          <div class="admin-card" id="admin-tab-products">
-            <div class="admin-top"><h3>Products (<span id="prodCount">0</span>)</h3><button class="btn btn-dark btn-sm" onclick="openAddProduct()">+ Add product</button></div>
-            <div class="pf-form hidden" id="productForm">
-              <input type="hidden" id="pf-id">
-              <div class="pf-grid"><input class="mini-select" id="pf-name" placeholder="Device name"><input class="mini-select" id="pf-brand" placeholder="Brand"><select class="mini-select" id="pf-cat"><option value="phone">Smartphone</option><option value="tablet">Tablet</option><option value="laptop">Laptop</option><option value="wifi">Pocket Wi-Fi</option></select></div>
-              <div class="pf-grid"><select class="mini-select" id="pf-grade"><option>Like New</option><option>Good</option><option>Fair</option></select><input class="mini-select" id="pf-price" type="number" placeholder="Daily rate"><input class="mini-select" id="pf-weekly" type="number" placeholder="Weekly rate"></div>
-              <div class="pf-grid"><input class="mini-select" id="pf-monthly" type="number" placeholder="Monthly rate"><input class="mini-select" id="pf-deposit" type="number" placeholder="Security deposit"><input class="mini-select" id="pf-stock" type="number" placeholder="Stock"></div>
-              <div class="pf-grid wide"><input class="mini-select" id="pf-desc" placeholder="Short description"></div>
-              <div class="pf-grid"><input class="mini-select" id="pf-image" type="file" accept="image/*" onchange="previewProductImage(this)"><input class="mini-select" id="pf-specs" placeholder="Specifications (e.g. Storage: 256 GB; Display: OLED)" style="grid-column:span 2;"></div>
-              <div id="pf-image-preview" class="product-image-preview hidden"></div>
-              <div style="display:flex;gap:10px;margin-top:6px;"><button class="btn btn-dark btn-sm" type="button" onclick="saveProduct()">Save product</button><button class="btn btn-ghost btn-sm" type="button" onclick="cancelProductForm()">Cancel</button></div>
-            </div>
-            <div class="table-wrap"><table><thead><tr><th>Device</th><th>Brand</th><th>Grade</th><th>Daily</th><th>Stock</th><th></th></tr></thead><tbody id="adminProductRows"></tbody></table></div>
-          </div>
-          <div class="admin-card hidden" id="admin-tab-orders"><div class="admin-top"><h3>Orders (<span id="orderCount">0</span>)</h3></div><div class="table-wrap"><table><thead><tr><th>Order</th><th>Customer</th><th>Period</th><th>Total</th><th>Status</th></tr></thead><tbody id="adminOrderRows"></tbody></table></div></div>
-          <div class="admin-card hidden" id="admin-tab-inventory"><div class="admin-top"><h3>Inventory overview</h3></div><div id="inventoryStats" class="stat-grid"></div><div class="table-wrap"><table><thead><tr><th>Device</th><th>Total</th><th>Available</th><th>Rented</th><th>Inspection/Repair</th><th>Data wipe</th></tr></thead><tbody id="inventoryRows"></tbody></table></div></div>
-          <div class="admin-card hidden" id="admin-tab-reports"><div class="admin-top"><h3>Sales reports</h3></div><div id="reportStats" class="stat-grid"></div><div class="report-grid"><div class="report-panel"><h4>Revenue by month</h4><div id="revenueChart" class="bar-chart"></div></div><div class="report-panel"><h4>Most rented devices</h4><div id="popularChart" class="bar-chart"></div></div></div></div>
-        </div>
-      </div>
-    </div>
   </div>
-</section>
 
-<!-- ======================= TECHNICIAN ======================= -->
-<section class="view hidden" id="view-technician">
-  <div class="wrap">
-    <div class="page-head"><h1>Technician portal</h1><p>Inspect returned devices, record quality checks, and log secure data wiping.</p></div>
-    <div class="technician-layout">
-      <div class="admin-card"><div class="admin-top"><h3>Return queue</h3><span class="mono" id="techQueueCount">0 devices</span></div><div id="techQueue"></div></div>
-      <div class="admin-card" id="inspectionPanel"><div class="empty-state"><p>Select a returned device to begin inspection.</p></div></div>
-    </div>
-  </div>
-</section>
-
-<!-- ======================= INFO ======================= -->
-<section class="view hidden" id="view-info">
-  <div class="wrap"><div class="page-head"><h1 id="infoTitle">About PhoneRent</h1><p id="infoLead"></p></div><div class="info-card" id="infoContent"></div></div>
-</section>
-
-<!-- ======================= TEAM ======================= -->
-<section class="view hidden" id="view-team">
-  <div class="wrap">
-    <div class="page-head"><h1>The developers</h1><p>The team behind PhoneRent's systems architecture and build.</p></div>
-    <div class="team-grid" id="teamGrid" style="padding-top:24px;"></div>
-  </div>
-</section>
-
-</main>
-
-<div class="chatbot" id="chatbot">
-  <button class="chat-fab" onclick="toggleChat()" aria-label="Open PhoneRent assistant">
-    <svg viewBox="0 0 24 24" fill="none"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v8A2.5 2.5 0 0 1 17.5 16H10l-5 4v-4.6A2.5 2.5 0 0 1 4 13.5z" stroke="currentColor" stroke-width="1.8"/></svg>
-    <span>Ask PhoneRent</span>
-  </button>
-  <div class="chat-panel hidden" id="chatPanel">
-    <div class="chat-head"><div><b>PhoneRent Assistant</b><span><i></i> Online · demo AI support</span></div><button onclick="toggleChat()">×</button></div>
-    <div class="chat-messages" id="chatMessages"><div class="chat-msg bot">Hi! I can recommend a device, explain deposits and returns, or help you track a rental.</div></div>
-    <div class="chat-suggestions"><button onclick="quickChat('Recommend a phone')">Recommend a phone</button><button onclick="quickChat('How do returns work?')">Returns</button><button onclick="quickChat('What is the security deposit?')">Deposit</button></div>
-    <form class="chat-input" onsubmit="sendChat(event)"><input id="chatInput" placeholder="Ask something..." autocomplete="off"><button>Send</button></form>
-  </div>
-</div>
-
-<footer>
-  <div class="wrap">
-    <div class="foot-grid">
-      <div class="foot-brand">
-        <div class="logo"><span class="logo-mark"><svg viewBox="0 0 24 24" fill="none"><rect x="7" y="2" width="10" height="20" rx="2.5" stroke="white" stroke-width="1.6"/><circle cx="12" cy="18.4" r="1" fill="white"/></svg></span>PhoneRent</div>
-        <p>On-demand smartphone, tablet, laptop, and pocket Wi-Fi rentals — graded, sanitized, and insured for every booking.</p>
-      </div>
-      <div class="foot-col"><h5>Platform</h5>
-        <button onclick="switchView('products')">Devices</button>
-        <button onclick="switchView('cart')">Cart</button>
-        <button onclick="switchView('orders')">My orders</button>
-        <button onclick="switchView('admin')">Admin</button>
-      </div>
-      <div class="foot-col"><h5>Company</h5>
-        <button onclick="switchView('team')">Developers</button>
-        <button onclick="showInfo('about')">About</button>
-        <button onclick="showInfo('contact')">Contact</button>
-      </div>
-      <div class="foot-col"><h5>Support</h5>
-        <button onclick="showInfo('help')">Help center</button>
-        <button onclick="showInfo('damage')">Damage policy</button>
-        <button onclick="showInfo('privacy')">Data privacy</button>
-      </div>
-    </div>
-    <div class="foot-bottom">
-      <span>© 2026 PhoneRent. A student systems-integration project.</span>
-      <span>Made for IT 009 · Technological Institute of the Philippines</span>
-    </div>
-  </div>
-</footer>
-
-<script src="js/app.js"></script>
+  <script type="module" src="js/pages/home.js"></script>
+  <script type="module" src="js/chatbot.js"></script>
 </body>
 </html>

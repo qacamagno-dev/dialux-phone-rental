@@ -1,0 +1,35 @@
+# Build context is the repository root — keep the image small and secret-free.
+
+# Dependencies are installed inside the image from the lockfile.
+**/node_modules
+
+# Secrets must never be baked into a layer. Supply them at run time with
+# --env-file or the orchestrator's secret store.
+**/.env
+**/.env.*
+!**/.env.example
+
+# Version control and local tooling.
+.git
+.gitignore
+.github
+.claude
+**/.claude
+
+# Docs and generated reports — not needed at runtime.
+README.md
+STRUCTURE.md
+dialux-status.html
+**/*.md
+!phone-rental-backend/README.md
+
+# One-off scripts.
+phone-rental-backend/convert-static-pages.js
+
+# Editor and OS cruft.
+.vscode
+.idea
+**/.DS_Store
+**/Thumbs.db
+**/*.log
+npm-debug.log*
