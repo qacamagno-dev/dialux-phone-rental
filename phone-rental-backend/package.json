@@ -1,7 +1,7 @@
 {
   "name": "dialux-backend",
   "version": "1.1.0",
-  "description": "DiaLux API \u2014 auth, catalog, wishlist, cart, orders, support, CMS, settings, audit and reporting",
+  "description": "DiaLux API — auth, catalog, wishlist, cart, orders, support, CMS, settings, audit and reporting",
   "main": "src/index.js",
   "type": "commonjs",
   "scripts": {
@@ -30,6 +30,7 @@
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "google-auth-library": "^11.0.2",
+    "groq-sdk": "^1.6.0",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.9.1",
     "resend": "^6.32.1"
