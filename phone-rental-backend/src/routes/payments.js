@@ -382,6 +382,62 @@ function originOf(req) {
   );
 }
 
+function paymentReturnUrls(
+  req,
+  orderId
+) {
+  const webBase =
+    originOf(req);
+
+  const requestedReturnUrl =
+    String(
+      req.body?.returnUrl ||
+      ''
+    ).trim();
+
+  try {
+    if (
+      requestedReturnUrl
+    ) {
+      const parsed =
+        new URL(
+          requestedReturnUrl
+        );
+
+      const isMobileDev =
+        (
+          parsed.hostname ===
+            'localhost' ||
+          parsed.hostname ===
+            '127.0.0.1'
+        ) &&
+        parsed.port ===
+          '8100';
+
+      if (isMobileDev) {
+        return {
+          successUrl:
+            `${parsed.origin}/order/${orderId}?payment=success`,
+
+          cancelUrl:
+            `${parsed.origin}/order/${orderId}?payment=cancelled`,
+        };
+      }
+    }
+  } catch {
+    // Invalid returnUrl:
+    // fall back to web checkout.
+  }
+
+  return {
+    successUrl:
+      `${webBase}/order.html?id=${orderId}&payment=success`,
+
+    cancelUrl:
+      `${webBase}/order.html?id=${orderId}&payment=cancelled`,
+  };
+}
+
 /* ---------------- payment guard ---------------- */
 
 async function loadPayableOrder(
@@ -967,6 +1023,15 @@ router.post(
         });
       }
 
+      const {
+        successUrl,
+        cancelUrl,
+      } =
+        paymentReturnUrls(
+          req,
+          order.id
+        );
+
       const session =
         await paymongoRequest(
           '/checkout_sessions',
@@ -1004,10 +1069,10 @@ router.post(
                   order.id,
 
                 success_url:
-                  `${originOf(req)}/order.html?id=${order.id}&payment=success`,
+                  successUrl,
 
                 cancel_url:
-                  `${originOf(req)}/order.html?id=${order.id}&payment=cancelled`,
+                  cancelUrl,
 
                 billing: {
                   name:
