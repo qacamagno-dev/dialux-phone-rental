@@ -1,0 +1,861 @@
+<ion-header>
+  <ion-toolbar>
+
+    <ion-buttons slot="start">
+      <ion-back-button
+        defaultHref="/tabs/cart"
+        text="Back">
+      </ion-back-button>
+    </ion-buttons>
+
+    <ion-title>
+      Checkout
+    </ion-title>
+
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-content>
+
+  <!-- LOADING -->
+
+  <div
+    class="checkout-page"
+    *ngIf="loading()">
+
+    <div class="state-card">
+
+      <ion-spinner
+        name="crescent">
+      </ion-spinner>
+
+      <h2>
+        Loading checkout
+      </h2>
+
+      <p>
+        Preparing your rental details.
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <!-- ERROR -->
+
+  <div
+    class="checkout-page"
+    *ngIf="
+      !loading() &&
+      error()
+    ">
+
+    <div class="state-card error-state">
+
+      <ion-icon
+        name="alert-circle-outline">
+      </ion-icon>
+
+      <h2>
+        Unable to load checkout
+      </h2>
+
+      <p>
+        {{ error() }}
+      </p>
+
+      <ion-button
+        type="button"
+        expand="block"
+        (click)="load()">
+
+        Try Again
+
+      </ion-button>
+
+    </div>
+
+  </div>
+
+
+  <!-- CHECKOUT -->
+
+  <form
+    *ngIf="
+      !loading() &&
+      !error() &&
+      cart() as c
+    "
+    class="checkout-page"
+    (ngSubmit)="place()">
+
+
+    <!-- RENTAL PERIOD -->
+
+    <section class="checkout-card">
+
+      <div class="card-heading">
+
+        <div class="heading-icon">
+          <ion-icon
+            name="calendar-outline">
+          </ion-icon>
+        </div>
+
+        <div>
+
+          <h2>
+            Rental Period
+          </h2>
+
+          <p>
+            Confirm your rental dates.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="date-grid">
+
+        <div class="field-group">
+
+          <label class="field-label">
+            Start date
+          </label>
+
+          <ion-input
+            class="form-control"
+            type="date"
+            [(ngModel)]="startDate"
+            name="startDate"
+            [min]="minStartDate"
+            (ionChange)="onStartDateChange()">
+          </ion-input>
+
+        </div>
+
+
+        <div class="field-group">
+
+          <label class="field-label">
+            Return date
+          </label>
+
+          <ion-input
+            class="form-control"
+            type="date"
+            [(ngModel)]="endDate"
+            name="endDate"
+            [min]="minEndDate"
+            (ionChange)="onEndDateChange()">
+          </ion-input>
+
+        </div>
+
+      </div>
+
+
+      <div class="protection-row">
+
+        <div>
+
+          <strong>
+            Device Protection
+          </strong>
+
+          <p>
+            Add optional protection to your rental.
+          </p>
+
+        </div>
+
+        <ion-toggle
+          [(ngModel)]="protection"
+          name="protection">
+        </ion-toggle>
+
+      </div>
+
+    </section>
+
+
+    <!-- RECEIVE DEVICE -->
+
+    <section class="checkout-card">
+
+      <div class="card-heading">
+
+        <div class="heading-icon">
+          <ion-icon
+            name="location-outline">
+          </ion-icon>
+        </div>
+
+        <div>
+
+          <h2>
+            Receive Your Device
+          </h2>
+
+          <p>
+            Choose how you want to receive your rental.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <!-- RECEIVE TYPE -->
+
+      <div class="receive-tabs">
+
+        <button
+          type="button"
+          [class.active]="
+            orderType === 'delivery'
+          "
+          (click)="orderType = 'delivery'">
+
+          <ion-icon
+            name="bicycle-outline">
+          </ion-icon>
+
+          <span>
+            Delivery
+          </span>
+
+        </button>
+
+
+        <button
+          type="button"
+          [class.active]="
+            orderType === 'pickup'
+          "
+          (click)="orderType = 'pickup'">
+
+          <ion-icon
+            name="storefront-outline">
+          </ion-icon>
+
+          <span>
+            Pickup
+          </span>
+
+        </button>
+
+
+        <button
+          type="button"
+          [class.active]="
+            orderType === 'meetup'
+          "
+          (click)="orderType = 'meetup'">
+
+          <ion-icon
+            name="people-outline">
+          </ion-icon>
+
+          <span>
+            Meet-up
+          </span>
+
+        </button>
+
+      </div>
+
+
+      <!-- DELIVERY -->
+
+      <div
+        *ngIf="
+          orderType === 'delivery'
+        "
+        class="receive-content">
+
+        <label class="field-label">
+          Delivery address
+        </label>
+
+
+        <ion-select
+          *ngIf="
+            addresses().length > 0
+          "
+          class="form-control"
+          interface="action-sheet"
+          [(ngModel)]="addressId"
+          name="addressId"
+          placeholder="Select address">
+
+          <ion-select-option
+            *ngFor="
+              let address of addresses()
+            "
+            [value]="
+              address.id ||
+              address._id
+            ">
+
+            {{
+              address.label ||
+              'Address'
+            }}
+            —
+            {{ address.address }}
+
+          </ion-select-option>
+
+        </ion-select>
+
+
+        <!-- SELECTED ADDRESS -->
+
+        <ng-container
+          *ngIf="
+            getSelectedAddress() as selected
+          ">
+
+          <div class="selected-address">
+
+            <ion-icon
+              name="home-outline">
+            </ion-icon>
+
+            <div>
+
+              <strong>
+                {{
+                  selected.label ||
+                  'Home'
+                }}
+              </strong>
+
+              <p>
+                {{ selected.address }}
+              </p>
+
+              <p>
+                {{ selected.city }}
+
+                <ng-container
+                  *ngIf="selected.zip">
+                  {{ selected.zip }}
+                </ng-container>
+
+              </p>
+
+            </div>
+
+          </div>
+
+        </ng-container>
+
+
+        <!-- NO ADDRESS -->
+
+        <div
+          class="no-address"
+          *ngIf="
+            addresses().length === 0
+          ">
+
+          <ion-icon
+            name="location-outline">
+          </ion-icon>
+
+          <div>
+
+            <strong>
+              No address saved
+            </strong>
+
+            <p>
+              Add a delivery address
+              in your profile first.
+            </p>
+
+          </div>
+
+          <ion-button
+            type="button"
+            size="small"
+            fill="outline"
+            (click)="goToProfile()">
+
+            Add
+
+          </ion-button>
+
+        </div>
+
+      </div>
+
+
+      <!-- PICKUP -->
+
+      <div
+        *ngIf="
+          orderType === 'pickup'
+        "
+        class="receive-content">
+
+        <label class="field-label">
+          Pickup hub
+        </label>
+
+        <ion-select
+          class="form-control"
+          interface="action-sheet"
+          [(ngModel)]="pickupHub"
+          name="pickupHub">
+
+          <ion-select-option
+            value="cubao">
+            Cubao Hub
+          </ion-select-option>
+
+          <ion-select-option
+            value="fairview">
+            Fairview Hub
+          </ion-select-option>
+
+          <ion-select-option
+            value="katipunan">
+            Katipunan Hub
+          </ion-select-option>
+
+        </ion-select>
+
+
+        <label class="field-label">
+          Preferred time
+        </label>
+
+        <ion-input
+          class="form-control"
+          [(ngModel)]="timeSlot"
+          name="pickupTime"
+          placeholder="2:00 PM - 5:00 PM">
+        </ion-input>
+
+      </div>
+
+
+      <!-- MEETUP -->
+
+      <div
+        *ngIf="
+          orderType === 'meetup'
+        "
+        class="receive-content">
+
+        <label class="field-label">
+          Meet-up location
+        </label>
+
+        <ion-input
+          class="form-control"
+          [(ngModel)]="meetupLocation"
+          name="meetupLocation"
+          placeholder="Enter meeting place">
+        </ion-input>
+
+
+        <label class="field-label">
+          Preferred time
+        </label>
+
+        <ion-input
+          class="form-control"
+          [(ngModel)]="timeSlot"
+          name="meetupTime"
+          placeholder="2:00 PM - 5:00 PM">
+        </ion-input>
+
+      </div>
+
+    </section>
+
+
+    <!-- PAYMENT METHOD -->
+
+    <section class="checkout-card">
+
+      <div class="card-heading">
+
+        <div class="heading-icon">
+          <ion-icon
+            name="card-outline">
+          </ion-icon>
+        </div>
+
+        <div>
+
+          <h2>
+            Payment Method
+          </h2>
+
+          <p>
+            Select how you want to pay.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <ion-radio-group
+        class="payment-list"
+        [(ngModel)]="paymentMethod"
+        name="paymentMethod">
+
+
+        <!-- CASH -->
+
+        <div
+          class="payment-option"
+          role="button"
+          tabindex="0"
+          [class.selected]="
+            paymentMethod === 'cash'
+          "
+          (click)="
+            paymentMethod = 'cash'
+          "
+          (keydown.enter)="
+            paymentMethod = 'cash'
+          ">
+
+          <div class="payment-icon">
+
+            <ion-icon
+              name="cash-outline">
+            </ion-icon>
+
+          </div>
+
+
+          <div class="payment-copy">
+
+            <strong>
+              Cash on Delivery
+            </strong>
+
+            <span>
+              Pay the rider when your device arrives.
+            </span>
+
+          </div>
+
+
+          <ion-radio
+            value="cash">
+          </ion-radio>
+
+        </div>
+
+
+        <!-- GCASH -->
+
+        <div
+          class="payment-option"
+          role="button"
+          tabindex="0"
+          [class.selected]="
+            paymentMethod === 'gcash'
+          "
+          (click)="
+            paymentMethod = 'gcash'
+          "
+          (keydown.enter)="
+            paymentMethod = 'gcash'
+          ">
+
+          <div class="payment-icon">
+
+            <ion-icon
+              name="phone-portrait-outline">
+            </ion-icon>
+
+          </div>
+
+
+          <div class="payment-copy">
+
+            <strong>
+              GCash
+            </strong>
+
+            <span>
+              Pay securely through PayMongo.
+            </span>
+
+          </div>
+
+
+          <ion-radio
+            value="gcash">
+          </ion-radio>
+
+        </div>
+
+
+        <!-- MAYA -->
+
+        <div
+          class="payment-option"
+          role="button"
+          tabindex="0"
+          [class.selected]="
+            paymentMethod === 'maya'
+          "
+          (click)="
+            paymentMethod = 'maya'
+          "
+          (keydown.enter)="
+            paymentMethod = 'maya'
+          ">
+
+          <div class="payment-icon">
+
+            <ion-icon
+              name="wallet-outline">
+            </ion-icon>
+
+          </div>
+
+
+          <div class="payment-copy">
+
+            <strong>
+              Maya
+            </strong>
+
+            <span>
+              Continue to Maya checkout.
+            </span>
+
+          </div>
+
+
+          <ion-radio
+            value="maya">
+          </ion-radio>
+
+        </div>
+
+
+        <!-- CARD -->
+
+        <div
+          class="payment-option"
+          role="button"
+          tabindex="0"
+          [class.selected]="
+            paymentMethod === 'card'
+          "
+          (click)="
+            paymentMethod = 'card'
+          "
+          (keydown.enter)="
+            paymentMethod = 'card'
+          ">
+
+          <div class="payment-icon">
+
+            <ion-icon
+              name="card-outline">
+            </ion-icon>
+
+          </div>
+
+
+          <div class="payment-copy">
+
+            <strong>
+              Debit / Credit Card
+            </strong>
+
+            <span>
+              Secure card payment through PayMongo.
+            </span>
+
+          </div>
+
+
+          <ion-radio
+            value="card">
+          </ion-radio>
+
+        </div>
+
+
+        <!-- BANK TRANSFER -->
+
+        <div
+          class="payment-option"
+          role="button"
+          tabindex="0"
+          [class.selected]="
+            paymentMethod ===
+            'bank-transfer'
+          "
+          (click)="
+            paymentMethod =
+            'bank-transfer'
+          "
+          (keydown.enter)="
+            paymentMethod =
+            'bank-transfer'
+          ">
+
+          <div class="payment-icon">
+
+            <ion-icon
+              name="business-outline">
+            </ion-icon>
+
+          </div>
+
+
+          <div class="payment-copy">
+
+            <strong>
+              Bank Transfer
+            </strong>
+
+            <span>
+              Submit your payment proof after checkout.
+            </span>
+
+          </div>
+
+
+          <ion-radio
+            value="bank-transfer">
+          </ion-radio>
+
+        </div>
+
+      </ion-radio-group>
+
+    </section>
+
+
+    <!-- PAYMENT SUMMARY -->
+
+    <section class="checkout-card summary-card">
+
+      <h2>
+        Payment Summary
+      </h2>
+
+
+      <div class="summary-row">
+
+        <span>
+          Rental
+        </span>
+
+        <strong>
+          {{ money(c.rent) }}
+        </strong>
+
+      </div>
+
+
+      <div class="summary-row">
+
+        <span>
+          Security deposit
+        </span>
+
+        <strong>
+          {{ money(c.deposit) }}
+        </strong>
+
+      </div>
+
+
+      <div class="summary-row">
+
+        <span>
+          Delivery
+        </span>
+
+        <strong>
+          {{ money(c.delivery) }}
+        </strong>
+
+      </div>
+
+
+      <div
+        class="summary-row"
+        *ngIf="c.protectionFee">
+
+        <span>
+          Protection
+        </span>
+
+        <strong>
+          {{ money(c.protectionFee) }}
+        </strong>
+
+      </div>
+
+
+      <div class="summary-total">
+
+        <span>
+          Total
+        </span>
+
+        <strong>
+          {{ money(c.total) }}
+        </strong>
+
+      </div>
+
+    </section>
+
+
+    <!-- CHECKOUT BUTTON -->
+
+    <ion-button
+      class="checkout-button"
+      type="submit"
+      expand="block"
+      size="large"
+      [disabled]="
+        submitting() ||
+        !c.lines.length
+      ">
+
+      <ion-spinner
+        *ngIf="submitting()"
+        slot="start"
+        name="crescent">
+      </ion-spinner>
+
+      {{
+        submitting()
+          ? 'Processing...'
+          : (
+              paymentMethod === 'cash'
+                ? 'Place Order'
+                : 'Confirm & Pay'
+            )
+      }}
+
+    </ion-button>
+
+  </form>
+
+</ion-content>

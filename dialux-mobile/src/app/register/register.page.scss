@@ -1,0 +1,193 @@
+ion-content {
+  --background:
+    linear-gradient(
+      180deg,
+      #eef4ff 0%,
+      #f8fafc 48%,
+      #ffffff 100%
+    );
+}
+
+.auth-page {
+  width: min(
+    100%,
+    460px
+  );
+
+  min-height: 100%;
+
+  margin: 0 auto;
+
+  padding:
+    32px
+    20px
+    50px;
+}
+
+.brand {
+  position: relative;
+
+  padding:
+    30px
+    0
+    26px;
+
+  text-align: center;
+}
+
+.back-button {
+  position: absolute;
+
+  top: 0;
+  left: 0;
+
+  display: grid;
+
+  width: 42px;
+  height: 42px;
+
+  place-items: center;
+
+  border: 0;
+  border-radius: 14px;
+
+  background: #ffffff;
+
+  color: #111827;
+
+  box-shadow:
+    0 6px 20px
+    rgba(15, 23, 42, 0.08);
+
+  cursor: pointer;
+}
+
+.back-button ion-icon {
+  font-size: 22px;
+}
+
+.logo-mark {
+  display: grid;
+
+  width: 72px;
+  height: 72px;
+
+  margin:
+    10px auto
+    20px;
+
+  place-items: center;
+
+  border-radius: 22px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #2563eb,
+      #60a5fa
+    );
+
+  color: #ffffff;
+
+  font-size: 2rem;
+  font-weight: 900;
+
+  box-shadow:
+    0 12px 30px
+    rgba(37, 99, 235, 0.28);
+}
+
+.brand h1 {
+  margin:
+    0
+    0
+    8px;
+
+  color: #0f172a;
+
+  font-size: 2rem;
+  font-weight: 800;
+}
+
+.brand p {
+  margin: 0;
+
+  color: #64748b;
+
+  line-height: 1.5;
+}
+
+.auth-card {
+  padding: 18px;
+
+  border:
+    1px solid
+    #e5e7eb;
+
+  border-radius: 24px;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.95
+    );
+
+  box-shadow:
+    0 18px 50px
+    rgba(15, 23, 42, 0.08);
+}
+
+.field {
+  margin-bottom: 12px;
+
+  --background: #f8fafc;
+
+  --border-radius: 14px;
+
+  --color: #0f172a;
+}
+
+.field ion-icon {
+  color: #64748b;
+}
+
+.submit-button {
+  min-height: 52px;
+
+  margin-top: 20px;
+
+  --border-radius: 14px;
+
+  font-weight: 700;
+}
+
+.login-row {
+  display: flex;
+
+  justify-content: center;
+
+  gap: 6px;
+
+  margin-top: 22px;
+
+  color: #64748b;
+
+  font-size: 0.9rem;
+}
+
+.login-row button {
+  padding: 0;
+
+  border: 0;
+
+  background: transparent;
+
+  color:
+    var(--ion-color-primary);
+
+  font-weight: 700;
+
+  cursor: pointer;
+}

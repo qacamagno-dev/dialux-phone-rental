@@ -1,0 +1,864 @@
+<ion-header>
+
+  <ion-toolbar>
+
+    <ion-buttons slot="start">
+
+      <ion-back-button
+        defaultHref="/orders">
+      </ion-back-button>
+
+    </ion-buttons>
+
+    <ion-title>
+      Order Details
+    </ion-title>
+
+  </ion-toolbar>
+
+</ion-header>
+
+
+<ion-content>
+
+  <div
+    class="state"
+    *ngIf="loading()">
+
+    <ion-spinner
+      name="crescent">
+    </ion-spinner>
+
+    <p>
+      Loading order...
+    </p>
+
+  </div>
+
+
+  <div
+    class="state"
+    *ngIf="
+      !loading() &&
+      error()
+    ">
+
+    <ion-icon
+      name="alert-circle-outline">
+    </ion-icon>
+
+    <h2>
+      Order unavailable
+    </h2>
+
+    <p>
+      {{ error() }}
+    </p>
+
+    <ion-button
+      (click)="load()">
+      Try Again
+    </ion-button>
+
+  </div>
+
+
+  <main
+    class="order-page"
+    *ngIf="
+      !loading() &&
+      !error() &&
+      o() as x
+    ">
+
+    <!-- ORDER HEADER -->
+
+    <section class="order-hero">
+
+      <div class="hero-top">
+
+        <div>
+
+          <span class="eyebrow">
+            Order Number
+          </span>
+
+          <strong class="invoice">
+            {{ x.invoiceNo }}
+          </strong>
+
+        </div>
+
+        <span
+          class="status-badge"
+          [ngClass]="
+            statusClass(
+              x.status
+            )
+          ">
+
+          {{
+            statusLabel(
+              x.status
+            )
+          }}
+
+        </span>
+
+      </div>
+
+
+      <div class="hero-date">
+
+        <ion-icon
+          name="calendar-outline">
+        </ion-icon>
+
+        <span>
+          {{ x.startDate }}
+          to
+          {{ x.endDate }}
+        </span>
+
+      </div>
+
+    </section>
+
+
+    <!-- DEVICES -->
+
+    <section class="card">
+
+      <div class="card-title">
+
+        <div>
+
+          <h2>
+            Devices
+          </h2>
+
+          <p>
+            Items included in this rental
+          </p>
+
+        </div>
+
+        <ion-icon
+          name="phone-portrait-outline">
+        </ion-icon>
+
+      </div>
+
+
+      <div
+        class="device-card"
+        *ngFor="
+          let item of x.items
+        ">
+
+        <div class="device-image">
+
+          <img
+            [src]="
+              apiUrl(
+                item.image
+              )
+            "
+            [alt]="item.name">
+
+        </div>
+
+        <div class="device-info">
+
+          <h3>
+            {{ item.name }}
+          </h3>
+
+          <div class="device-meta">
+
+            <span>
+              {{ item.plan }}
+            </span>
+
+            <span>
+              Qty {{ item.qty }}
+            </span>
+
+          </div>
+
+          <strong>
+            {{ money(item.rate) }}
+          </strong>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- DELIVERY / HANDOVER -->
+
+    <section class="card">
+
+      <div class="card-title">
+
+        <div>
+
+          <h2>
+            Delivery / Handover
+          </h2>
+
+          <p>
+            How you will receive the device
+          </p>
+
+        </div>
+
+        <ion-icon
+          name="location-outline">
+        </ion-icon>
+
+      </div>
+
+
+      <div class="detail-row">
+
+        <span>
+          Method
+        </span>
+
+        <strong>
+          {{
+            x.orderType
+              | titlecase
+          }}
+        </strong>
+
+      </div>
+
+
+      <div
+        class="address-box"
+        *ngIf="x.address">
+
+        <ion-icon
+          name="home-outline">
+        </ion-icon>
+
+        <div>
+
+          <span>
+            Address
+          </span>
+
+          <strong>
+            {{ x.address }}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <div
+        class="detail-row"
+        *ngIf="x.timeSlot">
+
+        <span>
+          Preferred time
+        </span>
+
+        <strong>
+          {{ x.timeSlot }}
+        </strong>
+
+      </div>
+
+
+      <div
+        class="detail-row"
+        *ngIf="x.pickupHub">
+
+        <span>
+          Pickup hub
+        </span>
+
+        <strong>
+          {{
+            x.pickupHub
+              | titlecase
+          }}
+        </strong>
+
+      </div>
+
+
+      <div
+        class="detail-row"
+        *ngIf="x.meetupLocation">
+
+        <span>
+          Meet-up location
+        </span>
+
+        <strong>
+          {{ x.meetupLocation }}
+        </strong>
+
+      </div>
+
+    </section>
+
+
+    <!-- PAYMENT -->
+
+    <section class="card">
+
+      <div class="card-title">
+
+        <div>
+
+          <h2>
+            Payment
+          </h2>
+
+          <p>
+            Payment method and breakdown
+          </p>
+
+        </div>
+
+        <ion-icon
+          name="card-outline">
+        </ion-icon>
+
+      </div>
+
+
+      <div class="detail-row">
+
+        <span>
+          Method
+        </span>
+
+        <strong>
+          {{
+            paymentLabel(
+              x.payment?.method
+            )
+          }}
+        </strong>
+
+      </div>
+
+
+      <div class="detail-row">
+
+        <span>
+          Payment status
+        </span>
+
+        <strong
+          class="payment-status"
+          [class.paid]="
+            x.payment?.status ===
+            'paid'
+          ">
+
+          {{
+            paymentStatusLabel(
+              x
+            )
+          }}
+
+        </strong>
+
+      </div>
+
+
+      <!-- BANK TRANSFER -->
+
+      <ng-container
+        *ngIf="
+          x.payment?.method ===
+          'bank-transfer'
+        ">
+
+        <div class="detail-row">
+
+          <span>
+            Bank
+          </span>
+
+          <strong>
+            BDO
+          </strong>
+
+        </div>
+
+        <div class="detail-row">
+
+          <span>
+            Account name
+          </span>
+
+          <strong>
+            DiaLux Rentals Inc.
+          </strong>
+
+        </div>
+
+        <div class="detail-row">
+
+          <span>
+            Account number
+          </span>
+
+          <strong>
+            0012-3456-7890
+          </strong>
+
+        </div>
+
+
+        <div
+          *ngIf="
+            x.payment?.status !==
+            'paid'
+          "
+          style="
+            margin-top: 18px;
+            padding: 16px;
+            border: 1px solid var(--ion-color-light-shade);
+            border-radius: 14px;
+          ">
+
+          <strong
+            style="
+              display: block;
+              font-size: 16px;
+              margin-bottom: 6px;
+            ">
+            Proof of Payment
+          </strong>
+
+          <p
+            style="
+              margin: 0 0 14px;
+              font-size: 14px;
+              line-height: 1.5;
+            ">
+            Transfer the total amount, then upload your receipt or screenshot for verification.
+          </p>
+
+
+          <div
+            *ngIf="
+              x.payment?.proofUrl
+            "
+            style="
+              margin-bottom: 14px;
+              padding: 12px;
+              border-radius: 10px;
+              background: var(--ion-color-warning-tint);
+            ">
+
+            <strong>
+              Proof submitted
+            </strong>
+
+            <p
+              style="
+                margin: 5px 0 0;
+                font-size: 14px;
+              ">
+              Your payment is waiting for admin verification.
+            </p>
+
+          </div>
+
+
+          <img
+            *ngIf="
+              proofPreview()
+            "
+            [src]="proofPreview()"
+            alt="Payment proof"
+            style="
+              width: 100%;
+              max-height: 320px;
+              object-fit: contain;
+              border-radius: 12px;
+              margin-bottom: 12px;
+              border: 1px solid var(--ion-color-light-shade);
+            ">
+
+
+          <input
+            #proofInput
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            style="display: none"
+            (change)="
+              onProofSelected(
+                $event
+              )
+            ">
+
+
+          <ion-button
+            expand="block"
+            fill="outline"
+            [disabled]="
+              uploadingProof()
+            "
+            (click)="
+              proofInput.click()
+            ">
+
+            <ion-icon
+              slot="start"
+              name="image-outline">
+            </ion-icon>
+
+            {{
+              proofPreview()
+                ? 'Choose Another Proof'
+                : 'Choose Proof Image'
+            }}
+
+          </ion-button>
+
+
+          <p
+            *ngIf="
+              proofFileName()
+            "
+            style="
+              font-size: 14px;
+              margin: 10px 0;
+            ">
+
+            Selected:
+            <strong>
+              {{ proofFileName() }}
+            </strong>
+
+          </p>
+
+
+          <ion-button
+            expand="block"
+            [disabled]="
+              !proofPreview() ||
+              uploadingProof()
+            "
+            (click)="
+              uploadProof()
+            ">
+
+            <ion-spinner
+              *ngIf="
+                uploadingProof()
+              "
+              name="crescent"
+              slot="start">
+            </ion-spinner>
+
+            <ion-icon
+              *ngIf="
+                !uploadingProof()
+              "
+              name="cloud-upload-outline"
+              slot="start">
+            </ion-icon>
+
+            {{
+              uploadingProof()
+                ? 'Submitting...'
+                : (
+                    x.payment?.proofUrl
+                      ? 'Resubmit Proof'
+                      : 'Submit for Verification'
+                  )
+            }}
+
+          </ion-button>
+
+        </div>
+
+      </ng-container>
+
+
+      <div class="detail-row">
+
+        <span>
+          Rental
+        </span>
+
+        <strong>
+          {{ money(x.rent) }}
+        </strong>
+
+      </div>
+
+
+      <div class="detail-row">
+
+        <span>
+          Security deposit
+        </span>
+
+        <strong>
+          {{ money(x.deposit) }}
+        </strong>
+
+      </div>
+
+
+      <div
+        class="detail-row"
+        *ngIf="
+          x.delivery !== undefined
+        ">
+
+        <span>
+          Delivery
+        </span>
+
+        <strong>
+          {{ money(x.delivery) }}
+        </strong>
+
+      </div>
+
+
+      <div
+        class="detail-row"
+        *ngIf="
+          x.protectionFee
+        ">
+
+        <span>
+          Protection
+        </span>
+
+        <strong>
+          {{
+            money(
+              x.protectionFee
+            )
+          }}
+        </strong>
+
+      </div>
+
+
+      <div class="detail-total">
+
+        <span>
+          Total
+        </span>
+
+        <strong>
+          {{ money(x.total) }}
+        </strong>
+
+      </div>
+
+    </section>
+
+
+    <!-- TIMELINE -->
+
+    <section
+      class="card"
+      *ngIf="
+        x.statusHistory?.length
+      ">
+
+      <div class="card-title">
+
+        <div>
+
+          <h2>
+            Order Timeline
+          </h2>
+
+          <p>
+            Track the progress of your rental
+          </p>
+
+        </div>
+
+        <ion-icon
+          name="time-outline">
+        </ion-icon>
+
+      </div>
+
+
+      <div class="timeline">
+
+        <div
+          class="timeline-item"
+          *ngFor="
+            let status of x.statusHistory;
+            let last = last
+          ">
+
+          <div class="timeline-marker">
+
+            <div class="dot">
+            </div>
+
+            <div
+              class="line"
+              *ngIf="!last">
+            </div>
+
+          </div>
+
+          <div class="timeline-content">
+
+            <strong>
+              {{
+                statusLabel(
+                  status.status
+                )
+              }}
+            </strong>
+
+            <small>
+              {{
+                status.at
+                  | date:
+                    'MMM d, y, h:mm a'
+              }}
+            </small>
+
+            <p
+              *ngIf="
+                status.note
+              ">
+              {{ status.note }}
+            </p>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ACTIONS -->
+
+    <section class="actions">
+
+      <ion-button
+        *ngIf="
+          x.status ===
+          'delivered'
+        "
+        expand="block"
+        [disabled]="
+          updating()
+        "
+        (click)="
+          action(
+            'receipt'
+          )
+        ">
+
+        <ion-spinner
+          *ngIf="
+            updating()
+          "
+          slot="start"
+          name="crescent">
+        </ion-spinner>
+
+        Confirm Receipt
+
+      </ion-button>
+
+
+      <ion-button
+        *ngIf="
+          [
+            'pending',
+            'approved'
+          ].includes(
+            x.status
+          )
+        "
+        expand="block"
+        fill="outline"
+        color="danger"
+        [disabled]="
+          updating()
+        "
+        (click)="
+          action(
+            'cancel'
+          )
+        ">
+
+        Cancel Order
+
+      </ion-button>
+
+
+      <ion-button
+        *ngIf="
+          [
+            'received',
+            'active',
+            'overdue'
+          ].includes(
+            x.status
+          )
+        "
+        expand="block"
+        fill="outline"
+        [disabled]="
+          updating()
+        "
+        (click)="
+          action(
+            'return'
+          )
+        ">
+
+        <ion-icon
+          slot="start"
+          name="return-down-back-outline">
+        </ion-icon>
+
+        Request Rider Return
+
+      </ion-button>
+
+
+      <ion-button
+        expand="block"
+        fill="clear"
+        (click)="support()">
+
+        <ion-icon
+          slot="start"
+          name="chatbubble-ellipses-outline">
+        </ion-icon>
+
+        Need Help With This Order?
+
+      </ion-button>
+
+    </section>
+
+  </main>
+
+</ion-content>

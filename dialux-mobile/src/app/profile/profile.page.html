@@ -1,0 +1,665 @@
+<ion-header>
+
+  <ion-toolbar>
+
+    <ion-title>
+      Profile
+    </ion-title>
+
+  </ion-toolbar>
+
+</ion-header>
+
+<ion-content>
+
+  <div
+    class="state"
+    *ngIf="!auth.isLoggedIn()">
+
+    <ion-icon
+      name="person-circle-outline">
+    </ion-icon>
+
+    <h2>
+      Sign in to your account
+    </h2>
+
+    <p>
+      Manage your rentals,
+      addresses, and account settings.
+    </p>
+
+    <ion-button
+      (click)="login()">
+      Sign in
+    </ion-button>
+
+  </div>
+
+  <div
+    class="state"
+    *ngIf="
+      auth.isLoggedIn() &&
+      loading()
+    ">
+
+    <ion-spinner
+      name="crescent">
+    </ion-spinner>
+
+    <p>
+      Loading profile...
+    </p>
+
+  </div>
+
+  <main
+    class="profile-page"
+    *ngIf="
+      auth.isLoggedIn() &&
+      !loading() &&
+      user() as currentUser
+    ">
+
+    <!-- IDENTITY -->
+
+    <section class="profile-hero">
+
+      <div class="avatar">
+
+        {{
+          (currentUser.name || 'D')
+            .charAt(0)
+            .toUpperCase()
+        }}
+
+      </div>
+
+      <div class="identity-copy">
+
+        <span class="eyebrow">
+          DiaLux Customer
+        </span>
+
+        <h1>
+          {{ currentUser.name }}
+        </h1>
+
+        <p>
+          {{ currentUser.email }}
+        </p>
+
+      </div>
+
+    </section>
+
+    <!-- PERSONAL DETAILS -->
+
+    <section class="profile-card">
+
+      <div class="card-heading">
+
+        <div>
+
+          <h2>
+            Personal Details
+          </h2>
+
+          <p>
+            Keep your contact
+            information up to date.
+          </p>
+
+        </div>
+
+        <ion-button
+          size="small"
+          fill="clear"
+          *ngIf="!editing()"
+          (click)="editing.set(true)">
+          Edit
+        </ion-button>
+
+        <ion-button
+          size="small"
+          fill="clear"
+          color="medium"
+          *ngIf="editing()"
+          (click)="cancelEdit()">
+          Cancel
+        </ion-button>
+
+      </div>
+
+      <ng-container
+        *ngIf="!editing()">
+
+        <div class="detail-row">
+
+          <div class="detail-icon">
+            <ion-icon
+              name="person-outline">
+            </ion-icon>
+          </div>
+
+          <div>
+
+            <span>
+              Full name
+            </span>
+
+            <strong>
+              {{ currentUser.name }}
+            </strong>
+
+          </div>
+
+        </div>
+
+        <div class="detail-row">
+
+          <div class="detail-icon">
+            <ion-icon
+              name="mail-outline">
+            </ion-icon>
+          </div>
+
+          <div>
+
+            <span>
+              Email
+            </span>
+
+            <strong>
+              {{ currentUser.email }}
+            </strong>
+
+          </div>
+
+        </div>
+
+        <div class="detail-row">
+
+          <div class="detail-icon">
+            <ion-icon
+              name="call-outline">
+            </ion-icon>
+          </div>
+
+          <div>
+
+            <span>
+              Phone number
+            </span>
+
+            <strong>
+              {{
+                currentUser.profile?.phone ||
+                'Not set'
+              }}
+            </strong>
+
+          </div>
+
+        </div>
+
+      </ng-container>
+
+      <form
+        class="edit-form"
+        *ngIf="editing()"
+        (ngSubmit)="save()">
+
+        <label>
+          Full name
+        </label>
+
+        <ion-input
+          class="form-control"
+          [(ngModel)]="name"
+          name="name"
+          placeholder="Enter your full name">
+        </ion-input>
+
+        <label>
+          Phone number
+        </label>
+
+        <ion-input
+          class="form-control"
+          type="tel"
+          inputmode="tel"
+          [(ngModel)]="phone"
+          name="phone"
+          placeholder="09XXXXXXXXX">
+        </ion-input>
+
+        <ion-button
+          type="submit"
+          expand="block"
+          [disabled]="savingProfile()">
+
+          <ion-spinner
+            *ngIf="savingProfile()"
+            slot="start"
+            name="crescent">
+          </ion-spinner>
+
+          {{
+            savingProfile()
+              ? 'Saving...'
+              : 'Save Changes'
+          }}
+
+        </ion-button>
+
+      </form>
+
+    </section>
+
+    <!-- ADDRESSES -->
+
+    <section class="profile-card">
+
+      <div class="card-heading">
+
+        <div>
+
+          <h2>
+            Saved Addresses
+          </h2>
+
+          <p>
+            Used for delivery during checkout.
+          </p>
+
+        </div>
+
+        <div class="address-count">
+          {{ addresses().length }}
+        </div>
+
+      </div>
+
+      <div
+        class="empty-address"
+        *ngIf="
+          addresses().length === 0
+        ">
+
+        <ion-icon
+          name="location-outline">
+        </ion-icon>
+
+        <div>
+
+          <strong>
+            No address saved yet
+          </strong>
+
+          <p>
+            Add one below for faster checkout.
+          </p>
+
+        </div>
+
+      </div>
+
+      <article
+        class="address-card"
+        *ngFor="
+          let savedAddress of addresses()
+        ">
+
+        <div class="address-icon">
+
+          <ion-icon
+            name="home-outline">
+          </ion-icon>
+
+        </div>
+
+        <div class="address-info">
+
+          <div class="address-title">
+
+            <strong>
+              {{
+                savedAddress.label ||
+                'Address'
+              }}
+            </strong>
+
+            <span
+              class="default-badge"
+              *ngIf="
+                savedAddress.isDefault
+              ">
+              Default
+            </span>
+
+          </div>
+
+          <p>
+            {{ savedAddress.address }}
+          </p>
+
+          <p>
+            {{ savedAddress.city }}
+
+            <ng-container
+              *ngIf="
+                savedAddress.zip
+              ">
+              {{ savedAddress.zip }}
+            </ng-container>
+          </p>
+
+          <p
+            *ngIf="
+              savedAddress.phone
+            ">
+            {{ savedAddress.phone }}
+          </p>
+
+          <div class="address-actions">
+
+            <ion-button
+              size="small"
+              fill="outline"
+              *ngIf="
+                !savedAddress.isDefault
+              "
+              [disabled]="
+                isAddressBusy(
+                  savedAddress
+                )
+              "
+              (click)="
+                setDefault(
+                  savedAddress
+                )
+              ">
+              Set Default
+            </ion-button>
+
+            <ion-button
+              size="small"
+              fill="clear"
+              color="danger"
+              [disabled]="
+                isAddressBusy(
+                  savedAddress
+                )
+              "
+              (click)="
+                remove(
+                  savedAddress
+                )
+              ">
+
+              <ion-spinner
+                *ngIf="
+                  isAddressBusy(
+                    savedAddress
+                  )
+                "
+                name="crescent">
+              </ion-spinner>
+
+              <ion-icon
+                *ngIf="
+                  !isAddressBusy(
+                    savedAddress
+                  )
+                "
+                name="trash-outline">
+              </ion-icon>
+
+            </ion-button>
+
+          </div>
+
+        </div>
+
+      </article>
+
+      <div class="divider">
+      </div>
+
+      <h3 class="add-title">
+        Add New Address
+      </h3>
+
+      <form
+        class="address-form"
+        (ngSubmit)="addAddress()">
+
+        <label>
+          Label
+        </label>
+
+        <ion-input
+          class="form-control"
+          [(ngModel)]="addressLabel"
+          name="addressLabel"
+          placeholder="Home, School, Office">
+        </ion-input>
+
+        <label>
+          Street address
+        </label>
+
+        <ion-input
+          class="form-control"
+          [(ngModel)]="address"
+          name="address"
+          placeholder="House no., street, barangay">
+        </ion-input>
+
+        <div class="address-grid">
+
+          <div>
+
+            <label>
+              City
+            </label>
+
+            <ion-input
+              class="form-control"
+              [(ngModel)]="city"
+              name="city"
+              placeholder="Quezon City">
+            </ion-input>
+
+          </div>
+
+          <div>
+
+            <label>
+              ZIP
+            </label>
+
+            <ion-input
+              class="form-control"
+              [(ngModel)]="zip"
+              name="zip"
+              inputmode="numeric"
+              placeholder="1100">
+            </ion-input>
+
+          </div>
+
+        </div>
+
+        <ion-button
+          type="submit"
+          expand="block"
+          fill="outline"
+          [disabled]="savingAddress()">
+
+          <ion-spinner
+            *ngIf="
+              savingAddress()
+            "
+            slot="start"
+            name="crescent">
+          </ion-spinner>
+
+          <ion-icon
+            *ngIf="
+              !savingAddress()
+            "
+            slot="start"
+            name="add-outline">
+          </ion-icon>
+
+          {{
+            savingAddress()
+              ? 'Saving Address...'
+              : 'Add Address'
+          }}
+
+        </ion-button>
+
+      </form>
+
+    </section>
+
+    <!-- MENU -->
+
+    <section class="menu-section">
+
+      <button
+        type="button"
+        class="menu-card"
+        (click)="go('/orders')">
+
+        <div class="menu-icon">
+
+          <ion-icon
+            name="receipt-outline">
+          </ion-icon>
+
+        </div>
+
+        <div class="menu-copy">
+
+          <strong>
+            My Orders
+          </strong>
+
+          <span>
+            View rentals and track orders
+          </span>
+
+        </div>
+
+        <ion-icon
+          class="arrow"
+          name="chevron-forward-outline">
+        </ion-icon>
+
+      </button>
+
+      <button
+        type="button"
+        class="menu-card"
+        (click)="go('/notifications')">
+
+        <div class="menu-icon">
+
+          <ion-icon
+            name="notifications-outline">
+          </ion-icon>
+
+        </div>
+
+        <div class="menu-copy">
+
+          <strong>
+            Notifications
+          </strong>
+
+          <span>
+            View updates and alerts
+          </span>
+
+        </div>
+
+        <ion-icon
+          class="arrow"
+          name="chevron-forward-outline">
+        </ion-icon>
+
+      </button>
+
+      <button
+        type="button"
+        class="menu-card"
+        (click)="go('/support')">
+
+        <div class="menu-icon">
+
+          <ion-icon
+            name="chatbubble-ellipses-outline">
+          </ion-icon>
+
+        </div>
+
+        <div class="menu-copy">
+
+          <strong>
+            Support
+          </strong>
+
+          <span>
+            Get help with your rental
+          </span>
+
+        </div>
+
+        <ion-icon
+          class="arrow"
+          name="chevron-forward-outline">
+        </ion-icon>
+
+      </button>
+
+    </section>
+
+    <!-- SIGN OUT -->
+
+    <section class="signout-card">
+
+      <div>
+
+        <strong>
+          Sign out
+        </strong>
+
+        <p>
+          Sign out of your DiaLux account.
+        </p>
+
+      </div>
+
+      <ion-button
+        fill="outline"
+        color="danger"
+        (click)="logout()">
+
+        <ion-icon
+          slot="start"
+          name="log-out-outline">
+        </ion-icon>
+
+        Sign Out
+
+      </ion-button>
+
+    </section>
+
+  </main>
+
+</ion-content>

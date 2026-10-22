@@ -1,0 +1,532 @@
+<ion-header>
+
+  <ion-toolbar>
+
+    <ion-title>
+      DiaLux
+    </ion-title>
+
+    <ion-buttons slot="end">
+
+      <ion-button
+        *ngIf="
+          !auth.isLoggedIn()
+        "
+        (click)="go('/login')">
+
+        Sign In
+
+      </ion-button>
+
+      <ion-button
+        *ngIf="
+          auth.isLoggedIn()
+        "
+        (click)="go('/notifications')">
+
+        <ion-icon
+          slot="icon-only"
+          name="notifications-outline">
+        </ion-icon>
+
+      </ion-button>
+
+    </ion-buttons>
+
+  </ion-toolbar>
+
+</ion-header>
+
+<ion-content>
+
+  <main class="home-page">
+
+    <!-- HERO -->
+
+    <section class="hero">
+
+      <div class="hero-copy">
+
+        <span
+          class="welcome-label"
+          *ngIf="
+            auth.isLoggedIn() &&
+            greetingName()
+          ">
+
+          Welcome back,
+          {{ greetingName() }}
+
+        </span>
+
+        <span
+          class="welcome-label"
+          *ngIf="
+            !auth.isLoggedIn()
+          ">
+
+          Premium Device Rentals
+
+        </span>
+
+        <h1>
+          Rent premium devices
+          without buying them.
+        </h1>
+
+        <p>
+          Choose a device, set your rental
+          period, and have it delivered
+          when you need it.
+        </p>
+
+        <div class="hero-actions">
+
+          <ion-button
+            size="large"
+            (click)="
+              go('/tabs/devices')
+            ">
+
+            Browse Devices
+
+            <ion-icon
+              slot="end"
+              name="arrow-forward-outline">
+            </ion-icon>
+
+          </ion-button>
+
+          <ion-button
+            *ngIf="
+              auth.isLoggedIn()
+            "
+            size="large"
+            fill="outline"
+            (click)="go('/orders')">
+
+            My Orders
+
+          </ion-button>
+
+        </div>
+
+      </div>
+
+      <div class="hero-art">
+
+        <div class="phone phone-back">
+        </div>
+
+        <div class="phone phone-front">
+
+          <ion-icon
+            name="phone-portrait-outline">
+          </ion-icon>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- QUICK ACCESS -->
+
+    <section class="section">
+
+      <div class="section-heading">
+
+        <div>
+
+          <span>
+            Quick Access
+          </span>
+
+          <h2>
+            What do you need?
+          </h2>
+
+        </div>
+
+      </div>
+
+      <div class="quick-grid">
+
+        <button
+          type="button"
+          class="quick-card"
+          (click)="
+            go('/tabs/devices')
+          ">
+
+          <div class="quick-icon">
+
+            <ion-icon
+              name="phone-portrait-outline">
+            </ion-icon>
+
+          </div>
+
+          <strong>
+            Devices
+          </strong>
+
+          <span>
+            Browse available rentals
+          </span>
+
+        </button>
+
+        <button
+          type="button"
+          class="quick-card"
+          (click)="
+            go('/tabs/wishlist')
+          ">
+
+          <div class="quick-icon">
+
+            <ion-icon
+              name="heart-outline">
+            </ion-icon>
+
+          </div>
+
+          <strong>
+            Wishlist
+          </strong>
+
+          <span>
+            View saved devices
+          </span>
+
+        </button>
+
+        <button
+          type="button"
+          class="quick-card"
+          (click)="
+            go('/tabs/cart')
+          ">
+
+          <div class="quick-icon">
+
+            <ion-icon
+              name="cart-outline">
+            </ion-icon>
+
+          </div>
+
+          <strong>
+            Cart
+          </strong>
+
+          <span>
+            Continue your rental
+          </span>
+
+        </button>
+
+        <button
+          type="button"
+          class="quick-card"
+          (click)="
+            go(
+              auth.isLoggedIn()
+                ? '/orders'
+                : '/login'
+            )
+          ">
+
+          <div class="quick-icon">
+
+            <ion-icon
+              name="receipt-outline">
+            </ion-icon>
+
+          </div>
+
+          <strong>
+            My Orders
+          </strong>
+
+          <span>
+            Track your bookings
+          </span>
+
+        </button>
+
+      </div>
+
+    </section>
+
+    <!-- FEATURED DEVICES -->
+
+    <section class="section">
+
+      <div class="section-heading">
+
+        <div>
+
+          <span>
+            Featured Rentals
+          </span>
+
+          <h2>
+            Popular Devices
+          </h2>
+
+        </div>
+
+        <button
+          type="button"
+          class="view-all"
+          (click)="
+            go('/tabs/devices')
+          ">
+
+          View All
+
+          <ion-icon
+            name="arrow-forward-outline">
+          </ion-icon>
+
+        </button>
+
+      </div>
+
+      <div
+        class="featured-loading"
+        *ngIf="loading()">
+
+        <ion-spinner
+          name="crescent">
+        </ion-spinner>
+
+        <span>
+          Loading devices...
+        </span>
+
+      </div>
+
+      <div
+        class="featured-scroll"
+        *ngIf="
+          !loading() &&
+          featured().length > 0
+        ">
+
+        <article
+          class="device-card"
+          *ngFor="
+            let product of featured()
+          "
+          (click)="
+            openDevice(product)
+          ">
+
+          <div class="device-image">
+
+            <img
+              [src]="
+                api.imageUrl(
+                  product.image ||
+                  product.cardImage
+                )
+              "
+              [alt]="product.name">
+
+          </div>
+
+          <div class="device-body">
+
+            <div class="device-tags">
+
+              <span>
+                {{
+                  product.brand ||
+                  'Device'
+                }}
+              </span>
+
+              <span
+                *ngIf="
+                  product.grade
+                ">
+                {{ product.grade }}
+              </span>
+
+            </div>
+
+            <h3>
+              {{ product.name }}
+            </h3>
+
+            <div class="device-price">
+
+              <strong>
+                {{
+                  money(
+                    product.daily
+                  )
+                }}
+              </strong>
+
+              <span>
+                / day
+              </span>
+
+            </div>
+
+            <div class="device-stock">
+
+              <ion-icon
+                name="checkmark-circle-outline">
+              </ion-icon>
+
+              {{
+                product.stock
+              }}
+              available
+
+            </div>
+
+          </div>
+
+        </article>
+
+      </div>
+
+    </section>
+
+    <!-- HOW IT WORKS -->
+
+    <section class="section">
+
+      <div class="section-heading">
+
+        <div>
+
+          <span>
+            Simple Process
+          </span>
+
+          <h2>
+            How DiaLux Works
+          </h2>
+
+        </div>
+
+      </div>
+
+      <div class="steps">
+
+        <article>
+
+          <div class="step-number">
+            1
+          </div>
+
+          <div>
+
+            <h3>
+              Choose a Device
+            </h3>
+
+            <p>
+              Browse phones and other
+              devices available for rent.
+            </p>
+
+          </div>
+
+        </article>
+
+        <article>
+
+          <div class="step-number">
+            2
+          </div>
+
+          <div>
+
+            <h3>
+              Set Your Rental
+            </h3>
+
+            <p>
+              Select dates, rental plan,
+              and delivery preferences.
+            </p>
+
+          </div>
+
+        </article>
+
+        <article>
+
+          <div class="step-number">
+            3
+          </div>
+
+          <div>
+
+            <h3>
+              Receive & Enjoy
+            </h3>
+
+            <p>
+              Complete checkout and track
+              your rental from the app.
+            </p>
+
+          </div>
+
+        </article>
+
+      </div>
+
+    </section>
+
+    <!-- SUPPORT CTA -->
+
+    <section class="support-banner">
+
+      <div class="support-icon">
+
+        <ion-icon
+          name="chatbubble-ellipses-outline">
+        </ion-icon>
+
+      </div>
+
+      <div class="support-copy">
+
+        <span>
+          Need Help?
+        </span>
+
+        <strong>
+          Ask DiaLux Support
+        </strong>
+
+        <p>
+          Get help with rentals,
+          payments, delivery, or returns.
+        </p>
+
+      </div>
+
+      <ion-button
+        fill="outline"
+        (click)="go('/support')">
+
+        Support
+
+      </ion-button>
+
+    </section>
+
+  </main>
+
+</ion-content>

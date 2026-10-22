@@ -1,0 +1,585 @@
+ion-content {
+  --background: #f4f6fa;
+  --color: #111827;
+}
+
+ion-toolbar {
+  --background: #1f1f1f;
+  --color: #ffffff;
+}
+
+.device-page {
+  width: 100%;
+  max-width: 560px;
+
+  margin: 0 auto;
+
+  padding:
+    12px
+    12px
+    115px;
+}
+
+/* IMAGE */
+
+.image-card {
+  display: flex;
+
+  min-height: 260px;
+
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+
+  margin-bottom: 16px;
+
+  padding: 20px;
+
+  border:
+    1px solid #e5e7eb;
+
+  border-radius: 20px;
+
+  background: #ffffff;
+}
+
+.image-card img {
+  width: 100%;
+  max-width: 260px;
+  height: 235px;
+
+  object-fit: contain;
+}
+
+/* HEADING */
+
+.device-heading {
+  margin-bottom: 16px;
+}
+
+.tags {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 7px;
+
+  margin-bottom: 10px;
+}
+
+.tags span {
+  display: inline-flex;
+
+  align-items: center;
+
+  min-height: 27px;
+
+  padding:
+    4px
+    9px;
+
+  border-radius: 999px;
+
+  background: #eef2f7;
+
+  color: #475569;
+
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.tags .stock {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.tags .stock.out {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.device-heading h1 {
+  margin:
+    0
+    0
+    8px;
+
+  color: #111827;
+
+  font-size: 1.55rem;
+  font-weight: 900;
+
+  line-height: 1.15;
+}
+
+.description {
+  margin: 0;
+
+  color: #475569;
+
+  font-size: 0.9rem;
+
+  line-height: 1.55;
+}
+
+/* PRICES */
+
+.price-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 8px;
+
+  margin-bottom: 12px;
+}
+
+.price-card {
+  position: relative;
+
+  display: flex;
+
+  min-height: 100px;
+
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 3px;
+
+  padding: 10px 5px;
+
+  border:
+    2px solid #e5e7eb;
+
+  border-radius: 14px;
+
+  background: #ffffff;
+
+  color: #111827;
+
+  cursor: pointer;
+}
+
+.price-card span {
+  color: #64748b;
+
+  font-size: 0.77rem;
+  font-weight: 700;
+}
+
+.price-card strong {
+  color: #111827;
+
+  font-size: 0.92rem;
+  font-weight: 900;
+}
+
+.price-card small {
+  color: #94a3b8;
+
+  font-size: 0.68rem;
+}
+
+.price-card.selected {
+  border-color:
+    var(--ion-color-primary);
+
+  background: #eff6ff;
+
+  box-shadow:
+    0 5px 16px
+    rgba(37, 99, 235, 0.13);
+}
+
+.price-card.selected span,
+.price-card.selected strong {
+  color: #1d4ed8;
+}
+
+.price-card > ion-icon {
+  position: absolute;
+
+  top: 6px;
+  right: 6px;
+
+  color:
+    var(--ion-color-primary);
+
+  font-size: 17px;
+}
+
+.price-card.disabled {
+  opacity: 0.45;
+
+  cursor: not-allowed;
+}
+
+/* SELECTED RENTAL */
+
+.selected-rental-card {
+  display: flex;
+
+  align-items: center;
+
+  gap: 11px;
+
+  margin-bottom: 12px;
+
+  padding: 14px;
+
+  border:
+    1px solid #bfdbfe;
+
+  border-radius: 15px;
+
+  background: #f8fbff;
+}
+
+.selected-icon {
+  display: grid;
+
+  width: 42px;
+  height: 42px;
+
+  flex: 0 0 auto;
+
+  place-items: center;
+
+  border-radius: 11px;
+
+  background: #dbeafe;
+
+  color: #1d4ed8;
+}
+
+.selected-icon ion-icon {
+  font-size: 21px;
+}
+
+.selected-copy {
+  display: flex;
+
+  flex: 1;
+
+  min-width: 0;
+
+  flex-direction: column;
+
+  gap: 3px;
+}
+
+.selected-copy span {
+  color: #64748b;
+
+  font-size: 0.72rem;
+}
+
+.selected-copy strong {
+  color: #111827;
+
+  font-size: 0.9rem;
+  font-weight: 900;
+}
+
+.selected-price {
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: flex-end;
+}
+
+.selected-price strong {
+  color:
+    var(--ion-color-primary);
+
+  font-size: 0.95rem;
+}
+
+.selected-price span {
+  margin-top: 2px;
+
+  color: #94a3b8;
+
+  font-size: 0.66rem;
+}
+
+/* DEPOSIT */
+
+.deposit-card {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 10px;
+
+  margin-bottom: 12px;
+
+  padding: 15px;
+
+  border:
+    1px solid #e5e7eb;
+
+  border-radius: 15px;
+
+  background: #ffffff;
+}
+
+.deposit-card span {
+  display: block;
+
+  margin-bottom: 3px;
+
+  color: #64748b;
+
+  font-size: 0.72rem;
+}
+
+.deposit-card strong {
+  color: #111827;
+
+  font-size: 0.92rem;
+}
+
+.deposit-card ion-icon {
+  color:
+    var(--ion-color-primary);
+
+  font-size: 26px;
+}
+
+/* INFO */
+
+.info-card {
+  margin-bottom: 12px;
+
+  padding: 16px;
+
+  border:
+    1px solid #e5e7eb;
+
+  border-radius: 16px;
+
+  background: #ffffff;
+}
+
+.info-card h2 {
+  margin:
+    0
+    0
+    13px;
+
+  color: #111827;
+
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.spec-row {
+  display: flex;
+
+  align-items: flex-start;
+
+  justify-content: space-between;
+
+  gap: 14px;
+
+  padding:
+    10px
+    0;
+
+  border-bottom:
+    1px solid #eef2f7;
+}
+
+.spec-row:last-child {
+  border-bottom: 0;
+}
+
+.spec-row span {
+  color: #64748b;
+
+  font-size: 0.78rem;
+}
+
+.spec-row strong {
+  max-width: 60%;
+
+  color: #111827;
+
+  font-size: 0.78rem;
+
+  text-align: right;
+}
+
+.included-item {
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  padding:
+    7px
+    0;
+
+  color: #475569;
+
+  font-size: 0.8rem;
+}
+
+.included-item ion-icon {
+  flex: 0 0 auto;
+
+  color: #16a34a;
+
+  font-size: 18px;
+}
+
+/* BOTTOM ACTIONS */
+
+.bottom-actions {
+  position: fixed;
+
+  right: 0;
+  bottom: 55px;
+  left: 0;
+
+  z-index: 50;
+
+  display: flex;
+
+  width: 100%;
+  max-width: 560px;
+
+  align-items: center;
+
+  gap: 9px;
+
+  margin: 0 auto;
+
+  padding:
+    10px
+    12px;
+
+  border-top:
+    1px solid #e5e7eb;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.97
+    );
+
+  box-shadow:
+    0 -5px 18px
+    rgba(15, 23, 42, 0.08);
+}
+
+.wishlist-button {
+  width: 52px;
+  min-width: 52px;
+  height: 52px;
+
+  margin: 0;
+
+  --border-radius: 13px;
+}
+
+.cart-button {
+  min-height: 52px;
+
+  flex: 1;
+
+  margin: 0;
+
+  --border-radius: 13px;
+
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+/* STATES */
+
+.state {
+  display: flex;
+
+  min-height: 70vh;
+
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 10px;
+
+  padding: 30px;
+
+  color: #64748b;
+
+  text-align: center;
+}
+
+.state ion-icon {
+  color: #94a3b8;
+
+  font-size: 48px;
+}
+
+.state h2 {
+  margin: 0;
+
+  color: #111827;
+
+  font-size: 1.15rem;
+}
+
+.state p {
+  margin: 0;
+
+  font-size: 0.85rem;
+}
+
+@media (max-width: 390px) {
+
+  .device-page {
+    padding:
+      10px
+      10px
+      110px;
+  }
+
+  .image-card {
+    min-height: 230px;
+  }
+
+  .image-card img {
+    height: 205px;
+  }
+
+  .device-heading h1 {
+    font-size: 1.35rem;
+  }
+
+  .price-card {
+    min-height: 94px;
+  }
+
+  .price-card strong {
+    font-size: 0.84rem;
+  }
+
+  .bottom-actions {
+    padding:
+      9px
+      10px;
+  }
+}

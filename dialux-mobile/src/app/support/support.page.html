@@ -1,0 +1,447 @@
+<ion-header>
+
+  <ion-toolbar>
+
+    <ion-buttons slot="start">
+
+      <ion-back-button
+        defaultHref="/tabs/profile">
+      </ion-back-button>
+
+    </ion-buttons>
+
+    <ion-title>
+      Support
+    </ion-title>
+
+  </ion-toolbar>
+
+</ion-header>
+
+<ion-content>
+
+  <main class="support-page">
+
+    <!-- CHAT -->
+
+    <section class="support-card">
+
+      <div class="card-heading">
+
+        <div class="heading-icon">
+
+          <ion-icon
+            name="sparkles-outline">
+          </ion-icon>
+
+        </div>
+
+        <div>
+
+          <h2>
+            Ask DiaLux
+          </h2>
+
+          <p>
+            Get quick help with common rental questions.
+          </p>
+
+        </div>
+
+      </div>
+
+      <div class="chat">
+
+        <div
+          *ngFor="
+            let chatMessage of chatMessages()
+          "
+          class="message-row"
+          [class.me]="
+            chatMessage.me
+          ">
+
+          <div class="bubble">
+
+            {{ chatMessage.text }}
+
+          </div>
+
+        </div>
+
+        <div
+          class="message-row"
+          *ngIf="asking()">
+
+          <div class="bubble typing">
+
+            <ion-spinner
+              name="dots">
+            </ion-spinner>
+
+            <span>
+              DiaLux is replying...
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="chatbox">
+
+        <ion-input
+          class="chat-input"
+          placeholder="Ask about rentals, payments, returns..."
+          [(ngModel)]="chat"
+          (keyup.enter)="ask()">
+        </ion-input>
+
+        <ion-button
+          class="send-button"
+          [disabled]="
+            !chat.trim() ||
+            asking()
+          "
+          (click)="ask()">
+
+          <ion-icon
+            slot="icon-only"
+            name="send-outline">
+          </ion-icon>
+
+        </ion-button>
+
+      </div>
+
+    </section>
+
+    <!-- CONTACT SUPPORT -->
+
+    <section class="support-card">
+
+      <div class="card-heading">
+
+        <div class="heading-icon">
+
+          <ion-icon
+            name="headset-outline">
+          </ion-icon>
+
+        </div>
+
+        <div>
+
+          <h2>
+            Contact Support
+          </h2>
+
+          <p>
+            Submit a ticket if you need help from our team.
+          </p>
+
+        </div>
+
+      </div>
+
+      <form
+        class="support-form"
+        (ngSubmit)="send()">
+
+        <label>
+          Subject
+        </label>
+
+        <ion-input
+          class="form-control"
+          [(ngModel)]="subject"
+          name="subject"
+          placeholder="Briefly describe your concern">
+        </ion-input>
+
+        <label>
+          Category
+        </label>
+
+        <ion-select
+          class="form-control"
+          interface="action-sheet"
+          [(ngModel)]="category"
+          name="category">
+
+          <ion-select-option
+            value="order">
+            Order
+          </ion-select-option>
+
+          <ion-select-option
+            value="payment">
+            Payment
+          </ion-select-option>
+
+          <ion-select-option
+            value="return">
+            Return
+          </ion-select-option>
+
+          <ion-select-option
+            value="technical">
+            Technical
+          </ion-select-option>
+
+          <ion-select-option
+            value="other">
+            Other
+          </ion-select-option>
+
+        </ion-select>
+
+        <label>
+          Order reference
+          <span>
+            Optional
+          </span>
+        </label>
+
+        <ion-input
+          class="form-control"
+          [(ngModel)]="orderRef"
+          name="orderRef"
+          placeholder="e.g. DLX-ABC123">
+        </ion-input>
+
+        <label>
+          Message
+        </label>
+
+        <ion-textarea
+          class="message-control"
+          [autoGrow]="true"
+          rows="5"
+          [(ngModel)]="message"
+          name="message"
+          placeholder="Tell us what happened and how we can help.">
+        </ion-textarea>
+
+        <div class="message-count">
+
+          {{ message.trim().length }}
+          characters
+
+        </div>
+
+        <ion-button
+          type="submit"
+          expand="block"
+          size="large"
+          [disabled]="sending()">
+
+          <ion-spinner
+            *ngIf="sending()"
+            slot="start"
+            name="crescent">
+          </ion-spinner>
+
+          {{
+            sending()
+              ? 'Submitting...'
+              : 'Submit Support Ticket'
+          }}
+
+        </ion-button>
+
+      </form>
+
+    </section>
+
+    <!-- TICKETS -->
+
+    <section
+      class="support-card"
+      *ngIf="auth.isLoggedIn()">
+
+      <div class="card-heading">
+
+        <div class="heading-icon">
+
+          <ion-icon
+            name="ticket-outline">
+          </ion-icon>
+
+        </div>
+
+        <div>
+
+          <h2>
+            My Tickets
+          </h2>
+
+          <p>
+            Track the support requests you've submitted.
+          </p>
+
+        </div>
+
+      </div>
+
+      <div
+        class="ticket-state"
+        *ngIf="ticketsLoading()">
+
+        <ion-spinner
+          name="crescent">
+        </ion-spinner>
+
+        <span>
+          Loading tickets...
+        </span>
+
+      </div>
+
+      <div
+        class="ticket-state"
+        *ngIf="
+          !ticketsLoading() &&
+          ticketsError()
+        ">
+
+        <ion-icon
+          name="alert-circle-outline">
+        </ion-icon>
+
+        <span>
+          {{ ticketsError() }}
+        </span>
+
+        <ion-button
+          size="small"
+          fill="outline"
+          (click)="loadTickets()">
+          Retry
+        </ion-button>
+
+      </div>
+
+      <div
+        class="ticket-state"
+        *ngIf="
+          !ticketsLoading() &&
+          !ticketsError() &&
+          tickets().length === 0
+        ">
+
+        <ion-icon
+          name="checkmark-circle-outline">
+        </ion-icon>
+
+        <strong>
+          No support tickets
+        </strong>
+
+        <span>
+          You're all set for now.
+        </span>
+
+      </div>
+
+      <div
+        class="ticket-list"
+        *ngIf="
+          !ticketsLoading() &&
+          !ticketsError() &&
+          tickets().length > 0
+        ">
+
+        <article
+          class="ticket-card"
+          *ngFor="
+            let ticket of tickets()
+          ">
+
+          <div class="ticket-top">
+
+            <div>
+
+              <span class="ticket-ref">
+                {{ ticket.ref }}
+              </span>
+
+              <h3>
+                {{
+                  ticket.subject ||
+                  'Support request'
+                }}
+              </h3>
+
+            </div>
+
+            <span
+              class="ticket-status"
+              [ngClass]="
+                statusClass(
+                  ticket.status
+                )
+              ">
+
+              {{
+                statusLabel(
+                  ticket.status
+                )
+              }}
+
+            </span>
+
+          </div>
+
+          <div class="ticket-meta">
+
+            <span>
+              {{
+                categoryLabel(
+                  ticket.category
+                )
+              }}
+            </span>
+
+            <span
+              *ngIf="
+                ticket.orderRef
+              ">
+              Order:
+              {{ ticket.orderRef }}
+            </span>
+
+          </div>
+
+          <p>
+            {{ ticket.message }}
+          </p>
+
+          <div
+            class="ticket-date"
+            *ngIf="
+              ticket.createdAt
+            ">
+
+            <ion-icon
+              name="time-outline">
+            </ion-icon>
+
+            {{
+              ticket.createdAt
+                | date:
+                  'MMM d, y, h:mm a'
+            }}
+
+          </div>
+
+        </article>
+
+      </div>
+
+    </section>
+
+  </main>
+
+</ion-content>

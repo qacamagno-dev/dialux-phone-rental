@@ -1,0 +1,524 @@
+<ion-header>
+
+  <ion-toolbar>
+
+    <ion-title>
+      Devices
+    </ion-title>
+
+  </ion-toolbar>
+
+</ion-header>
+
+<ion-content>
+
+  <ion-refresher
+    slot="fixed"
+    (ionRefresh)="refresh($event)">
+
+    <ion-refresher-content>
+    </ion-refresher-content>
+
+  </ion-refresher>
+
+  <main class="devices-page">
+
+    <!-- INTRO -->
+
+    <section class="page-heading">
+
+      <div>
+
+        <span class="eyebrow">
+          DiaLux Rentals
+        </span>
+
+        <h1>
+          Find Your Device
+        </h1>
+
+        <p>
+          Browse available phones and
+          choose the rental plan that
+          works for you.
+        </p>
+
+      </div>
+
+      <div class="device-count">
+
+        <strong>
+          {{ filteredProducts.length }}
+        </strong>
+
+        <span>
+          Devices
+        </span>
+
+      </div>
+
+    </section>
+
+    <!-- SEARCH -->
+
+    <section class="search-card">
+
+      <ion-searchbar
+        [(ngModel)]="searchTerm"
+        (ionInput)="applyFilters()"
+        placeholder="Search iPhone, Samsung..."
+        debounce="250">
+      </ion-searchbar>
+
+    </section>
+
+    <!-- FILTERS -->
+
+    <section class="filter-card">
+
+      <div class="filter-heading">
+
+        <div>
+
+          <strong>
+            Filter Devices
+          </strong>
+
+          <span>
+            Narrow down your results
+          </span>
+
+        </div>
+
+        <button
+          type="button"
+          class="clear-button"
+          *ngIf="hasActiveFilters()"
+          (click)="clearFilters()">
+
+          Clear
+
+        </button>
+
+      </div>
+
+      <div class="filters">
+
+        <div class="filter-field">
+
+          <label>
+            Brand
+          </label>
+
+          <ion-select
+            interface="action-sheet"
+            [(ngModel)]="selectedBrand"
+            (ionChange)="applyFilters()">
+
+            <ion-select-option
+              value="all">
+              All Brands
+            </ion-select-option>
+
+            <ion-select-option
+              *ngFor="
+                let brand of brands
+              "
+              [value]="brand">
+
+              {{ brand }}
+
+            </ion-select-option>
+
+          </ion-select>
+
+        </div>
+
+        <div class="filter-field">
+
+          <label>
+            Grade
+          </label>
+
+          <ion-select
+            interface="action-sheet"
+            [(ngModel)]="selectedGrade"
+            (ionChange)="applyFilters()">
+
+            <ion-select-option
+              value="all">
+              All Grades
+            </ion-select-option>
+
+            <ion-select-option
+              *ngFor="
+                let grade of grades
+              "
+              [value]="grade">
+
+              {{ grade }}
+
+            </ion-select-option>
+
+          </ion-select>
+
+        </div>
+
+        <div class="filter-field full">
+
+          <label>
+            Sort By
+          </label>
+
+          <ion-select
+            interface="action-sheet"
+            [(ngModel)]="selectedSort"
+            (ionChange)="applyFilters()">
+
+            <ion-select-option
+              value="featured">
+              Featured
+            </ion-select-option>
+
+            <ion-select-option
+              value="price-asc">
+              Price: Low to High
+            </ion-select-option>
+
+            <ion-select-option
+              value="price-desc">
+              Price: High to Low
+            </ion-select-option>
+
+            <ion-select-option
+              value="name">
+              Name
+            </ion-select-option>
+
+            <ion-select-option
+              value="stock">
+              Availability
+            </ion-select-option>
+
+            <ion-select-option
+              value="rating">
+              Rating
+            </ion-select-option>
+
+          </ion-select>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- LOADING -->
+
+    <div
+      *ngIf="loading"
+      class="state-box">
+
+      <ion-spinner
+        name="crescent">
+      </ion-spinner>
+
+      <h2>
+        Loading devices
+      </h2>
+
+      <p>
+        Finding available rentals...
+      </p>
+
+    </div>
+
+    <!-- ERROR -->
+
+    <div
+      *ngIf="
+        !loading &&
+        error
+      "
+      class="state-box">
+
+      <ion-icon
+        name="cloud-offline-outline">
+      </ion-icon>
+
+      <h2>
+        Couldn't load devices
+      </h2>
+
+      <p>
+        {{ error }}
+      </p>
+
+      <ion-button
+        (click)="loadProducts()">
+        Try Again
+      </ion-button>
+
+    </div>
+
+    <!-- EMPTY -->
+
+    <div
+      *ngIf="
+        !loading &&
+        !error &&
+        filteredProducts.length === 0
+      "
+      class="state-box">
+
+      <ion-icon
+        name="search-outline">
+      </ion-icon>
+
+      <h2>
+        No devices found
+      </h2>
+
+      <p>
+        Try changing your search or filters.
+      </p>
+
+      <ion-button
+        fill="outline"
+        (click)="clearFilters()">
+        Clear Filters
+      </ion-button>
+
+    </div>
+
+    <!-- PRODUCTS -->
+
+    <section
+      *ngIf="
+        !loading &&
+        !error &&
+        filteredProducts.length > 0
+      "
+      class="device-list">
+
+      <article
+        *ngFor="
+          let product of filteredProducts;
+          trackBy: trackByProductId
+        "
+        class="device-card">
+
+        <div class="image-section">
+
+          <img
+            [src]="
+              getImage(product)
+            "
+            [alt]="product.name"
+            loading="lazy">
+
+          <span
+            class="stock-badge"
+            [class.out]="
+              isOutOfStock(product)
+            ">
+
+            {{
+              isOutOfStock(product)
+                ? 'Out of Stock'
+                : product.stock +
+                  ' Available'
+            }}
+
+          </span>
+
+        </div>
+
+        <div class="device-content">
+
+          <div class="device-meta">
+
+            <span
+              *ngIf="
+                product.brand
+              ">
+
+              {{ product.brand }}
+
+            </span>
+
+            <span
+              *ngIf="
+                product.grade
+              ">
+
+              {{ product.grade }}
+
+            </span>
+
+          </div>
+
+          <h2>
+            {{ product.name }}
+          </h2>
+
+          <p
+            *ngIf="
+              product.desc
+            "
+            class="description">
+
+            {{ product.desc }}
+
+          </p>
+
+          <div class="rating-row">
+
+            <div class="rating">
+
+              <ion-icon
+                name="star">
+              </ion-icon>
+
+              <strong>
+                {{
+                  getRating(product)
+                }}
+              </strong>
+
+              <span>
+                {{
+                  product.reviewCount || 0
+                }}
+                reviews
+              </span>
+
+            </div>
+
+          </div>
+
+          <div class="pricing-title">
+
+            Rental Rates
+
+          </div>
+
+          <div class="pricing">
+
+            <div class="price-box">
+
+              <span>
+                Daily
+              </span>
+
+              <strong>
+                {{
+                  formatPrice(
+                    product.daily
+                  )
+                }}
+              </strong>
+
+              <small>
+                / day
+              </small>
+
+            </div>
+
+            <div class="price-box featured">
+
+              <span>
+                Weekly
+              </span>
+
+              <strong>
+                {{
+                  formatPrice(
+                    product.weekly
+                  )
+                }}
+              </strong>
+
+              <small>
+                / week
+              </small>
+
+            </div>
+
+            <div class="price-box">
+
+              <span>
+                Monthly
+              </span>
+
+              <strong>
+                {{
+                  formatPrice(
+                    product.monthly
+                  )
+                }}
+              </strong>
+
+              <small>
+                / month
+              </small>
+
+            </div>
+
+          </div>
+
+          <div
+            class="deposit-row"
+            *ngIf="
+              product.deposit
+            ">
+
+            <ion-icon
+              name="shield-checkmark-outline">
+            </ion-icon>
+
+            <span>
+              Security deposit from
+            </span>
+
+            <strong>
+              {{
+                formatPrice(500)
+              }}
+            </strong>
+
+          </div>
+
+          <ion-button
+            class="view-button"
+            expand="block"
+            size="large"
+            [disabled]="
+              isOutOfStock(product)
+            "
+            (click)="
+              openDevice(product)
+            ">
+
+            <ion-icon
+              slot="start"
+              name="phone-portrait-outline">
+            </ion-icon>
+
+            {{
+              isOutOfStock(product)
+                ? 'Currently Unavailable'
+                : 'View Device'
+            }}
+
+          </ion-button>
+
+        </div>
+
+      </article>
+
+    </section>
+
+  </main>
+
+</ion-content>

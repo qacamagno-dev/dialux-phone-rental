@@ -1,0 +1,143 @@
+<ion-content [fullscreen]="true">
+
+  <main class="auth-page">
+
+    <section class="brand">
+
+      <button
+        type="button"
+        class="back-button"
+        (click)="goHome()">
+
+        <ion-icon
+          name="arrow-back-outline">
+        </ion-icon>
+
+      </button>
+
+      <div class="logo-mark">
+        D
+      </div>
+
+      <h1>
+        Welcome back
+      </h1>
+
+      <p>
+        Sign in to continue renting
+        with DiaLux.
+      </p>
+
+    </section>
+
+    <section class="auth-card">
+
+      <form
+        (ngSubmit)="submit()">
+
+        <ion-item
+          lines="none"
+          class="field">
+
+          <ion-icon
+            slot="start"
+            name="mail-outline">
+          </ion-icon>
+
+          <ion-input
+            label="Email"
+            labelPlacement="stacked"
+            type="email"
+            inputmode="email"
+            autocomplete="email"
+            placeholder="you@example.com"
+            [(ngModel)]="email"
+            name="email">
+          </ion-input>
+
+        </ion-item>
+
+        <ion-item
+          lines="none"
+          class="field">
+
+          <ion-icon
+            slot="start"
+            name="lock-closed-outline">
+          </ion-icon>
+
+          <ion-input
+            label="Password"
+            labelPlacement="stacked"
+            [type]="
+              showPassword
+                ? 'text'
+                : 'password'
+            "
+            autocomplete="current-password"
+            placeholder="Enter password"
+            [(ngModel)]="password"
+            name="password">
+          </ion-input>
+
+          <ion-button
+            type="button"
+            slot="end"
+            fill="clear"
+            (click)="togglePassword()">
+
+            <ion-icon
+              slot="icon-only"
+              [name]="
+                showPassword
+                  ? 'eye-off-outline'
+                  : 'eye-outline'
+              ">
+            </ion-icon>
+
+          </ion-button>
+
+        </ion-item>
+
+        <ion-button
+          type="submit"
+          expand="block"
+          size="large"
+          class="submit-button"
+          [disabled]="submitting()">
+
+          <ion-spinner
+            *ngIf="submitting()"
+            slot="start"
+            name="crescent">
+          </ion-spinner>
+
+          {{
+            submitting()
+              ? 'Signing in...'
+              : 'Sign in'
+          }}
+
+        </ion-button>
+
+      </form>
+
+      <div class="signup-row">
+
+        <span>
+          New to DiaLux?
+        </span>
+
+        <button
+          type="button"
+          (click)="openRegister()">
+          Create account
+        </button>
+
+      </div>
+
+    </section>
+
+  </main>
+
+</ion-content>

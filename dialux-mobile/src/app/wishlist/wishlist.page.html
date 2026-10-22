@@ -1,0 +1,249 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>
+      Wishlist
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <div
+    class="state"
+    *ngIf="!auth.isLoggedIn()">
+
+    <ion-icon
+      name="heart-outline">
+    </ion-icon>
+
+    <h2>
+      Sign in to use your wishlist
+    </h2>
+
+    <p>
+      Save devices you want to rent later.
+    </p>
+
+    <ion-button
+      (click)="login()">
+      Sign in
+    </ion-button>
+
+  </div>
+
+  <div
+    class="state"
+    *ngIf="
+      auth.isLoggedIn() &&
+      loading()
+    ">
+
+    <ion-spinner
+      name="crescent">
+    </ion-spinner>
+
+    <p>
+      Loading wishlist...
+    </p>
+
+  </div>
+
+  <div
+    class="state"
+    *ngIf="
+      auth.isLoggedIn() &&
+      !loading() &&
+      error()
+    ">
+
+    <ion-icon
+      name="alert-circle-outline">
+    </ion-icon>
+
+    <h2>
+      Couldn't load wishlist
+    </h2>
+
+    <p>
+      {{ error() }}
+    </p>
+
+    <ion-button
+      (click)="load()">
+      Try Again
+    </ion-button>
+
+  </div>
+
+  <div
+    class="state"
+    *ngIf="
+      auth.isLoggedIn() &&
+      !loading() &&
+      !error() &&
+      products().length === 0
+    ">
+
+    <ion-icon
+      name="heart-outline">
+    </ion-icon>
+
+    <h2>
+      Your wishlist is empty
+    </h2>
+
+    <p>
+      Save devices you want to rent later.
+    </p>
+
+    <ion-button
+      (click)="browseDevices()">
+      Browse Devices
+    </ion-button>
+
+  </div>
+
+  <div
+    class="list"
+    *ngIf="
+      auth.isLoggedIn() &&
+      !loading() &&
+      !error() &&
+      products().length > 0
+    ">
+
+    <article
+      *ngFor="
+        let product of products()
+      ">
+
+      <button
+        type="button"
+        class="image-button"
+        (click)="open(product)">
+
+        <img
+          [src]="api.imageUrl(
+            product.image ||
+            product.cardImage
+          )"
+          [alt]="product.name">
+
+      </button>
+
+      <div class="info">
+
+        <small>
+          {{ product.brand || 'Device' }}
+
+          <ng-container
+            *ngIf="product.grade">
+            · {{ product.grade }}
+          </ng-container>
+        </small>
+
+        <h3
+          (click)="open(product)">
+          {{ product.name }}
+        </h3>
+
+        <div class="price">
+          {{ money(product.daily) }}
+
+          <span>
+            / day
+          </span>
+        </div>
+
+        <div
+          class="stock"
+          [class.out]="
+            isOutOfStock(product)
+          ">
+
+          <ng-container
+            *ngIf="
+              !isOutOfStock(product)
+            ">
+            {{ product.stock }}
+            available
+          </ng-container>
+
+          <ng-container
+            *ngIf="
+              isOutOfStock(product)
+            ">
+            Out of stock
+          </ng-container>
+
+        </div>
+
+        <div class="actions">
+
+          <ion-button
+            size="small"
+            [disabled]="
+              isOutOfStock(product) ||
+              isMoving(product)
+            "
+            (click)="moveToCart(product)">
+
+            <ion-spinner
+              *ngIf="
+                isMoving(product)
+              "
+              slot="start"
+              name="crescent">
+            </ion-spinner>
+
+            <ion-icon
+              *ngIf="
+                !isMoving(product)
+              "
+              slot="start"
+              name="cart-outline">
+            </ion-icon>
+
+            {{
+              isMoving(product)
+                ? 'Moving...'
+                : 'Move to Cart'
+            }}
+
+          </ion-button>
+
+          <ion-button
+            size="small"
+            fill="clear"
+            color="danger"
+            [disabled]="
+              isRemoving(product) ||
+              isMoving(product)
+            "
+            (click)="remove(product)">
+
+            <ion-spinner
+              *ngIf="
+                isRemoving(product)
+              "
+              name="crescent">
+            </ion-spinner>
+
+            <ion-icon
+              *ngIf="
+                !isRemoving(product)
+              "
+              name="trash-outline">
+            </ion-icon>
+
+          </ion-button>
+
+        </div>
+
+      </div>
+
+    </article>
+
+  </div>
+
+</ion-content>

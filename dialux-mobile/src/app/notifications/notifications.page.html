@@ -1,0 +1,280 @@
+<ion-header>
+
+  <ion-toolbar>
+
+    <ion-buttons slot="start">
+
+      <ion-back-button
+        defaultHref="/tabs/profile">
+      </ion-back-button>
+
+    </ion-buttons>
+
+    <ion-title>
+      Notifications
+    </ion-title>
+
+  </ion-toolbar>
+
+</ion-header>
+
+<ion-content>
+
+  <div
+    class="state"
+    *ngIf="!auth.isLoggedIn()">
+
+    <ion-icon
+      name="notifications-outline">
+    </ion-icon>
+
+    <h2>
+      Sign in to view notifications
+    </h2>
+
+    <p>
+      Order updates, payments, and
+      important account alerts will
+      appear here.
+    </p>
+
+    <ion-button
+      (click)="login()">
+      Sign in
+    </ion-button>
+
+  </div>
+
+  <div
+    class="state"
+    *ngIf="
+      auth.isLoggedIn() &&
+      loading()
+    ">
+
+    <ion-spinner
+      name="crescent">
+    </ion-spinner>
+
+    <p>
+      Loading notifications...
+    </p>
+
+  </div>
+
+  <div
+    class="state"
+    *ngIf="
+      auth.isLoggedIn() &&
+      !loading() &&
+      error()
+    ">
+
+    <ion-icon
+      name="alert-circle-outline">
+    </ion-icon>
+
+    <h2>
+      Couldn't load notifications
+    </h2>
+
+    <p>
+      {{ error() }}
+    </p>
+
+    <ion-button
+      (click)="load()">
+      Try Again
+    </ion-button>
+
+  </div>
+
+  <div
+    class="state"
+    *ngIf="
+      auth.isLoggedIn() &&
+      !loading() &&
+      !error() &&
+      items().length === 0
+    ">
+
+    <ion-icon
+      name="notifications-off-outline">
+    </ion-icon>
+
+    <h2>
+      You're all caught up
+    </h2>
+
+    <p>
+      New order and account updates
+      will appear here.
+    </p>
+
+  </div>
+
+  <main
+    class="notifications-page"
+    *ngIf="
+      auth.isLoggedIn() &&
+      !loading() &&
+      !error() &&
+      items().length > 0
+    ">
+
+    <section class="notifications-header">
+
+      <div>
+
+        <span class="eyebrow">
+          Inbox
+        </span>
+
+        <h1>
+          Updates & Alerts
+        </h1>
+
+        <p>
+          {{
+            unread() === 0
+              ? 'No unread notifications'
+              : unread() +
+                (
+                  unread() === 1
+                    ? ' unread notification'
+                    : ' unread notifications'
+                )
+          }}
+        </p>
+
+      </div>
+
+      <ion-button
+        size="small"
+        fill="outline"
+        [disabled]="
+          unread() === 0 ||
+          markingAll()
+        "
+        (click)="readAll()">
+
+        <ion-spinner
+          *ngIf="markingAll()"
+          slot="start"
+          name="crescent">
+        </ion-spinner>
+
+        {{
+          markingAll()
+            ? 'Updating...'
+            : 'Mark All Read'
+        }}
+
+      </ion-button>
+
+    </section>
+
+    <section class="notification-list">
+
+      <button
+        type="button"
+        class="notification-card"
+        *ngFor="
+          let notification of items()
+        "
+        [class.unread]="
+          !notification.read
+        "
+        (click)="read(notification)">
+
+        <div
+          class="notification-icon"
+          [class.unread-icon]="
+            !notification.read
+          ">
+
+          <ion-icon
+            [name]="
+              getIcon(
+                notification.type
+              )
+            ">
+          </ion-icon>
+
+        </div>
+
+        <div class="notification-content">
+
+          <div class="notification-top">
+
+            <span class="type">
+              {{
+                getTypeLabel(
+                  notification.type
+                )
+              }}
+            </span>
+
+            <span
+              class="unread-dot"
+              *ngIf="
+                !notification.read
+              ">
+            </span>
+
+          </div>
+
+          <h2>
+            {{ notification.title }}
+          </h2>
+
+          <p>
+            {{ notification.message }}
+          </p>
+
+          <div class="notification-bottom">
+
+            <span class="time">
+
+              <ion-icon
+                name="time-outline">
+              </ion-icon>
+
+              {{
+                notification.createdAt
+                  | date:
+                    'MMM d, y, h:mm a'
+              }}
+
+            </span>
+
+            <ion-spinner
+              *ngIf="
+                isReading(
+                  notification
+                )
+              "
+              name="crescent">
+            </ion-spinner>
+
+            <ion-icon
+              *ngIf="
+                !isReading(
+                  notification
+                )
+              "
+              class="arrow"
+              name="chevron-forward-outline">
+            </ion-icon>
+
+          </div>
+
+        </div>
+
+      </button>
+
+    </section>
+
+  </main>
+
+</ion-content>

@@ -1,0 +1,531 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>
+      Cart
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <div
+    class="state"
+    *ngIf="!auth.isLoggedIn()">
+
+    <ion-icon
+      name="cart-outline">
+    </ion-icon>
+
+    <h2>
+      Sign in to view your cart
+    </h2>
+
+    <p>
+      Your rental items will appear here.
+    </p>
+
+    <ion-button
+      (click)="login()">
+      Sign in
+    </ion-button>
+
+  </div>
+
+  <div
+    class="state"
+    *ngIf="
+      auth.isLoggedIn() &&
+      loading()
+    ">
+
+    <ion-spinner
+      name="crescent">
+    </ion-spinner>
+
+    <p>
+      Loading cart...
+    </p>
+
+  </div>
+
+  <div
+    class="state"
+    *ngIf="
+      auth.isLoggedIn() &&
+      !loading() &&
+      error()
+    ">
+
+    <ion-icon
+      name="alert-circle-outline">
+    </ion-icon>
+
+    <h2>
+      Couldn't load cart
+    </h2>
+
+    <p>
+      {{ error() }}
+    </p>
+
+    <ion-button
+      (click)="load()">
+      Try Again
+    </ion-button>
+
+  </div>
+
+  <ng-container
+    *ngIf="
+      auth.isLoggedIn() &&
+      !loading() &&
+      !error() &&
+      cart() as c
+    ">
+
+    <div
+      class="state"
+      *ngIf="
+        c.lines.length === 0
+      ">
+
+      <ion-icon
+        name="cart-outline">
+      </ion-icon>
+
+      <h2>
+        Your cart is empty
+      </h2>
+
+      <p>
+        Add a device to start your rental.
+      </p>
+
+      <ion-button
+        (click)="browseDevices()">
+        Browse Devices
+      </ion-button>
+
+    </div>
+
+    <main
+      class="cart"
+      *ngIf="
+        c.lines.length > 0
+      ">
+
+      <section class="items">
+
+        <article
+          *ngFor="
+            let line of c.lines
+          ">
+
+          <div class="device-image">
+
+            <img
+              [src]="
+                api.imageUrl(
+                  line.image
+                )
+              "
+              [alt]="line.name">
+
+          </div>
+
+          <div class="device-info">
+
+            <div class="device-meta">
+
+              <span
+                *ngIf="line.brand">
+                {{ line.brand }}
+              </span>
+
+              <span
+                *ngIf="line.grade">
+                {{ line.grade }}
+              </span>
+
+            </div>
+
+            <h3>
+              {{ line.name }}
+            </h3>
+
+            <div class="plan-row">
+
+              <label>
+                Rental plan
+              </label>
+
+              <ion-select
+                interface="popover"
+                [value]="line.plan"
+                [disabled]="
+                  isUpdating(line)
+                "
+                (ionChange)="
+                  changePlan(
+                    line,
+                    $event.detail.value
+                  )
+                ">
+
+                <ion-select-option
+                  value="Daily">
+                  Daily
+                </ion-select-option>
+
+                <ion-select-option
+                  value="Weekly">
+                  Weekly
+                </ion-select-option>
+
+                <ion-select-option
+                  value="Monthly">
+                  Monthly
+                </ion-select-option>
+
+              </ion-select>
+
+            </div>
+
+            <div class="rate">
+              {{ money(line.rate) }}
+              ×
+              {{ line.qty }}
+            </div>
+
+            <div class="line-total">
+              Rent:
+              <strong>
+                {{
+                  money(
+                    line.rentSubtotal
+                  )
+                }}
+              </strong>
+            </div>
+
+            <div class="qty-row">
+
+              <ion-button
+                size="small"
+                fill="outline"
+                [disabled]="
+                  line.qty <= 1 ||
+                  isUpdating(line)
+                "
+                (click)="
+                  changeQuantity(
+                    line,
+                    -1
+                  )
+                ">
+
+                <ion-icon
+                  name="remove-outline">
+                </ion-icon>
+
+              </ion-button>
+
+              <span class="qty-value">
+                {{ line.qty }}
+              </span>
+
+              <ion-button
+                size="small"
+                fill="outline"
+                [disabled]="
+                  line.qty >= line.stock ||
+                  isUpdating(line)
+                "
+                (click)="
+                  changeQuantity(
+                    line,
+                    1
+                  )
+                ">
+
+                <ion-icon
+                  name="add-outline">
+                </ion-icon>
+
+              </ion-button>
+
+              <ion-spinner
+                *ngIf="
+                  isUpdating(line)
+                "
+                name="crescent">
+              </ion-spinner>
+
+              <ion-button
+                size="small"
+                fill="clear"
+                color="danger"
+                [disabled]="
+                  isUpdating(line)
+                "
+                (click)="remove(line)">
+
+                <ion-icon
+                  name="trash-outline">
+                </ion-icon>
+
+              </ion-button>
+
+            </div>
+
+            <small class="stock">
+              {{ line.stock }} available
+            </small>
+
+          </div>
+
+        </article>
+
+      </section>
+
+      <section class="rental-card">
+
+        <div class="section-heading">
+
+          <div>
+            <h2>
+              Rental Period
+            </h2>
+
+            <p>
+              Choose when you need
+              the devices.
+            </p>
+          </div>
+
+          <ion-icon
+            name="calendar-outline">
+          </ion-icon>
+
+        </div>
+
+        <div class="dates">
+
+          <label>
+
+            <span>
+              Start date
+            </span>
+
+            <input
+              type="date"
+              [min]="minStartDate"
+              [(ngModel)]="
+                startDate
+              "
+              (change)="
+                onStartDateChange()
+              ">
+
+          </label>
+
+          <label>
+
+            <span>
+              End date
+            </span>
+
+            <input
+              type="date"
+              [min]="minEndDate"
+              [(ngModel)]="
+                endDate
+              "
+              (change)="
+                onEndDateChange()
+              ">
+
+          </label>
+
+        </div>
+
+        <ion-button
+          expand="block"
+          fill="outline"
+          [disabled]="
+            datesUpdating()
+          "
+          (click)="
+            updateRentalDates()
+          ">
+
+          <ion-spinner
+            *ngIf="
+              datesUpdating()
+            "
+            slot="start"
+            name="crescent">
+          </ion-spinner>
+
+          {{
+            datesUpdating()
+              ? 'Updating...'
+              : 'Apply Rental Dates'
+          }}
+
+        </ion-button>
+
+        <div
+          class="days"
+          *ngIf="
+            c.startDate &&
+            c.endDate
+          ">
+
+          Rental duration:
+          <strong>
+            {{ c.days }}
+            {{
+              c.days === 1
+                ? 'day'
+                : 'days'
+            }}
+          </strong>
+
+        </div>
+
+      </section>
+
+      <section class="protection-card">
+
+        <div>
+
+          <h2>
+            Device Protection
+          </h2>
+
+          <p>
+            Optional protection for
+            your rental.
+          </p>
+
+          <strong>
+            +{{
+              money(
+                c.protectionQuote
+              )
+            }}
+          </strong>
+
+        </div>
+
+        <ion-toggle
+          [checked]="
+            c.protection
+          "
+          [disabled]="
+            protectionUpdating()
+          "
+          (ionChange)="
+            toggleProtection(
+              $event.detail.checked
+            )
+          ">
+        </ion-toggle>
+
+      </section>
+
+      <section class="summary">
+
+        <h2>
+          Order Summary
+        </h2>
+
+        <div>
+
+          <span>
+            Rent
+          </span>
+
+          <b>
+            {{ money(c.rent) }}
+          </b>
+
+        </div>
+
+        <div>
+
+          <span>
+            Security deposit
+          </span>
+
+          <b>
+            {{ money(c.deposit) }}
+          </b>
+
+        </div>
+
+        <div>
+
+          <span>
+            Delivery
+          </span>
+
+          <b>
+            {{ money(c.delivery) }}
+          </b>
+
+        </div>
+
+        <div
+          *ngIf="
+            c.protection
+          ">
+
+          <span>
+            Protection
+          </span>
+
+          <b>
+            {{
+              money(
+                c.protectionFee
+              )
+            }}
+          </b>
+
+        </div>
+
+        <div class="total">
+
+          <span>
+            Total
+          </span>
+
+          <b>
+            {{ money(c.total) }}
+          </b>
+
+        </div>
+
+        <ion-button
+          expand="block"
+          size="large"
+          (click)="checkout()">
+
+          Continue to Checkout
+
+          <ion-icon
+            slot="end"
+            name="arrow-forward-outline">
+          </ion-icon>
+
+        </ion-button>
+
+      </section>
+
+    </main>
+
+  </ng-container>
+
+</ion-content>

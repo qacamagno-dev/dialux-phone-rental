@@ -1,0 +1,189 @@
+<ion-content [fullscreen]="true">
+
+  <main class="auth-page">
+
+    <section class="brand">
+
+      <button
+        type="button"
+        class="back-button"
+        (click)="goHome()">
+
+        <ion-icon
+          name="arrow-back-outline">
+        </ion-icon>
+
+      </button>
+
+      <div class="logo-mark">
+        D
+      </div>
+
+      <h1>
+        Create account
+      </h1>
+
+      <p>
+        Create your DiaLux account
+        and start renting.
+      </p>
+
+    </section>
+
+    <section class="auth-card">
+
+      <form
+        (ngSubmit)="submit()">
+
+        <ion-item
+          lines="none"
+          class="field">
+
+          <ion-icon
+            slot="start"
+            name="person-outline">
+          </ion-icon>
+
+          <ion-input
+            label="Full name"
+            labelPlacement="stacked"
+            type="text"
+            autocomplete="name"
+            placeholder="Your name"
+            [(ngModel)]="name"
+            name="name">
+          </ion-input>
+
+        </ion-item>
+
+        <ion-item
+          lines="none"
+          class="field">
+
+          <ion-icon
+            slot="start"
+            name="mail-outline">
+          </ion-icon>
+
+          <ion-input
+            label="Email"
+            labelPlacement="stacked"
+            type="email"
+            inputmode="email"
+            autocomplete="email"
+            placeholder="you@example.com"
+            [(ngModel)]="email"
+            name="email">
+          </ion-input>
+
+        </ion-item>
+
+        <ion-item
+          lines="none"
+          class="field">
+
+          <ion-icon
+            slot="start"
+            name="lock-closed-outline">
+          </ion-icon>
+
+          <ion-input
+            label="Password"
+            labelPlacement="stacked"
+            [type]="
+              showPassword
+                ? 'text'
+                : 'password'
+            "
+            autocomplete="new-password"
+            placeholder="Create password"
+            [(ngModel)]="password"
+            name="password">
+          </ion-input>
+
+          <ion-button
+            type="button"
+            slot="end"
+            fill="clear"
+            (click)="togglePassword()">
+
+            <ion-icon
+              slot="icon-only"
+              [name]="
+                showPassword
+                  ? 'eye-off-outline'
+                  : 'eye-outline'
+              ">
+            </ion-icon>
+
+          </ion-button>
+
+        </ion-item>
+
+        <ion-item
+          lines="none"
+          class="field">
+
+          <ion-icon
+            slot="start"
+            name="shield-checkmark-outline">
+          </ion-icon>
+
+          <ion-input
+            label="Confirm password"
+            labelPlacement="stacked"
+            [type]="
+              showPassword
+                ? 'text'
+                : 'password'
+            "
+            autocomplete="new-password"
+            placeholder="Repeat password"
+            [(ngModel)]="confirmPassword"
+            name="confirmPassword">
+          </ion-input>
+
+        </ion-item>
+
+        <ion-button
+          type="submit"
+          expand="block"
+          size="large"
+          class="submit-button"
+          [disabled]="submitting()">
+
+          <ion-spinner
+            *ngIf="submitting()"
+            slot="start"
+            name="crescent">
+          </ion-spinner>
+
+          {{
+            submitting()
+              ? 'Creating account...'
+              : 'Create account'
+          }}
+
+        </ion-button>
+
+      </form>
+
+      <div class="login-row">
+
+        <span>
+          Already registered?
+        </span>
+
+        <button
+          type="button"
+          (click)="openLogin()">
+          Sign in
+        </button>
+
+      </div>
+
+    </section>
+
+  </main>
+
+</ion-content>

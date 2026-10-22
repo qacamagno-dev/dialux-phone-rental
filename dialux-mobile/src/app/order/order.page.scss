@@ -1,0 +1,594 @@
+ion-content {
+  --background: #f4f6fa;
+  --color: #111827;
+}
+
+ion-toolbar {
+  --background: #1f1f1f;
+  --color: #ffffff;
+}
+
+.order-page {
+  width: 100%;
+  max-width: 560px;
+
+  margin: 0 auto;
+
+  padding:
+    14px
+    14px
+    40px;
+}
+
+/* HERO */
+
+.order-hero {
+  margin-bottom: 14px;
+
+  padding: 20px;
+
+  border-radius: 20px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #172554,
+      #2563eb
+    );
+
+  color: #ffffff;
+
+  box-shadow:
+    0 10px 25px
+    rgba(37, 99, 235, 0.22);
+}
+
+.hero-top {
+  display: flex;
+
+  align-items: flex-start;
+
+  justify-content: space-between;
+
+  gap: 12px;
+}
+
+.eyebrow {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color:
+    rgba(
+      255,
+      255,
+      255,
+      0.7
+    );
+
+  font-size: 0.68rem;
+
+  text-transform: uppercase;
+}
+
+.invoice {
+  display: block;
+
+  color: #ffffff;
+
+  font-size: 1rem;
+
+  word-break: break-word;
+}
+
+.status-badge {
+  display: inline-flex;
+
+  flex: 0 0 auto;
+
+  align-items: center;
+
+  padding:
+    6px
+    10px;
+
+  border-radius: 999px;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.18
+    );
+
+  color: #ffffff;
+
+  font-size: 0.7rem;
+
+  font-weight: 800;
+}
+
+.status-badge.success {
+  background: #dcfce7;
+
+  color: #166534;
+}
+
+.status-badge.danger {
+  background: #fee2e2;
+
+  color: #b91c1c;
+}
+
+.status-badge.warning {
+  background: #fef3c7;
+
+  color: #92400e;
+}
+
+.status-badge.primary {
+  background: #dbeafe;
+
+  color: #1d4ed8;
+}
+
+.hero-date {
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  margin-top: 18px;
+
+  color:
+    rgba(
+      255,
+      255,
+      255,
+      0.9
+    );
+
+  font-size: 0.78rem;
+}
+
+.hero-date ion-icon {
+  font-size: 18px;
+}
+
+/* CARDS */
+
+.card {
+  margin-bottom: 14px;
+
+  padding: 18px;
+
+  border:
+    1px solid #e5e7eb;
+
+  border-radius: 18px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 4px 14px
+    rgba(15, 23, 42, 0.05);
+}
+
+.card-title {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 12px;
+
+  margin-bottom: 16px;
+}
+
+.card-title h2 {
+  margin:
+    0
+    0
+    4px;
+
+  color: #111827;
+
+  font-size: 1rem;
+
+  font-weight: 800;
+}
+
+.card-title p {
+  margin: 0;
+
+  color: #64748b;
+
+  font-size: 0.72rem;
+}
+
+.card-title > ion-icon {
+  color:
+    var(--ion-color-primary);
+
+  font-size: 24px;
+}
+
+/* DEVICE */
+
+.device-card {
+  display: flex;
+
+  align-items: center;
+
+  gap: 13px;
+
+  padding:
+    10px
+    0;
+
+  border-bottom:
+    1px solid #eef2f7;
+}
+
+.device-card:last-child {
+  border-bottom: 0;
+}
+
+.device-image {
+  display: flex;
+
+  width: 82px;
+  height: 82px;
+
+  flex: 0 0 auto;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border-radius: 13px;
+
+  background: #f8fafc;
+}
+
+.device-image img {
+  width: 100%;
+  height: 100%;
+
+  padding: 7px;
+
+  object-fit: contain;
+}
+
+.device-info {
+  flex: 1;
+
+  min-width: 0;
+}
+
+.device-info h3 {
+  margin:
+    0
+    0
+    6px;
+
+  color: #111827;
+
+  font-size: 0.95rem;
+
+  font-weight: 800;
+}
+
+.device-meta {
+  display: flex;
+
+  gap: 7px;
+
+  margin-bottom: 6px;
+}
+
+.device-meta span {
+  padding:
+    3px
+    7px;
+
+  border-radius: 7px;
+
+  background: #f1f5f9;
+
+  color: #64748b;
+
+  font-size: 0.67rem;
+}
+
+.device-info strong {
+  color:
+    var(--ion-color-primary);
+
+  font-size: 0.85rem;
+}
+
+/* DETAILS */
+
+.detail-row {
+  display: flex;
+
+  align-items: flex-start;
+
+  justify-content: space-between;
+
+  gap: 16px;
+
+  padding:
+    8px
+    0;
+
+  color: #64748b;
+
+  font-size: 0.79rem;
+}
+
+.detail-row strong {
+  max-width: 60%;
+
+  color: #111827;
+
+  font-weight: 700;
+
+  text-align: right;
+
+  word-break: break-word;
+}
+
+.address-box {
+  display: flex;
+
+  gap: 11px;
+
+  margin:
+    7px
+    0;
+
+  padding: 13px;
+
+  border-radius: 13px;
+
+  background: #f8fafc;
+}
+
+.address-box > ion-icon {
+  flex: 0 0 auto;
+
+  color:
+    var(--ion-color-primary);
+
+  font-size: 21px;
+}
+
+.address-box div {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 4px;
+}
+
+.address-box span {
+  color: #64748b;
+
+  font-size: 0.68rem;
+}
+
+.address-box strong {
+  color: #111827;
+
+  font-size: 0.79rem;
+
+  line-height: 1.4;
+}
+
+.payment-status {
+  padding:
+    4px
+    8px;
+
+  border-radius: 999px;
+
+  background: #fef3c7;
+
+  color: #92400e !important;
+
+  font-size: 0.68rem;
+}
+
+.payment-status.paid {
+  background: #dcfce7;
+
+  color: #166534 !important;
+}
+
+.detail-total {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 15px;
+
+  margin-top: 9px;
+
+  padding-top: 14px;
+
+  border-top:
+    1px solid #e5e7eb;
+
+  color: #111827;
+
+  font-size: 0.95rem;
+
+  font-weight: 800;
+}
+
+.detail-total strong {
+  color:
+    var(--ion-color-primary);
+
+  font-size: 1.1rem;
+}
+
+/* TIMELINE */
+
+.timeline {
+  padding-top: 2px;
+}
+
+.timeline-item {
+  display: flex;
+
+  gap: 12px;
+}
+
+.timeline-marker {
+  display: flex;
+
+  width: 14px;
+
+  flex-direction: column;
+
+  align-items: center;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+
+  flex: 0 0 auto;
+
+  border-radius: 50%;
+
+  background:
+    var(--ion-color-primary);
+}
+
+.line {
+  width: 2px;
+
+  min-height: 60px;
+
+  flex: 1;
+
+  background: #dbeafe;
+}
+
+.timeline-content {
+  flex: 1;
+
+  padding-bottom: 20px;
+}
+
+.timeline-content strong {
+  display: block;
+
+  margin-bottom: 4px;
+
+  color: #111827;
+
+  font-size: 0.82rem;
+}
+
+.timeline-content small {
+  display: block;
+
+  color: #94a3b8;
+
+  font-size: 0.67rem;
+}
+
+.timeline-content p {
+  margin:
+    6px
+    0
+    0;
+
+  color: #64748b;
+
+  font-size: 0.73rem;
+
+  line-height: 1.4;
+}
+
+/* ACTIONS */
+
+.actions {
+  display: grid;
+
+  gap: 9px;
+
+  margin-top: 4px;
+}
+
+.actions ion-button {
+  min-height: 48px;
+
+  --border-radius: 13px;
+
+  font-size: 0.82rem;
+
+  font-weight: 700;
+}
+
+/* STATE */
+
+.state {
+  display: flex;
+
+  min-height: 70vh;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 10px;
+
+  padding: 30px;
+
+  color: #64748b;
+
+  text-align: center;
+}
+
+.state ion-icon {
+  font-size: 44px;
+}
+
+.state h2 {
+  margin: 0;
+
+  color: #111827;
+}
+
+@media (max-width: 390px) {
+
+  .order-page {
+    padding:
+      10px
+      10px
+      34px;
+  }
+
+  .card,
+  .order-hero {
+    padding: 15px;
+  }
+
+  .device-image {
+    width: 72px;
+    height: 72px;
+  }
+}

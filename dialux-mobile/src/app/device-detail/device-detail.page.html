@@ -1,0 +1,510 @@
+<ion-header>
+
+  <ion-toolbar>
+
+    <ion-buttons slot="start">
+
+      <ion-back-button
+        defaultHref="/tabs/devices">
+      </ion-back-button>
+
+    </ion-buttons>
+
+    <ion-title>
+      Device Details
+    </ion-title>
+
+  </ion-toolbar>
+
+</ion-header>
+
+
+<ion-content>
+
+  <div
+    class="state"
+    *ngIf="loading()">
+
+    <ion-spinner
+      name="crescent">
+    </ion-spinner>
+
+    <p>
+      Loading device...
+    </p>
+
+  </div>
+
+
+  <div
+    class="state"
+    *ngIf="
+      !loading() &&
+      error()
+    ">
+
+    <ion-icon
+      name="alert-circle-outline">
+    </ion-icon>
+
+    <h2>
+      Device unavailable
+    </h2>
+
+    <p>
+      {{ error() }}
+    </p>
+
+  </div>
+
+
+  <main
+    class="device-page"
+    *ngIf="
+      !loading() &&
+      !error() &&
+      product() as p
+    ">
+
+    <!-- IMAGE -->
+
+    <section class="image-card">
+
+      <img
+        [src]="
+          api.imageUrl(
+            p.image ||
+            p.cardImage
+          )
+        "
+        [alt]="
+          p.name ||
+          'Rental device'
+        ">
+
+    </section>
+
+
+    <!-- PRODUCT INFO -->
+
+    <section class="device-heading">
+
+      <div class="tags">
+
+        <span
+          *ngIf="p.brand">
+          {{ p.brand }}
+        </span>
+
+        <span
+          *ngIf="p.grade">
+          {{ p.grade }}
+        </span>
+
+        <span
+          class="stock"
+          [class.out]="
+            (p.stock || 0) <= 0
+          ">
+
+          {{
+            (p.stock || 0) > 0
+              ? (p.stock + ' available')
+              : 'Out of stock'
+          }}
+
+        </span>
+
+      </div>
+
+      <h1>
+        {{ p.name }}
+      </h1>
+
+      <p
+        class="description"
+        *ngIf="p.description">
+
+        {{ p.description }}
+
+      </p>
+
+    </section>
+
+
+    <!-- PRICES -->
+
+    <section class="price-grid">
+
+      <button
+        type="button"
+        class="price-card"
+        [class.selected]="
+          isSelected('Daily')
+        "
+        [class.disabled]="
+          !isPlanAvailable('Daily')
+        "
+        (click)="
+          selectPlan('Daily')
+        ">
+
+        <span>
+          Daily
+        </span>
+
+        <strong>
+          {{ money(p.daily) }}
+        </strong>
+
+        <small>
+          per day
+        </small>
+
+        <ion-icon
+          *ngIf="
+            isSelected('Daily')
+          "
+          name="checkmark-circle">
+        </ion-icon>
+
+      </button>
+
+
+      <button
+        type="button"
+        class="price-card"
+        [class.selected]="
+          isSelected('Weekly')
+        "
+        [class.disabled]="
+          !isPlanAvailable('Weekly')
+        "
+        (click)="
+          selectPlan('Weekly')
+        ">
+
+        <span>
+          Weekly
+        </span>
+
+        <strong>
+          {{ money(p.weekly) }}
+        </strong>
+
+        <small>
+          per week
+        </small>
+
+        <ion-icon
+          *ngIf="
+            isSelected('Weekly')
+          "
+          name="checkmark-circle">
+        </ion-icon>
+
+      </button>
+
+
+      <button
+        type="button"
+        class="price-card"
+        [class.selected]="
+          isSelected('Monthly')
+        "
+        [class.disabled]="
+          !isPlanAvailable('Monthly')
+        "
+        (click)="
+          selectPlan('Monthly')
+        ">
+
+        <span>
+          Monthly
+        </span>
+
+        <strong>
+          {{ money(p.monthly) }}
+        </strong>
+
+        <small>
+          per month
+        </small>
+
+        <ion-icon
+          *ngIf="
+            isSelected('Monthly')
+          "
+          name="checkmark-circle">
+        </ion-icon>
+
+      </button>
+
+    </section>
+
+
+    <!-- SELECTED RENTAL -->
+
+    <section class="selected-rental-card">
+
+      <div class="selected-icon">
+
+        <ion-icon
+          name="calendar-outline">
+        </ion-icon>
+
+      </div>
+
+      <div class="selected-copy">
+
+        <span>
+          Selected rental plan
+        </span>
+
+        <strong>
+          {{ selectedPlan() }}
+        </strong>
+
+      </div>
+
+      <div class="selected-price">
+
+        <strong>
+          {{ money(selectedPrice()) }}
+        </strong>
+
+        <span>
+          {{
+            selectedPlan() === 'Daily'
+              ? '/ day'
+              : (
+                  selectedPlan() === 'Weekly'
+                    ? '/ week'
+                    : '/ month'
+                )
+          }}
+        </span>
+
+      </div>
+
+    </section>
+
+
+    <!-- DEPOSIT -->
+
+    <section
+      class="deposit-card"
+      *ngIf="
+        p.deposit ||
+        p.securityDeposit
+      ">
+
+      <div>
+
+        <span>
+          Security Deposit
+        </span>
+
+        <strong>
+          {{
+            money(
+              selectedPlan() === 'Daily'
+                ? 500
+                : (
+                    selectedPlan() === 'Weekly'
+                      ? 2500
+                      : 5000
+                  )
+            )
+          }}
+        </strong>
+
+      </div>
+
+      <ion-icon
+        name="shield-checkmark-outline">
+      </ion-icon>
+
+    </section>
+
+
+    <!-- SPECS -->
+
+    <section
+      class="info-card"
+      *ngIf="
+        specsList().length > 0
+      ">
+
+      <h2>
+        Specifications
+      </h2>
+
+      <div
+        class="spec-row"
+        *ngFor="
+          let spec of specsList()
+        ">
+
+        <span>
+          {{ spec.label }}
+        </span>
+
+        <strong>
+          {{ spec.value }}
+        </strong>
+
+      </div>
+
+    </section>
+
+
+    <!-- INCLUDED -->
+
+    <section
+      class="info-card"
+      *ngIf="
+        includedItems().length > 0
+      ">
+
+      <h2>
+        What's Included
+      </h2>
+
+      <div
+        class="included-item"
+        *ngFor="
+          let item of includedItems()
+        ">
+
+        <ion-icon
+          name="checkmark-circle-outline">
+        </ion-icon>
+
+        <span>
+          {{ item }}
+        </span>
+
+      </div>
+
+    </section>
+
+
+    <div class="action-space">
+    </div>
+
+  </main>
+
+</ion-content>
+
+
+<div
+  class="bottom-actions"
+  *ngIf="
+    !loading() &&
+    !error() &&
+    product() as p
+  ">
+
+  <ion-button
+    class="wishlist-button"
+    fill="outline"
+    [disabled]="
+      addingWishlist() ||
+      orderingNow()
+    "
+    (click)="
+      addToWishlist()
+    ">
+
+    <ion-spinner
+      *ngIf="
+        addingWishlist()
+      "
+      name="crescent">
+    </ion-spinner>
+
+    <ion-icon
+      *ngIf="
+        !addingWishlist()
+      "
+      slot="icon-only"
+      name="heart-outline">
+    </ion-icon>
+
+  </ion-button>
+
+
+  <ion-button
+    class="cart-button"
+    fill="outline"
+    [disabled]="
+      addingCart() ||
+      orderingNow() ||
+      (p.stock || 0) <= 0
+    "
+    (click)="
+      addToCart()
+    ">
+
+    <ion-spinner
+      *ngIf="
+        addingCart()
+      "
+      slot="start"
+      name="crescent">
+    </ion-spinner>
+
+    <ion-icon
+      *ngIf="
+        !addingCart()
+      "
+      slot="start"
+      name="cart-outline">
+    </ion-icon>
+
+    {{
+      addingCart()
+        ? 'Adding...'
+        : 'Add to Cart'
+    }}
+
+  </ion-button>
+
+
+  <ion-button
+    class="order-now-button"
+    [disabled]="
+      orderingNow() ||
+      addingCart() ||
+      (p.stock || 0) <= 0
+    "
+    (click)="
+      orderNow()
+    ">
+
+    <ion-spinner
+      *ngIf="
+        orderingNow()
+      "
+      slot="start"
+      name="crescent">
+    </ion-spinner>
+
+    <ion-icon
+      *ngIf="
+        !orderingNow()
+      "
+      slot="start"
+      name="flash-outline">
+    </ion-icon>
+
+    {{
+      orderingNow()
+        ? 'Preparing...'
+        : 'Order Now'
+    }}
+
+  </ion-button>
+
+</div>
