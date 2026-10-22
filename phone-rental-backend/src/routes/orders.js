@@ -224,6 +224,51 @@ async function dispatchBestEffort(
   }
 }
 
+
+function rentalDepositFor(
+  product,
+  plan
+) {
+  const daily =
+    Math.max(
+      0,
+      Number(product?.daily) || 0
+    );
+
+  const weekly =
+    Math.max(
+      0,
+      Number(product?.weekly) || 0
+    );
+
+  const monthly =
+    Math.max(
+      0,
+      Number(product?.monthly) || 0
+    );
+
+  if (
+    plan === 'Daily'
+  ) {
+    return Math.round(
+      daily * 2
+    );
+  }
+
+  if (
+    plan === 'Monthly'
+  ) {
+    return Math.round(
+      monthly * 0.5
+    );
+  }
+
+  return Math.round(
+    weekly
+  );
+}
+
+
 /* ============================================================
    ORDER DECORATION
    ============================================================ */
@@ -1142,7 +1187,10 @@ router.post(
             ),
 
           deposit:
-            product.deposit,
+            rentalDepositFor(
+              product,
+              line.plan
+            ),
         });
       }
 
@@ -1616,8 +1664,15 @@ router.post(
         qty;
 
 
+      const unitDeposit =
+        rentalDepositFor(
+          product,
+          plan
+        );
+
+
       const deposit =
-        product.deposit *
+        unitDeposit *
         qty;
 
 
@@ -1677,7 +1732,7 @@ router.post(
               rate,
 
               deposit:
-                product.deposit,
+                unitDeposit,
             },
           ],
 
