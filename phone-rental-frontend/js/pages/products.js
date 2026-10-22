@@ -336,7 +336,13 @@ function renderDetail(id) {
           </div>
 
           <div class="detail-summary">
-            <div>Refundable deposit<b>${peso(p.deposit)}</b></div>
+            <div>Refundable deposit<b id="depositLabel">${peso(
+    detailPlan === 'Daily'
+      ? 500
+      : detailPlan === 'Weekly'
+        ? 2500
+        : 5000
+  )}</b></div>
             <div>Condition grade<b>${escapeHtml(p.grade)}</b></div>
             <div>Units available<b>${p.stock}</b></div>
             <div>Selected plan<b id="planLabel">${escapeHtml(detailPlan)} · ${peso(rateFor(p, detailPlan))}</b></div>
@@ -376,6 +382,28 @@ function renderDetail(id) {
       </div>
     </div>
   </div>`;
+
+
+  wrap.querySelector('#rateSelector')?.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-plan]');
+    if (!button) return;
+
+    const plan = button.dataset.plan;
+
+    const deposit =
+      plan === 'Daily'
+        ? 500
+        : plan === 'Weekly'
+          ? 2500
+          : 5000;
+
+    const depositLabel =
+      wrap.querySelector('#depositLabel');
+
+    if (depositLabel) {
+      depositLabel.textContent = peso(deposit);
+    }
+  });
 
   wrap.querySelector('#backToCatalog').addEventListener('click', () => {
     history.pushState('', '', location.pathname);

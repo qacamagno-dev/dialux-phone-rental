@@ -382,7 +382,7 @@ function itemMarkup(p, days) {
 
     <div class="cart-info">
       <h4>${escapeHtml(p.name)}</h4>
-      <span>${escapeHtml(catLabel(p.cat))} · ${escapeHtml(p.grade || '')} · deposit ${peso(p.deposit)}</span>
+      <span>${escapeHtml(catLabel(p.cat))} · ${escapeHtml(p.grade || '')} · deposit ${peso(depositForDays(days))}</span>
       <div style="margin-top:8px;font-size:.8rem;color:var(--ink-faint);">
         ${peso(rate)} total · ${days} day${days === 1 ? '' : 's'} ·
         <span class="plan-tier-tag">${escapeHtml(planLabelFor(days))}</span>
@@ -446,6 +446,19 @@ function stepIndicator() {
     </div>`;
 }
 
+
+function depositForDays(days) {
+  const rentalDays = Math.max(
+    1,
+    Number(days) || 1
+  );
+
+  if (rentalDays >= 28) return 5000;
+  if (rentalDays >= 7) return 2500;
+
+  return 500;
+}
+
 function summaryMarkup(p, days) {
   const profile = currentProfile();
   const hasAddress = Boolean(profile?.address) || currentAddresses().length > 0;
@@ -454,7 +467,7 @@ function summaryMarkup(p, days) {
 
   const rate = bestValue(p, days);
   const rent = rate * qty;
-  const deposit = p.deposit * qty;
+  const deposit = depositForDays(days) * qty;
   const fulfilmentFee = orderTypeFeeFor(orderType, rent);
   const pct = Number(state.settings?.protectionFeePct) || 0;
   const protectionQuote = protectionFeeFor(rent);
