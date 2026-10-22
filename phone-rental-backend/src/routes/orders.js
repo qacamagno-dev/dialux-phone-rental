@@ -229,43 +229,19 @@ function rentalDepositFor(
   product,
   plan
 ) {
-  const daily =
-    Math.max(
-      0,
-      Number(product?.daily) || 0
-    );
-
-  const weekly =
-    Math.max(
-      0,
-      Number(product?.weekly) || 0
-    );
-
-  const monthly =
-    Math.max(
-      0,
-      Number(product?.monthly) || 0
-    );
-
   if (
     plan === 'Daily'
   ) {
-    return Math.round(
-      daily * 2
-    );
+    return 500;
   }
 
   if (
     plan === 'Monthly'
   ) {
-    return Math.round(
-      monthly * 0.5
-    );
+    return 5000;
   }
 
-  return Math.round(
-    weekly
-  );
+  return 2500;
 }
 
 
