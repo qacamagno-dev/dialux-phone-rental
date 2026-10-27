@@ -29,6 +29,7 @@
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "firebase-admin": "^13.10.0",
     "google-auth-library": "^11.0.2",
     "groq-sdk": "^1.6.0",
     "jsonwebtoken": "^9.0.3",
