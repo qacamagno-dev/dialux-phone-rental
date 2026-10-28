@@ -15,7 +15,8 @@ const { audit, diff } = require('../services/audit');
 
 const {
   ROLES,
-  MIN_PASSWORD
+  MIN_PASSWORD,
+  TERMS_VERSION
 } = require('../constants');
 
 
@@ -80,6 +81,237 @@ function pickAddressFields(body) {
 /* ============================================================
    ACCOUNT DETAILS
    ============================================================ */
+
+
+/* ============================================================
+   CUSTOMER CONSENT
+   ============================================================ */
+
+
+/**
+ * Shared Terms + marketing preferences used by both the website and
+ * the Android app. The server owns the current Terms version so clients
+ * never need to guess whether an acceptance is still current.
+ */
+router.get(
+  '/me/consent',
+
+  async (
+    req,
+    res,
+    next
+  ) => {
+
+    try {
+
+      const user =
+        await User.findById(
+          req.userId
+        );
+
+      if (!user) {
+
+        return res
+          .status(401)
+          .json({
+            error:
+              'Account no longer exists'
+          });
+      }
+
+
+      const consents =
+        user.consents ||
+        {};
+
+
+      res.json({
+        currentTermsVersion:
+          TERMS_VERSION,
+
+        termsAccepted:
+          consents.termsVersion ===
+          TERMS_VERSION,
+
+        termsVersion:
+          consents.termsVersion ||
+          '',
+
+        termsAcceptedAt:
+          consents.termsAcceptedAt ||
+          null,
+
+        marketingEmails:
+          Boolean(
+            consents.marketingEmails
+          ),
+
+        marketingUpdatedAt:
+          consents.marketingUpdatedAt ||
+          null,
+      });
+
+    } catch (err) {
+
+      next(err);
+
+    }
+
+  }
+);
+
+
+router.patch(
+  '/me/consent',
+
+  async (
+    req,
+    res,
+    next
+  ) => {
+
+    try {
+
+      const user =
+        await User.findById(
+          req.userId
+        );
+
+      if (!user) {
+
+        return res
+          .status(401)
+          .json({
+            error:
+              'Account no longer exists'
+          });
+      }
+
+
+      const existing =
+        user.consents?.toObject?.() ||
+        user.consents ||
+        {};
+
+
+      const acceptedCurrent =
+        existing.termsVersion ===
+        TERMS_VERSION;
+
+
+      if (
+        !acceptedCurrent &&
+        req.body.acceptTerms !==
+          true
+      ) {
+
+        return res
+          .status(400)
+          .json({
+            error:
+              'Please accept the current Terms & Conditions to continue'
+          });
+      }
+
+
+      const now =
+        new Date();
+
+
+      const nextConsents = {
+        ...existing,
+      };
+
+
+      if (
+        req.body.acceptTerms ===
+        true &&
+        !acceptedCurrent
+      ) {
+
+        nextConsents.termsVersion =
+          TERMS_VERSION;
+
+        nextConsents.termsAcceptedAt =
+          now;
+      }
+
+
+      if (
+        req.body.marketingEmails !==
+        undefined
+      ) {
+
+        if (
+          typeof req.body.marketingEmails !==
+          'boolean'
+        ) {
+
+          return res
+            .status(400)
+            .json({
+              error:
+                'Marketing email preference must be true or false'
+            });
+        }
+
+
+        nextConsents.marketingEmails =
+          req.body.marketingEmails;
+
+        nextConsents.marketingUpdatedAt =
+          now;
+      }
+
+
+      user.consents =
+        nextConsents;
+
+
+      await user.save();
+
+
+      res.json({
+        ok:
+          true,
+
+        currentTermsVersion:
+          TERMS_VERSION,
+
+        termsAccepted:
+          user.consents?.termsVersion ===
+          TERMS_VERSION,
+
+        termsVersion:
+          user.consents?.termsVersion ||
+          '',
+
+        termsAcceptedAt:
+          user.consents?.termsAcceptedAt ||
+          null,
+
+        marketingEmails:
+          Boolean(
+            user.consents
+              ?.marketingEmails
+          ),
+
+        marketingUpdatedAt:
+          user.consents
+            ?.marketingUpdatedAt ||
+          null,
+
+        user,
+      });
+
+    } catch (err) {
+
+      next(err);
+
+    }
+
+  }
+);
 
 
 /**

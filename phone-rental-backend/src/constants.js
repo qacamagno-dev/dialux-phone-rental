@@ -202,6 +202,12 @@ const RESET_TOKEN_TTL_MIN = 60;
 
 const MIN_PASSWORD = 6;
 
+/* ---------------- customer consent ---------------- */
+
+// Bump this value whenever DiaLux materially changes the customer Terms & Conditions.
+// Customers who accepted an older version will be asked to review the new one once.
+const TERMS_VERSION = '2026-10-28';
+
 /* ---------------- helpers ---------------- */
 
 /**
@@ -303,6 +309,6 @@ module.exports = {
   ORDER_TYPES, PICKUP_HUBS, DELIVERY_FEE, MEETUP_FEE,
   DELIVERY_TYPES, DELIVERY_STATUSES,
   NOTIFICATION_TYPES, SUPPORT_STATUSES, SUPPORT_CATEGORIES,
-  PAGE_SLUGS, DEFAULT_SETTINGS, RESET_TOKEN_TTL_MIN, MIN_PASSWORD,
+  PAGE_SLUGS, DEFAULT_SETTINGS, RESET_TOKEN_TTL_MIN, MIN_PASSWORD, TERMS_VERSION,
   daysBetween, bestValue, protectionFeeFor, deliveryFeeFor, orderTypeFeeFor, looksLikeQC,
 };

@@ -392,6 +392,58 @@ function returnReminderMail({ to, name, order, currency = '₱' }) {
   return sendMail({ to, subject: 'Your DiaLux rental is due back soon', text, html });
 }
 
+
+function promotionMail({ to, name, title, message, link }) {
+  const safeLink = String(link || '').trim();
+  const target = safeLink
+    ? (safeLink.startsWith('http://') || safeLink.startsWith('https://')
+        ? safeLink
+        : `${appUrl()}${safeLink.startsWith('/') ? safeLink : `/${safeLink}`}`)
+    : `${appUrl()}/products.html`;
+
+  const body = `
+    <h2 style="margin-top:0;">Hi ${name || 'there'} 👋</h2>
+    <p>${message || 'There is something new waiting for you at DiaLux.'}</p>
+    <div class="details">
+      <strong>${title}</strong>
+      <p style="margin-bottom:0;color:#64748B;">Browse available devices and rental offers while stocks last.</p>
+    </div>
+    <p style="font-size:12px;color:#94A3B8;margin-top:24px;">
+      You received this because you opted in to DiaLux promotional emails.
+      You can change this anytime from your account profile.
+    </p>
+  `;
+
+  const text = [
+    `Hi ${name || 'there'},`,
+    '',
+    title,
+    message || 'There is something new waiting for you at DiaLux.',
+    '',
+    `See the offer: ${target}`,
+    '',
+    'You received this because you opted in to DiaLux promotional emails.',
+    'You can turn promotional emails off from your DiaLux profile.',
+    '',
+    '— DiaLux',
+  ].join('\n');
+
+  const html = emailShell({
+    title: '✨ DiaLux Promotion',
+    subtitle: title,
+    body,
+    cta: `<a href="${target}" class="button">View DiaLux Offer →</a>`,
+  });
+
+  return sendMail({
+    to,
+    subject: `DiaLux — ${title}`,
+    text,
+    html,
+  });
+}
+
+
 function supportReceiptMail({ to, name, ticket }) {
   const body = `
     <h2 style="margin-top:0;">We got your message ✅</h2>
@@ -428,6 +480,7 @@ module.exports = {
   paymentReceiptMail,
   returnReminderMail,
   supportReceiptMail,
+  promotionMail,
   currentTransport: () => resolveTransport(),
   mailDiagnostics,
 };

@@ -21,6 +21,18 @@ import {
   PushNotificationsService
 } from './core/push-notifications.service';
 
+import {
+  firstValueFrom
+} from 'rxjs';
+
+import {
+  Auth
+} from './core/auth';
+
+import {
+  UserConsentService
+} from './core/consent';
+
 
 @Component({
   selector:
@@ -55,7 +67,11 @@ export class AppComponent
     private router: Router,
     private zone: NgZone,
     private pushNotifications:
-      PushNotificationsService
+      PushNotificationsService,
+    private auth:
+      Auth,
+    private userConsent:
+      UserConsentService
   ) {
 
     void this.initializeApp();
@@ -70,6 +86,38 @@ export class AppComponent
 
     await this.pushNotifications
       .initialize();
+
+
+    /*
+     * Existing customers may already have a saved mobile session when this
+     * feature is deployed. Refresh the account once, then enforce the same
+     * Terms acceptance used by the website.
+     */
+    if (
+      this.auth.isLoggedIn()
+    ) {
+
+      try {
+
+        await firstValueFrom(
+          this.auth
+            .loadCurrentUser()
+        );
+
+
+        await this.userConsent
+          .ensureAccepted();
+
+      } catch (error) {
+
+        console.warn(
+          'Could not refresh customer consent state:',
+          error
+        );
+
+      }
+
+    }
 
 
     /*

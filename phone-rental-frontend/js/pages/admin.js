@@ -3924,6 +3924,23 @@ async function renderSettings(panel) {
 
       </div>
 
+      <label
+        class="protect-row"
+        style="margin-top:14px;"
+      >
+        <input
+          type="checkbox"
+          name="emailPromotion"
+        >
+
+        <span>
+          <b>Also email customers who opted in</b>
+          <small>
+            Available for Promotion announcements. Transactional emails are unaffected.
+          </small>
+        </span>
+      </label>
+
       <div style="margin-top:14px;">
         <button
           class="btn btn-primary btn-sm"
@@ -4126,14 +4143,25 @@ async function renderSettings(panel) {
               form.link.value.trim(),
 
             audience,
+
+            emailPromotion:
+              Boolean(
+                form.emailPromotion
+                  ?.checked
+              ),
           });
 
         done();
 
         form.reset();
 
+        const emailCopy =
+          res.emailPromotion
+            ? ` · promo email delivered to ${res.emailDelivered}/${res.emailRequested} opted-in customer${res.emailRequested === 1 ? '' : 's'}`
+            : '';
+
         toast(
-          `Announcement sent to ${res.sent} recipient${res.sent === 1 ? '' : 's'}`
+          `Announcement sent to ${res.sent} recipient${res.sent === 1 ? '' : 's'}${emailCopy}`
         );
       } catch (err) {
         done();

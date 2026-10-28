@@ -31,6 +31,13 @@ export interface AuthUser {
 
   hasPassword?: boolean;
 
+  consents?: {
+    termsVersion?: string;
+    termsAcceptedAt?: string | null;
+    marketingEmails?: boolean;
+    marketingUpdatedAt?: string | null;
+  };
+
 }
 
 
@@ -189,6 +196,27 @@ export class Auth {
         })
 
       );
+
+  }
+
+
+  replaceCurrentUser(
+    user:
+      AuthUser
+  ):
+    void {
+
+    localStorage.setItem(
+      this.userKey,
+      JSON.stringify(
+        user
+      )
+    );
+
+
+    this.currentUser.set(
+      user
+    );
 
   }
 

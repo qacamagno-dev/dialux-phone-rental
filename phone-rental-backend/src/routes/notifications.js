@@ -6,6 +6,7 @@ const auth = require('../middlewares/auth');
 const admin = require('../middlewares/admin');
 const { notifyMany } = require('../services/notify');
 const { audit } = require('../services/audit');
+const { promotionMail } = require('../services/mailer');
 const { NOTIFICATION_TYPES } = require('../constants');
 
 const router = express.Router();
@@ -109,11 +110,23 @@ router.post('/broadcast', auth, admin, async (req, res, next) => {
     const link = String(req.body.link || '').trim();
     const type = NOTIFICATION_TYPES.includes(req.body.type) ? req.body.type : 'promo';
     const audience = req.body.audience === 'admins' ? 'admins' : 'all';
+    const emailPromotion =
+      req.body.emailPromotion === true &&
+      type === 'promo' &&
+      audience === 'all';
 
     if (!title) return res.status(400).json({ error: 'A title is required' });
 
-    const filter = audience === 'admins' ? { role: 'admin' } : {};
-    const recipients = await User.find(filter).select('_id');
+    // "all" means customer accounts for announcements; staff dashboards
+    // receive their own operational notices separately.
+    const filter = audience === 'admins'
+      ? { role: 'admin' }
+      : { role: 'user' };
+
+    const recipients = await User.find(filter).select(
+      '_id name email consents'
+    );
+
     if (!recipients.length) return res.status(409).json({ error: 'No recipients matched' });
 
     const sent = await notifyMany(
@@ -121,13 +134,57 @@ router.post('/broadcast', auth, admin, async (req, res, next) => {
       { type, title, message, link }
     );
 
+    let emailRequested = 0;
+    let emailDelivered = 0;
+
+    if (emailPromotion) {
+      const optedIn = recipients.filter(
+        user =>
+          user.consents?.marketingEmails === true &&
+          user.email
+      );
+
+      emailRequested = optedIn.length;
+
+      // Send sequentially. The class project has a small audience, and this
+      // avoids bursting the transactional-mail provider with one large batch.
+      for (const user of optedIn) {
+        const result = await promotionMail({
+          to: user.email,
+          name: user.name,
+          title,
+          message,
+          link,
+        });
+
+        if (result?.delivered) {
+          emailDelivered += 1;
+        }
+      }
+    }
+
     await audit(req, 'notification.broadcast', {
       targetType: 'Notification',
       targetLabel: title,
-      details: { audience, type, recipients: recipients.length, sent },
+      details: {
+        audience,
+        type,
+        recipients: recipients.length,
+        sent,
+        emailPromotion,
+        emailRequested,
+        emailDelivered,
+      },
     });
 
-    res.status(201).json({ ok: true, sent, recipients: recipients.length });
+    res.status(201).json({
+      ok: true,
+      sent,
+      recipients: recipients.length,
+      emailPromotion,
+      emailRequested,
+      emailDelivered,
+    });
   } catch (err) { next(err); }
 });
 

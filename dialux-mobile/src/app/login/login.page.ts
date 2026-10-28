@@ -26,6 +26,10 @@ import {
   AuthResponse
 } from '../core/auth';
 
+import {
+  UserConsentService
+} from '../core/consent';
+
 
 @Component({
   selector: 'app-login',
@@ -62,7 +66,9 @@ export class LoginPage {
     private router: Router,
     private toastController:
       ToastController,
-    private zone: NgZone
+    private zone: NgZone,
+    private userConsent:
+      UserConsentService
   ) {}
 
 
@@ -763,6 +769,18 @@ export class LoginPage {
         'warning'
       );
 
+
+      return;
+
+    }
+
+
+    const accepted =
+      await this.userConsent
+        .ensureAccepted();
+
+
+    if (!accepted) {
 
       return;
 

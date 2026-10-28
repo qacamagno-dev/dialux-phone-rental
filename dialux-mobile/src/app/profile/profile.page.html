@@ -1000,6 +1000,43 @@
       <button
         type="button"
         class="menu-card"
+        (click)="openCommunicationPreferences()">
+
+        <div
+          class="menu-icon">
+
+          <ion-icon
+            name="shield-checkmark-outline">
+          </ion-icon>
+
+        </div>
+
+
+        <div
+          class="menu-copy">
+
+          <strong>
+            Privacy & Communications
+          </strong>
+
+          <span>
+            Terms and promotional email choices
+          </span>
+
+        </div>
+
+
+        <ion-icon
+          class="arrow"
+          name="chevron-forward-outline">
+        </ion-icon>
+
+      </button>
+
+
+      <button
+        type="button"
+        class="menu-card"
         (click)="go('/support')">
 
         <div

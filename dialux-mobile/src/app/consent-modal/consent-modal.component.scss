@@ -1,0 +1,267 @@
+:host {
+  --ion-background-color:
+    #f6f8fc;
+}
+
+ion-toolbar {
+  --background:
+    #ffffff;
+}
+
+.consent-page {
+  max-width:
+    620px;
+
+  margin:
+    0 auto;
+
+  padding:
+    30px 22px 24px;
+}
+
+.consent-icon {
+  width:
+    68px;
+
+  height:
+    68px;
+
+  display:
+    grid;
+
+  place-items:
+    center;
+
+  border-radius:
+    22px;
+
+  color:
+    #3478eb;
+
+  background:
+    #eaf2ff;
+
+  margin-bottom:
+    20px;
+}
+
+.consent-icon ion-icon {
+  font-size:
+    34px;
+}
+
+h1 {
+  margin:
+    0 0 12px;
+
+  color:
+    #111827;
+
+  font-size:
+    1.65rem;
+
+  line-height:
+    1.2;
+}
+
+.lead {
+  margin:
+    0;
+
+  color:
+    #667085;
+
+  line-height:
+    1.65;
+}
+
+.document-links {
+  display:
+    flex;
+
+  flex-wrap:
+    wrap;
+
+  gap:
+    10px;
+
+  margin:
+    22px 0;
+}
+
+.document-links a {
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  gap:
+    6px;
+
+  padding:
+    10px 13px;
+
+  border:
+    1px solid #dbe5f4;
+
+  border-radius:
+    12px;
+
+  background:
+    #ffffff;
+
+  color:
+    #2f73e4;
+
+  font-size:
+    .88rem;
+
+  font-weight:
+    700;
+
+  text-decoration:
+    none;
+}
+
+.marketing-choice {
+  padding:
+    16px;
+
+  border:
+    1px solid #dce6f4;
+
+  border-radius:
+    17px;
+
+  background:
+    #ffffff;
+
+  box-shadow:
+    0 8px 22px
+    rgba(
+      20,
+      45,
+      85,
+      .05
+    );
+}
+
+.marketing-choice ion-checkbox {
+  width:
+    100%;
+
+  --size:
+    22px;
+
+  --checkbox-background-checked:
+    #4f8ff7;
+
+  --border-color-checked:
+    #4f8ff7;
+}
+
+.marketing-copy {
+  padding-right:
+    16px;
+}
+
+.marketing-copy strong,
+.marketing-copy span {
+  display:
+    block;
+}
+
+.marketing-copy strong {
+  color:
+    #152033;
+
+  font-size:
+    .98rem;
+
+  margin-bottom:
+    5px;
+}
+
+.marketing-copy span {
+  color:
+    #748197;
+
+  font-size:
+    .83rem;
+
+  line-height:
+    1.45;
+}
+
+.fine-print {
+  margin:
+    14px 2px 0;
+
+  color:
+    #8a96a8;
+
+  font-size:
+    .76rem;
+
+  line-height:
+    1.5;
+}
+
+.error {
+  margin-top:
+    14px;
+
+  color:
+    var(
+      --ion-color-danger
+    );
+
+  font-size:
+    .84rem;
+
+  font-weight:
+    650;
+}
+
+ion-footer {
+  box-shadow:
+    0 -8px 28px
+    rgba(
+      15,
+      23,
+      42,
+      .08
+    );
+}
+
+.consent-actions {
+  display:
+    flex;
+
+  gap:
+    10px;
+
+  justify-content:
+    flex-end;
+
+  padding:
+    8px 12px
+    calc(
+      8px +
+      env(
+        safe-area-inset-bottom
+      )
+    );
+}
+
+.accept-button {
+  min-width:
+    175px;
+
+  --border-radius:
+    13px;
+
+  --background:
+    #4f8ff7;
+}

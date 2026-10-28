@@ -10,10 +10,12 @@ import {
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { ConsentModalComponent } from './consent-modal/consent-modal.component';
 
 @NgModule({
   declarations: [
     AppComponent,
+    ConsentModalComponent,
   ],
   imports: [
     BrowserModule,

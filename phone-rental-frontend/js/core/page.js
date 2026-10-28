@@ -6,6 +6,7 @@
 // ============================================================
 
 import * as fx from '../3d-enhancements.js';
+import { ensureWebConsent } from './consent.js';
 
 import {
   mountChrome,
@@ -385,6 +386,23 @@ export async function bootPage(
     redirectStaffAwayFromShopping(
       active
     )
+  ) {
+    return;
+  }
+
+  /*
+   * Customer Terms acceptance is shared with the Android app through the
+   * backend. A first-time / outdated acceptance blocks customer pages until
+   * the current Terms are accepted or the account is signed out.
+   */
+  const isConsentDocument =
+    location.pathname === '/terms.html' ||
+    location.pathname === '/privacy.html';
+
+  if (
+    state.user?.role === 'user' &&
+    !isConsentDocument &&
+    !await ensureWebConsent()
   ) {
     return;
   }

@@ -20,6 +20,10 @@ import {
   AuthUser
 } from '../core/auth';
 
+import {
+  UserConsentService
+} from '../core/consent';
+
 
 interface Address {
 
@@ -165,7 +169,10 @@ export class ProfilePage {
       Router,
 
     private toastController:
-      ToastController
+      ToastController,
+
+    private userConsent:
+      UserConsentService
 
   ) {}
 
@@ -1114,6 +1121,28 @@ export class ProfilePage {
     this.router.navigateByUrl(
       path
     );
+
+  }
+
+
+  async openCommunicationPreferences():
+    Promise<void> {
+
+    const saved =
+      await this.userConsent
+        .openPreferences();
+
+
+    if (saved) {
+
+      await this.showToast(
+        'Communication preferences saved.',
+        'success'
+      );
+
+      this.load();
+
+    }
 
   }
 

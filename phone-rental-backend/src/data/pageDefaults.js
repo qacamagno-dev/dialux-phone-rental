@@ -154,7 +154,7 @@ const PAGE_DEFAULTS = {
       },
       {
         heading: '2. How We Use Your Data',
-        body: 'To fulfil and deliver your bookings, to keep you informed about a rental, and to answer support requests. Nothing more.',
+        body: 'To fulfil and deliver your bookings, keep you informed about a rental, answer support requests, and — only when you opt in — send promotional emails about DiaLux devices and rental offers.',
       },
       {
         heading: '3. Secure Data Wiping',
@@ -174,7 +174,7 @@ const PAGE_DEFAULTS = {
       },
       {
         heading: '7. Your Rights',
-        body: 'You can view and correct your details from your profile, request a copy of your data, or ask for your account to be deleted. Contact support and we will action it.',
+        body: 'You can view and correct your details from your profile, change or withdraw your promotional-email choice from Privacy & Communications, request a copy of your data, or ask for your account to be deleted. Contact support and we will action it.',
       },
     ],
   },

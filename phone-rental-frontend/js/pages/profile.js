@@ -18,6 +18,7 @@ import {
   statusClass, titleCase, catLabel, addressLine, paymentLabel,
 } from '../core/ui.js';
 import { requireAuth, changePassword, renderAcctButton } from '../core/auth.js';
+import { openConsentPreferences } from '../core/consent.js';
 
 const shortId = (id) => String(id).slice(-6).toUpperCase();
 
@@ -95,6 +96,22 @@ function renderAccount() {
       <p class="summary-note" style="margin-top:12px;">
         Forgot it entirely? <a href="/index.html#forgot" style="color:var(--accent);">Use the reset link flow ›</a>
       </p>
+    </div>
+
+    <div class="account-card">
+      <h3>Privacy & communications</h3>
+      <p>
+        Review the DiaLux Terms &amp; Privacy Policy and choose whether you want
+        optional promotional emails about new devices and rental deals.
+      </p>
+      <button
+        type="button"
+        class="btn btn-ghost"
+        id="consentPreferencesBtn"
+        style="width:100%;justify-content:center;"
+      >
+        Manage communication preferences
+      </button>
     </div>`;
 
   box.querySelector('#accountForm')?.addEventListener('submit', async (e) => {
@@ -114,6 +131,14 @@ function renderAccount() {
     toast('Details saved');
     renderAccount();
     renderAcctButton();   // the header greeting uses the name we just changed
+  });
+
+  box.querySelector('#consentPreferencesBtn')?.addEventListener('click', async () => {
+    try {
+      await openConsentPreferences();
+    } catch (err) {
+      toast(err.message || 'Could not open communication preferences', 'error');
+    }
   });
 
   box.querySelector('#passwordForm')?.addEventListener('submit', async (e) => {

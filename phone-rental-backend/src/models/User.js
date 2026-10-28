@@ -115,6 +115,35 @@ const addressSchema =
   });
 
 
+
+const consentSchema =
+  new mongoose.Schema(
+    {
+      termsVersion: {
+        type: String,
+        default: '',
+        trim: true,
+      },
+
+      termsAcceptedAt: {
+        type: Date,
+      },
+
+      marketingEmails: {
+        type: Boolean,
+        default: false,
+      },
+
+      marketingUpdatedAt: {
+        type: Date,
+      },
+    },
+    {
+      _id: false,
+    }
+  );
+
+
 const riderDispatchSchema =
   new mongoose.Schema(
     {
@@ -252,6 +281,15 @@ const userSchema =
       riderDispatch: {
         type:
           riderDispatchSchema,
+
+        default:
+          () => ({}),
+      },
+
+
+      consents: {
+        type:
+          consentSchema,
 
         default:
           () => ({}),

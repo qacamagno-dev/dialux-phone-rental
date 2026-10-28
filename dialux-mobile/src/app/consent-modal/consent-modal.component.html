@@ -1,0 +1,212 @@
+<ion-header>
+
+  <ion-toolbar>
+
+    <ion-title>
+
+      {{
+        preferencesOnly
+          ? 'Communication preferences'
+          : 'Terms & Conditions'
+      }}
+
+    </ion-title>
+
+  </ion-toolbar>
+
+</ion-header>
+
+
+<ion-content>
+
+  <main
+    class="consent-page">
+
+
+    <div
+      class="consent-icon">
+
+      <ion-icon
+        name="shield-checkmark-outline">
+      </ion-icon>
+
+    </div>
+
+
+    <h1>
+
+      {{
+        preferencesOnly
+          ? 'Choose what you receive'
+          : 'One quick step before you continue'
+      }}
+
+    </h1>
+
+
+    <p
+      class="lead"
+      *ngIf="!preferencesOnly">
+
+      Please review the current
+      DiaLux Terms & Conditions.
+      By tapping
+      <strong>
+        Accept & continue
+      </strong>,
+      you agree to those terms and
+      acknowledge our Privacy Policy.
+
+    </p>
+
+
+    <p
+      class="lead"
+      *ngIf="preferencesOnly">
+
+      Your Terms acceptance stays in place.
+      You can update optional promotional
+      email preferences anytime.
+
+    </p>
+
+
+    <div
+      class="document-links">
+
+      <a
+        [href]="termsUrl"
+        target="_blank"
+        rel="noopener noreferrer">
+
+        Terms & Conditions
+
+        <ion-icon
+          name="open-outline">
+        </ion-icon>
+
+      </a>
+
+
+      <a
+        [href]="privacyUrl"
+        target="_blank"
+        rel="noopener noreferrer">
+
+        Privacy Policy
+
+        <ion-icon
+          name="open-outline">
+        </ion-icon>
+
+      </a>
+
+    </div>
+
+
+    <section
+      class="marketing-choice">
+
+      <ion-checkbox
+        justify="space-between"
+        labelPlacement="start"
+        [checked]="marketingEmails"
+        (ionChange)="setMarketing($event)">
+
+        <div
+          class="marketing-copy">
+
+          <strong>
+            DiaLux offers & promotions
+          </strong>
+
+          <span>
+            Email me about new devices,
+            rental deals, and limited offers.
+          </span>
+
+        </div>
+
+      </ion-checkbox>
+
+    </section>
+
+
+    <p
+      class="fine-print">
+
+      Promotional emails are optional.
+      Booking confirmations, payment receipts,
+      password resets, and support emails
+      are not affected by this choice.
+
+    </p>
+
+
+    <div
+      class="error"
+      *ngIf="errorMessage()">
+
+      {{ errorMessage() }}
+
+    </div>
+
+
+  </main>
+
+</ion-content>
+
+
+<ion-footer>
+
+  <ion-toolbar>
+
+    <div
+      class="consent-actions">
+
+
+      <ion-button
+        *ngIf="preferencesOnly"
+        fill="clear"
+        color="medium"
+        (click)="cancel()">
+
+        Cancel
+
+      </ion-button>
+
+
+      <ion-button
+        *ngIf="!preferencesOnly"
+        fill="clear"
+        color="medium"
+        (click)="signOut()">
+
+        Sign out
+
+      </ion-button>
+
+
+      <ion-button
+        class="accept-button"
+        [disabled]="saving()"
+        (click)="save()">
+
+        {{
+          saving()
+            ? 'Saving...'
+            : (
+                preferencesOnly
+                  ? 'Save choices'
+                  : 'Accept & continue'
+              )
+        }}
+
+      </ion-button>
+
+
+    </div>
+
+  </ion-toolbar>
+
+</ion-footer>
