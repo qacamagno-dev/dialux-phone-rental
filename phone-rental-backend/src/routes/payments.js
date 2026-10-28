@@ -389,44 +389,34 @@ function paymentReturnUrls(
   const webBase =
     originOf(req);
 
-  const requestedReturnUrl =
+  const client =
     String(
-      req.body?.returnUrl ||
+      req.body?.client ||
       ''
-    ).trim();
+    ).toLowerCase();
 
-  try {
-    if (
-      requestedReturnUrl
-    ) {
-      const parsed =
-        new URL(
-          requestedReturnUrl
-        );
+  /*
+   * Native mobile checkout must return through HTTPS first because
+   * hosted payment providers are most reliable with normal HTTPS
+   * success/cancel URLs. The HTTPS endpoint below then hands control
+   * back to the DiaLux app using our custom scheme.
+   *
+   * Website checkout stays completely unchanged.
+   */
+  if (
+    client ===
+    'mobile'
+  ) {
+    const base =
+      `${webBase}/api/payments/mobile-return`;
 
-      const isMobileDev =
-        (
-          parsed.hostname ===
-            'localhost' ||
-          parsed.hostname ===
-            '127.0.0.1'
-        ) &&
-        parsed.port ===
-          '8100';
+    return {
+      successUrl:
+        `${base}?orderId=${encodeURIComponent(orderId)}&payment=success`,
 
-      if (isMobileDev) {
-        return {
-          successUrl:
-            `${parsed.origin}/order/${orderId}?payment=success`,
-
-          cancelUrl:
-            `${parsed.origin}/order/${orderId}?payment=cancelled`,
-        };
-      }
-    }
-  } catch {
-    // Invalid returnUrl:
-    // fall back to web checkout.
+      cancelUrl:
+        `${base}?orderId=${encodeURIComponent(orderId)}&payment=cancelled`,
+    };
   }
 
   return {
@@ -520,6 +510,98 @@ async function loadPayableOrder(
     order,
   };
 }
+
+/* ================================================================
+   GET /api/payments/mobile-return
+
+   Public HTTPS bridge used only as PayMongo's success/cancel target
+   for native mobile checkout. It does NOT mark anything as paid.
+   The app still calls the authenticated /:orderId/status endpoint,
+   which re-reads the Checkout Session from PayMongo before changing
+   the order.
+================================================================ */
+
+router.get(
+  '/mobile-return',
+  (req, res) => {
+    const orderId =
+      String(
+        req.query?.orderId ||
+        ''
+      ).trim();
+
+    const payment =
+      String(
+        req.query?.payment ||
+        ''
+      ).trim();
+
+    if (
+      !isValidId(
+        orderId
+      ) ||
+      ![
+        'success',
+        'cancelled'
+      ].includes(
+        payment
+      )
+    ) {
+      return res
+        .status(400)
+        .type('text/plain')
+        .send(
+          'Invalid payment return.'
+        );
+    }
+
+    const appUrl =
+      `dialux://payment?orderId=${encodeURIComponent(orderId)}&payment=${encodeURIComponent(payment)}`;
+
+    const webUrl =
+      `/order.html?id=${encodeURIComponent(orderId)}&payment=${encodeURIComponent(payment)}`;
+
+    res
+      .set({
+        'Cache-Control':
+          'no-store',
+
+        'Referrer-Policy':
+          'no-referrer',
+
+        'Content-Security-Policy':
+          "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'",
+      })
+      .type('html')
+      .send(`<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Returning to DiaLux</title>
+  <style>
+    body{font-family:system-ui,sans-serif;margin:0;min-height:100vh;display:grid;place-items:center;background:#f6f8fc;color:#0f172a}
+    main{max-width:440px;padding:32px;text-align:center}
+    a{display:inline-block;margin-top:14px;padding:12px 18px;border-radius:12px;background:#2563eb;color:white;text-decoration:none}
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Returning to DiaLux…</h1>
+    <p>If the app does not open automatically, tap the button below.</p>
+    <a href="${appUrl}">Open DiaLux</a>
+  </main>
+  <script>
+    location.replace(${JSON.stringify(appUrl)});
+    setTimeout(function(){
+      location.replace(${JSON.stringify(webUrl)});
+    }, 1800);
+  </script>
+</body>
+</html>`);
+  }
+);
+
 
 /* ================================================================
    POST /api/payments/intent
