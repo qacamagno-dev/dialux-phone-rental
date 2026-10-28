@@ -20,7 +20,9 @@ import {
   AuthUser
 } from '../core/auth';
 
+
 interface Address {
+
   id?: string;
   _id?: string;
 
@@ -32,77 +34,178 @@ interface Address {
   zip?: string;
 
   isDefault?: boolean;
+
 }
+
+
+interface PasswordResponse {
+
+  ok?: boolean;
+
+  hasPassword?: boolean;
+
+  message?: string;
+
+}
+
+
+interface ForgotPasswordResponse {
+
+  ok?: boolean;
+
+  message?: string;
+
+  emailed?: boolean;
+
+  transport?: string;
+
+  devResetUrl?: string;
+
+}
+
 
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.page.html',
-  styleUrls: ['./profile.page.scss'],
+  styleUrls: [
+    './profile.page.scss'
+  ],
   standalone: false
 })
 export class ProfilePage {
 
   user =
-    signal<AuthUser | null>(null);
+    signal<AuthUser | null>(
+      null
+    );
 
   addresses =
-    signal<Address[]>([]);
+    signal<Address[]>(
+      []
+    );
 
   loading =
-    signal<boolean>(true);
+    signal<boolean>(
+      true
+    );
 
   editing =
-    signal<boolean>(false);
+    signal<boolean>(
+      false
+    );
 
   savingProfile =
-    signal<boolean>(false);
+    signal<boolean>(
+      false
+    );
 
   savingAddress =
-    signal<boolean>(false);
+    signal<boolean>(
+      false
+    );
 
   busyAddressId =
-    signal<string | null>(null);
+    signal<string | null>(
+      null
+    );
 
-  name = '';
+  passwordFormOpen =
+    signal<boolean>(
+      false
+    );
 
-  phone = '';
+  changingPassword =
+    signal<boolean>(
+      false
+    );
+
+  sendingReset =
+    signal<boolean>(
+      false
+    );
+
+
+  name =
+    '';
+
+  phone =
+    '';
 
   addressLabel =
     'Home';
 
-  address = '';
+  address =
+    '';
 
-  city = '';
+  city =
+    '';
 
-  zip = '';
+  zip =
+    '';
+
+  currentPassword =
+    '';
+
+  newPassword =
+    '';
+
+  confirmPassword =
+    '';
+
 
   constructor(
-    public auth: Auth,
-    private api: Api,
-    private router: Router,
-    private toastController: ToastController
+
+    public auth:
+      Auth,
+
+    private api:
+      Api,
+
+    private router:
+      Router,
+
+    private toastController:
+      ToastController
+
   ) {}
 
-  ionViewWillEnter(): void {
+
+  ionViewWillEnter():
+    void {
+
     this.load();
+
   }
 
-  load(): void {
+
+  load():
+    void {
 
     if (
       !this.auth.isLoggedIn()
     ) {
 
-      this.user.set(null);
+      this.user.set(
+        null
+      );
 
-      this.addresses.set([]);
+      this.addresses.set(
+        []
+      );
 
-      this.loading.set(false);
+      this.loading.set(
+        false
+      );
 
       return;
+
     }
 
-    this.loading.set(true);
+
+    this.loading.set(
+      true
+    );
+
 
     this.auth
       .loadCurrentUser()
@@ -114,14 +217,22 @@ export class ProfilePage {
             user
           );
 
+
           this.name =
-            user.name || '';
+            user.name ||
+            '';
+
 
           this.phone =
-            user.profile?.phone || '';
+            user.profile
+              ?.phone ||
+            '';
+
 
           this.loadAddresses();
+
         },
+
 
         error: error => {
 
@@ -130,12 +241,20 @@ export class ProfilePage {
             error
           );
 
-          this.loading.set(false);
+
+          this.loading.set(
+            false
+          );
+
         }
+
       });
+
   }
 
-  private loadAddresses(): void {
+
+  private loadAddresses():
+    void {
 
     this.api
       .get<{
@@ -148,11 +267,17 @@ export class ProfilePage {
         next: response => {
 
           this.addresses.set(
-            response?.addresses || []
+            response?.addresses ||
+            []
           );
 
-          this.loading.set(false);
+
+          this.loading.set(
+            false
+          );
+
         },
+
 
         error: error => {
 
@@ -161,23 +286,38 @@ export class ProfilePage {
             error
           );
 
-          this.addresses.set([]);
 
-          this.loading.set(false);
+          this.addresses.set(
+            []
+          );
+
+
+          this.loading.set(
+            false
+          );
+
         }
+
       });
+
   }
 
-  async save(): Promise<void> {
+
+  async save():
+    Promise<void> {
 
     if (
       this.savingProfile()
     ) {
+
       return;
+
     }
+
 
     const cleanName =
       this.name.trim();
+
 
     if (!cleanName) {
 
@@ -187,19 +327,26 @@ export class ProfilePage {
       );
 
       return;
+
     }
+
 
     this.savingProfile.set(
       true
     );
 
+
     this.api
       .patch<AuthUser>(
         '/users/me',
         {
-          name: cleanName,
+
+          name:
+            cleanName,
+
           phone:
             this.phone.trim()
+
         }
       )
       .subscribe({
@@ -210,6 +357,7 @@ export class ProfilePage {
             user
           );
 
+
           localStorage.setItem(
             'authUser',
             JSON.stringify(
@@ -217,23 +365,29 @@ export class ProfilePage {
             )
           );
 
+
           this.auth.currentUser.set(
             user
           );
+
 
           this.editing.set(
             false
           );
 
+
           this.savingProfile.set(
             false
           );
+
 
           await this.showToast(
             'Profile saved.',
             'success'
           );
+
         },
+
 
         error: async error => {
 
@@ -242,26 +396,380 @@ export class ProfilePage {
             error
           );
 
+
           this.savingProfile.set(
             false
           );
+
 
           await this.showToast(
             error?.error?.error ||
             'Could not save profile.',
             'danger'
           );
+
         }
+
       });
+
   }
 
-  async addAddress(): Promise<void> {
+
+  hasPassword():
+    boolean {
+
+    const current =
+      this.user() as
+        (
+          AuthUser & {
+            hasPassword?: boolean;
+          }
+        ) |
+        null;
+
+
+    return Boolean(
+      current?.hasPassword
+    );
+
+  }
+
+
+  openPasswordForm():
+    void {
+
+    this.currentPassword =
+      '';
+
+    this.newPassword =
+      '';
+
+    this.confirmPassword =
+      '';
+
+
+    this.passwordFormOpen.set(
+      true
+    );
+
+  }
+
+
+  closePasswordForm():
+    void {
+
+    if (
+      this.changingPassword()
+    ) {
+
+      return;
+
+    }
+
+
+    this.currentPassword =
+      '';
+
+    this.newPassword =
+      '';
+
+    this.confirmPassword =
+      '';
+
+
+    this.passwordFormOpen.set(
+      false
+    );
+
+  }
+
+
+  async changePassword():
+    Promise<void> {
+
+    if (
+      this.changingPassword()
+    ) {
+
+      return;
+
+    }
+
+
+    if (
+      this.hasPassword() &&
+      !this.currentPassword
+    ) {
+
+      await this.showToast(
+        'Enter your current password.',
+        'warning'
+      );
+
+      return;
+
+    }
+
+
+    if (
+      !this.newPassword
+    ) {
+
+      await this.showToast(
+        'Enter a new password.',
+        'warning'
+      );
+
+      return;
+
+    }
+
+
+    if (
+      this.newPassword !==
+      this.confirmPassword
+    ) {
+
+      await this.showToast(
+        'New passwords do not match.',
+        'warning'
+      );
+
+      return;
+
+    }
+
+
+    if (
+      this.hasPassword() &&
+      this.currentPassword ===
+      this.newPassword
+    ) {
+
+      await this.showToast(
+        'Choose a different new password.',
+        'warning'
+      );
+
+      return;
+
+    }
+
+
+    this.changingPassword.set(
+      true
+    );
+
+
+    this.api
+      .patch<PasswordResponse>(
+        '/users/me/password',
+        {
+
+          currentPassword:
+            this.currentPassword,
+
+          newPassword:
+            this.newPassword,
+
+          confirmPassword:
+            this.confirmPassword
+
+        }
+      )
+      .subscribe({
+
+        next: async response => {
+
+          this.changingPassword.set(
+            false
+          );
+
+
+          const current =
+            this.user();
+
+
+          if (current) {
+
+            const updated =
+              {
+                ...current,
+                hasPassword: true
+              } as AuthUser;
+
+
+            this.user.set(
+              updated
+            );
+
+
+            this.auth.currentUser.set(
+              updated
+            );
+
+
+            localStorage.setItem(
+              'authUser',
+              JSON.stringify(
+                updated
+              )
+            );
+
+          }
+
+
+          this.currentPassword =
+            '';
+
+          this.newPassword =
+            '';
+
+          this.confirmPassword =
+            '';
+
+
+          this.passwordFormOpen.set(
+            false
+          );
+
+
+          await this.showToast(
+            response?.message ||
+            'Password updated successfully.',
+            'success'
+          );
+
+        },
+
+
+        error: async error => {
+
+          console.error(
+            'Password change error:',
+            error
+          );
+
+
+          this.changingPassword.set(
+            false
+          );
+
+
+          await this.showToast(
+            error?.error?.error ||
+            'Could not update password.',
+            'danger'
+          );
+
+        }
+
+      });
+
+  }
+
+
+  async forgotPassword():
+    Promise<void> {
+
+    if (
+      this.sendingReset()
+    ) {
+
+      return;
+
+    }
+
+
+    const current =
+      this.user();
+
+
+    const email =
+      current?.email
+        ?.trim() ||
+      '';
+
+
+    if (!email) {
+
+      await this.showToast(
+        'No email address is available for this account.',
+        'danger'
+      );
+
+      return;
+
+    }
+
+
+    this.sendingReset.set(
+      true
+    );
+
+
+    this.api
+      .post<ForgotPasswordResponse>(
+        '/auth/forgot-password',
+        {
+          email
+        }
+      )
+      .subscribe({
+
+        next: async response => {
+
+          this.sendingReset.set(
+            false
+          );
+
+
+          await this.showToast(
+            response?.message ||
+            'Password reset instructions were sent to your email.',
+            'success'
+          );
+
+        },
+
+
+        error: async error => {
+
+          console.error(
+            'Forgot password error:',
+            error
+          );
+
+
+          this.sendingReset.set(
+            false
+          );
+
+
+          await this.showToast(
+            error?.error?.error ||
+            'Could not send password reset instructions.',
+            'danger'
+          );
+
+        }
+
+      });
+
+  }
+
+
+  async addAddress():
+    Promise<void> {
 
     if (
       this.savingAddress()
     ) {
+
       return;
+
     }
+
 
     if (
       !this.address.trim() ||
@@ -274,16 +782,20 @@ export class ProfilePage {
       );
 
       return;
+
     }
+
 
     this.savingAddress.set(
       true
     );
 
+
     this.api
       .post<AuthUser>(
         '/users/me/addresses',
         {
+
           label:
             this.addressLabel.trim() ||
             'Home',
@@ -301,7 +813,9 @@ export class ProfilePage {
             this.zip.trim(),
 
           isDefault:
-            this.addresses().length === 0
+            this.addresses().length ===
+            0
+
         }
       )
       .subscribe({
@@ -311,23 +825,31 @@ export class ProfilePage {
           this.addressLabel =
             'Home';
 
-          this.address = '';
+          this.address =
+            '';
 
-          this.city = '';
+          this.city =
+            '';
 
-          this.zip = '';
+          this.zip =
+            '';
+
 
           this.savingAddress.set(
             false
           );
 
+
           this.loadAddresses();
+
 
           await this.showToast(
             'Address saved.',
             'success'
           );
+
         },
+
 
         error: async error => {
 
@@ -336,38 +858,50 @@ export class ProfilePage {
             error
           );
 
+
           this.savingAddress.set(
             false
           );
+
 
           await this.showToast(
             error?.error?.error ||
             'Could not save address.',
             'danger'
           );
+
         }
+
       });
+
   }
+
 
   setDefault(
     address: Address
-  ): void {
+  ):
+    void {
 
     const id =
       this.getAddressId(
         address
       );
 
+
     if (
       !id ||
       this.busyAddressId()
     ) {
+
       return;
+
     }
+
 
     this.busyAddressId.set(
       id
     );
+
 
     this.api
       .post(
@@ -382,13 +916,17 @@ export class ProfilePage {
             null
           );
 
+
           this.loadAddresses();
+
 
           await this.showToast(
             'Default address updated.',
             'success'
           );
+
         },
+
 
         error: async error => {
 
@@ -397,38 +935,50 @@ export class ProfilePage {
             error
           );
 
+
           this.busyAddressId.set(
             null
           );
+
 
           await this.showToast(
             error?.error?.error ||
             'Could not update default address.',
             'danger'
           );
+
         }
+
       });
+
   }
+
 
   remove(
     address: Address
-  ): void {
+  ):
+    void {
 
     const id =
       this.getAddressId(
         address
       );
 
+
     if (
       !id ||
       this.busyAddressId()
     ) {
+
       return;
+
     }
+
 
     this.busyAddressId.set(
       id
     );
+
 
     this.api
       .delete(
@@ -442,13 +992,17 @@ export class ProfilePage {
             null
           );
 
+
           this.loadAddresses();
+
 
           await this.showToast(
             'Address removed.',
             'success'
           );
+
         },
+
 
         error: async error => {
 
@@ -457,106 +1011,153 @@ export class ProfilePage {
             error
           );
 
+
           this.busyAddressId.set(
             null
           );
+
 
           await this.showToast(
             error?.error?.error ||
             'Could not remove address.',
             'danger'
           );
+
         }
+
       });
+
   }
+
 
   getAddressId(
     address: Address
-  ): string {
+  ):
+    string {
 
     return (
       address.id ||
       address._id ||
       ''
     );
+
   }
+
 
   isAddressBusy(
     address: Address
-  ): boolean {
+  ):
+    boolean {
 
     return (
       this.busyAddressId() ===
-      this.getAddressId(address)
+      this.getAddressId(
+        address
+      )
     );
+
   }
 
-  cancelEdit(): void {
+
+  cancelEdit():
+    void {
 
     const current =
       this.user();
 
+
     this.name =
-      current?.name || '';
+      current?.name ||
+      '';
+
 
     this.phone =
-      current?.profile?.phone || '';
+      current?.profile?.phone ||
+      '';
+
 
     this.editing.set(
       false
     );
+
   }
 
-  logout(): void {
+
+  logout():
+    void {
 
     this.auth.logout();
+
 
     this.user.set(
       null
     );
 
+
     this.addresses.set(
       []
     );
 
+
     this.router.navigateByUrl(
       '/tabs/home'
     );
+
   }
+
 
   go(
     path: string
-  ): void {
+  ):
+    void {
 
     this.router.navigateByUrl(
       path
     );
+
   }
 
-  login(): void {
+
+  login():
+    void {
 
     this.router.navigateByUrl(
       '/login'
     );
+
   }
+
 
   private async showToast(
     message: string,
+
     color:
       | 'success'
       | 'danger'
       | 'warning'
       | 'primary'
-  ): Promise<void> {
+  ):
+    Promise<void> {
 
     const toast =
-      await this.toastController.create({
-        message,
-        duration: 1800,
-        position: 'bottom',
-        color
-      });
+      await this.toastController
+        .create({
+
+          message,
+
+          duration:
+            2200,
+
+          position:
+            'bottom',
+
+          color
+
+        });
+
 
     await toast.present();
+
   }
+
 }

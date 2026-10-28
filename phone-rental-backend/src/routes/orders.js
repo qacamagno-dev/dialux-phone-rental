@@ -1148,6 +1148,8 @@ router.post(
 
           image:
             product.image ||
+            product.cardImage ||
+            product.images?.[0] ||
             '',
 
           plan:
@@ -1699,6 +1701,8 @@ router.post(
 
               image:
                 product.image ||
+                product.cardImage ||
+                product.images?.[0] ||
                 '',
 
               plan,

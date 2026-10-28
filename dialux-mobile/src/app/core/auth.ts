@@ -12,11 +12,15 @@ import {
   Api
 } from './api';
 
+
 export interface AuthUser {
+
   id?: string;
+
   _id?: string;
 
   name: string;
+
   email: string;
 
   role?: string;
@@ -24,12 +28,20 @@ export interface AuthUser {
   avatar?: string;
 
   profile?: any;
+
+  hasPassword?: boolean;
+
 }
 
-interface AuthResponse {
+
+export interface AuthResponse {
+
   token: string;
+
   user: AuthUser;
+
 }
+
 
 @Injectable({
   providedIn: 'root'
@@ -42,60 +54,114 @@ export class Auth {
   private readonly userKey =
     'authUser';
 
+
   currentUser =
     signal<AuthUser | null>(
       this.readStoredUser()
     );
 
+
   constructor(
     private api: Api
   ) {}
 
+
   login(
     email: string,
     password: string
-  ): Observable<AuthResponse> {
+  ):
+    Observable<AuthResponse> {
 
     return this.api
       .post<AuthResponse>(
         '/auth/login',
         {
+
           email,
+
           password
+
         }
       )
       .pipe(
+
         tap(response => {
+
           this.saveSession(
             response
           );
+
         })
+
       );
+
   }
+
+
+  googleLogin(
+    credential: string
+  ):
+    Observable<AuthResponse> {
+
+    return this.api
+      .post<AuthResponse>(
+        '/auth/google',
+        {
+
+          token:
+            credential
+
+        }
+      )
+      .pipe(
+
+        tap(response => {
+
+          this.saveSession(
+            response
+          );
+
+        })
+
+      );
+
+  }
+
 
   register(
     name: string,
     email: string,
     password: string
-  ): Observable<AuthResponse> {
+  ):
+    Observable<AuthResponse> {
 
     return this.api
       .post<AuthResponse>(
         '/auth/register',
         {
+
           name,
+
           email,
+
           password
+
         }
       )
       .pipe(
+
         tap(response => {
+
           this.saveSession(
             response
           );
+
         })
+
       );
+
   }
+
 
   loadCurrentUser():
     Observable<AuthUser> {
@@ -105,54 +171,76 @@ export class Auth {
         '/auth/me'
       )
       .pipe(
+
         tap(user => {
 
           this.currentUser.set(
             user
           );
 
+
           localStorage.setItem(
             this.userKey,
-            JSON.stringify(user)
+            JSON.stringify(
+              user
+            )
           );
+
         })
+
       );
+
   }
 
-  logout(): void {
+
+  logout():
+    void {
 
     localStorage.removeItem(
       this.tokenKey
     );
+
 
     localStorage.removeItem(
       this.userKey
     );
 
+
     this.currentUser.set(
       null
     );
+
   }
 
-  isLoggedIn(): boolean {
+
+  isLoggedIn():
+    boolean {
 
     return Boolean(
+
       localStorage.getItem(
         this.tokenKey
       )
+
     );
+
   }
 
-  getToken(): string | null {
+
+  getToken():
+    string | null {
 
     return localStorage.getItem(
       this.tokenKey
     );
+
   }
+
 
   private saveSession(
     response: AuthResponse
-  ): void {
+  ):
+    void {
 
     if (
       !response?.token ||
@@ -162,12 +250,15 @@ export class Auth {
       throw new Error(
         'Invalid authentication response.'
       );
+
     }
+
 
     localStorage.setItem(
       this.tokenKey,
       response.token
     );
+
 
     localStorage.setItem(
       this.userKey,
@@ -176,10 +267,13 @@ export class Auth {
       )
     );
 
+
     this.currentUser.set(
       response.user
     );
+
   }
+
 
   private readStoredUser():
     AuthUser | null {
@@ -189,10 +283,13 @@ export class Auth {
         this.userKey
       );
 
+
     if (!raw) {
 
       return null;
+
     }
+
 
     try {
 
@@ -206,7 +303,11 @@ export class Auth {
         this.userKey
       );
 
+
       return null;
+
     }
+
   }
+
 }

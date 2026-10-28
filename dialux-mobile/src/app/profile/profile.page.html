@@ -10,7 +10,11 @@
 
 </ion-header>
 
+
 <ion-content>
+
+
+  <!-- NOT LOGGED IN -->
 
   <div
     class="state"
@@ -36,6 +40,9 @@
 
   </div>
 
+
+  <!-- LOADING -->
+
   <div
     class="state"
     *ngIf="
@@ -53,6 +60,9 @@
 
   </div>
 
+
+  <!-- PROFILE -->
+
   <main
     class="profile-page"
     *ngIf="
@@ -61,11 +71,14 @@
       user() as currentUser
     ">
 
+
     <!-- IDENTITY -->
 
-    <section class="profile-hero">
+    <section
+      class="profile-hero">
 
-      <div class="avatar">
+      <div
+        class="avatar">
 
         {{
           (currentUser.name || 'D')
@@ -75,9 +88,12 @@
 
       </div>
 
-      <div class="identity-copy">
 
-        <span class="eyebrow">
+      <div
+        class="identity-copy">
+
+        <span
+          class="eyebrow">
           DiaLux Customer
         </span>
 
@@ -93,11 +109,14 @@
 
     </section>
 
+
     <!-- PERSONAL DETAILS -->
 
-    <section class="profile-card">
+    <section
+      class="profile-card">
 
-      <div class="card-heading">
+      <div
+        class="card-heading">
 
         <div>
 
@@ -112,13 +131,17 @@
 
         </div>
 
+
         <ion-button
           size="small"
           fill="clear"
           *ngIf="!editing()"
           (click)="editing.set(true)">
+
           Edit
+
         </ion-button>
+
 
         <ion-button
           size="small"
@@ -126,21 +149,30 @@
           color="medium"
           *ngIf="editing()"
           (click)="cancelEdit()">
+
           Cancel
+
         </ion-button>
 
       </div>
 
+
       <ng-container
         *ngIf="!editing()">
 
-        <div class="detail-row">
 
-          <div class="detail-icon">
+        <div
+          class="detail-row">
+
+          <div
+            class="detail-icon">
+
             <ion-icon
               name="person-outline">
             </ion-icon>
+
           </div>
+
 
           <div>
 
@@ -156,13 +188,19 @@
 
         </div>
 
-        <div class="detail-row">
 
-          <div class="detail-icon">
+        <div
+          class="detail-row">
+
+          <div
+            class="detail-icon">
+
             <ion-icon
               name="mail-outline">
             </ion-icon>
+
           </div>
+
 
           <div>
 
@@ -178,13 +216,19 @@
 
         </div>
 
-        <div class="detail-row">
 
-          <div class="detail-icon">
+        <div
+          class="detail-row">
+
+          <div
+            class="detail-icon">
+
             <ion-icon
               name="call-outline">
             </ion-icon>
+
           </div>
+
 
           <div>
 
@@ -193,17 +237,21 @@
             </span>
 
             <strong>
+
               {{
                 currentUser.profile?.phone ||
                 'Not set'
               }}
+
             </strong>
 
           </div>
 
         </div>
 
+
       </ng-container>
+
 
       <form
         class="edit-form"
@@ -214,6 +262,7 @@
           Full name
         </label>
 
+
         <ion-input
           class="form-control"
           [(ngModel)]="name"
@@ -221,9 +270,11 @@
           placeholder="Enter your full name">
         </ion-input>
 
+
         <label>
           Phone number
         </label>
+
 
         <ion-input
           class="form-control"
@@ -233,6 +284,7 @@
           name="phone"
           placeholder="09XXXXXXXXX">
         </ion-input>
+
 
         <ion-button
           type="submit"
@@ -244,6 +296,7 @@
             slot="start"
             name="crescent">
           </ion-spinner>
+
 
           {{
             savingProfile()
@@ -257,11 +310,299 @@
 
     </section>
 
-    <!-- ADDRESSES -->
 
-    <section class="profile-card">
+    <!-- ACCOUNT SECURITY -->
 
-      <div class="card-heading">
+    <section
+      class="profile-card">
+
+      <div
+        class="card-heading">
+
+        <div>
+
+          <h2>
+            Account Security
+          </h2>
+
+          <p>
+
+            {{
+              hasPassword()
+                ? 'Change or recover your account password.'
+                : 'Add a password to your Google account.'
+            }}
+
+          </p>
+
+        </div>
+
+
+        <ion-button
+          size="small"
+          fill="clear"
+          *ngIf="
+            !passwordFormOpen()
+          "
+          (click)="openPasswordForm()">
+
+          {{
+            hasPassword()
+              ? 'Change'
+              : 'Add'
+          }}
+
+        </ion-button>
+
+
+        <ion-button
+          size="small"
+          fill="clear"
+          color="medium"
+          *ngIf="
+            passwordFormOpen()
+          "
+          [disabled]="changingPassword()"
+          (click)="closePasswordForm()">
+
+          Cancel
+
+        </ion-button>
+
+      </div>
+
+
+      <div
+        class="detail-row"
+        *ngIf="
+          !passwordFormOpen()
+        ">
+
+        <div
+          class="detail-icon">
+
+          <ion-icon
+            name="lock-closed-outline">
+          </ion-icon>
+
+        </div>
+
+
+        <div>
+
+          <span>
+            Password
+          </span>
+
+          <strong>
+
+            {{
+              hasPassword()
+                ? 'Password configured'
+                : 'Google sign-in only'
+            }}
+
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <!-- FORGOT PASSWORD OUTSIDE FORM -->
+
+      <ion-button
+        *ngIf="
+          hasPassword() &&
+          !passwordFormOpen()
+        "
+        expand="block"
+        fill="clear"
+        size="small"
+        [disabled]="sendingReset()"
+        (click)="forgotPassword()">
+
+        <ion-spinner
+          *ngIf="sendingReset()"
+          slot="start"
+          name="crescent">
+        </ion-spinner>
+
+
+        <ion-icon
+          *ngIf="!sendingReset()"
+          slot="start"
+          name="mail-outline">
+        </ion-icon>
+
+
+        {{
+          sendingReset()
+            ? 'Sending Reset Email...'
+            : 'Forgot password?'
+        }}
+
+      </ion-button>
+
+
+      <!-- CHANGE PASSWORD FORM -->
+
+      <form
+        class="edit-form"
+        *ngIf="
+          passwordFormOpen()
+        "
+        (ngSubmit)="changePassword()">
+
+
+        <p
+          *ngIf="
+            !hasPassword()
+          ">
+
+          You currently sign in with Google.
+          Create a password if you also want
+          to sign in using your email address.
+
+        </p>
+
+
+        <ng-container
+          *ngIf="
+            hasPassword()
+          ">
+
+          <label>
+            Current password
+          </label>
+
+
+          <ion-input
+            class="form-control"
+            type="password"
+            autocomplete="current-password"
+            [(ngModel)]="currentPassword"
+            name="currentPassword"
+            placeholder="Enter current password">
+          </ion-input>
+
+
+          <ion-button
+            type="button"
+            expand="block"
+            fill="clear"
+            size="small"
+            [disabled]="
+              sendingReset() ||
+              changingPassword()
+            "
+            (click)="forgotPassword()">
+
+            <ion-spinner
+              *ngIf="sendingReset()"
+              slot="start"
+              name="crescent">
+            </ion-spinner>
+
+
+            <ion-icon
+              *ngIf="!sendingReset()"
+              slot="start"
+              name="mail-outline">
+            </ion-icon>
+
+
+            {{
+              sendingReset()
+                ? 'Sending Reset Email...'
+                : 'Forgot current password?'
+            }}
+
+          </ion-button>
+
+        </ng-container>
+
+
+        <label>
+          New password
+        </label>
+
+
+        <ion-input
+          class="form-control"
+          type="password"
+          autocomplete="new-password"
+          [(ngModel)]="newPassword"
+          name="newPassword"
+          placeholder="Enter new password">
+        </ion-input>
+
+
+        <label>
+          Confirm new password
+        </label>
+
+
+        <ion-input
+          class="form-control"
+          type="password"
+          autocomplete="new-password"
+          [(ngModel)]="confirmPassword"
+          name="confirmPassword"
+          placeholder="Enter new password again">
+        </ion-input>
+
+
+        <ion-button
+          type="submit"
+          expand="block"
+          [disabled]="
+            changingPassword() ||
+            sendingReset()
+          ">
+
+          <ion-spinner
+            *ngIf="
+              changingPassword()
+            "
+            slot="start"
+            name="crescent">
+          </ion-spinner>
+
+
+          <ion-icon
+            *ngIf="
+              !changingPassword()
+            "
+            slot="start"
+            name="lock-closed-outline">
+          </ion-icon>
+
+
+          {{
+            changingPassword()
+              ? 'Updating Password...'
+              : (
+                  hasPassword()
+                    ? 'Change Password'
+                    : 'Create Password'
+                )
+          }}
+
+        </ion-button>
+
+      </form>
+
+    </section>
+
+
+    <!-- SAVED ADDRESSES -->
+
+    <section
+      class="profile-card">
+
+      <div
+        class="card-heading">
 
         <div>
 
@@ -275,11 +616,16 @@
 
         </div>
 
-        <div class="address-count">
+
+        <div
+          class="address-count">
+
           {{ addresses().length }}
+
         </div>
 
       </div>
+
 
       <div
         class="empty-address"
@@ -290,6 +636,7 @@
         <ion-icon
           name="location-outline">
         </ion-icon>
+
 
         <div>
 
@@ -305,13 +652,16 @@
 
       </div>
 
+
       <article
         class="address-card"
         *ngFor="
-          let savedAddress of addresses()
+          let savedAddress
+          of addresses()
         ">
 
-        <div class="address-icon">
+        <div
+          class="address-icon">
 
           <ion-icon
             name="home-outline">
@@ -319,50 +669,69 @@
 
         </div>
 
-        <div class="address-info">
 
-          <div class="address-title">
+        <div
+          class="address-info">
+
+          <div
+            class="address-title">
 
             <strong>
+
               {{
                 savedAddress.label ||
                 'Address'
               }}
+
             </strong>
+
 
             <span
               class="default-badge"
               *ngIf="
                 savedAddress.isDefault
               ">
+
               Default
+
             </span>
 
           </div>
+
 
           <p>
             {{ savedAddress.address }}
           </p>
 
+
           <p>
+
             {{ savedAddress.city }}
 
             <ng-container
               *ngIf="
                 savedAddress.zip
               ">
+
               {{ savedAddress.zip }}
+
             </ng-container>
+
           </p>
+
 
           <p
             *ngIf="
               savedAddress.phone
             ">
+
             {{ savedAddress.phone }}
+
           </p>
 
-          <div class="address-actions">
+
+          <div
+            class="address-actions">
 
             <ion-button
               size="small"
@@ -380,8 +749,11 @@
                   savedAddress
                 )
               ">
+
               Set Default
+
             </ion-button>
+
 
             <ion-button
               size="small"
@@ -407,6 +779,7 @@
                 name="crescent">
               </ion-spinner>
 
+
               <ion-icon
                 *ngIf="
                   !isAddressBusy(
@@ -424,20 +797,27 @@
 
       </article>
 
-      <div class="divider">
+
+      <div
+        class="divider">
       </div>
 
-      <h3 class="add-title">
+
+      <h3
+        class="add-title">
         Add New Address
       </h3>
+
 
       <form
         class="address-form"
         (ngSubmit)="addAddress()">
 
+
         <label>
           Label
         </label>
+
 
         <ion-input
           class="form-control"
@@ -446,9 +826,11 @@
           placeholder="Home, School, Office">
         </ion-input>
 
+
         <label>
           Street address
         </label>
+
 
         <ion-input
           class="form-control"
@@ -457,7 +839,10 @@
           placeholder="House no., street, barangay">
         </ion-input>
 
-        <div class="address-grid">
+
+        <div
+          class="address-grid">
+
 
           <div>
 
@@ -473,6 +858,7 @@
             </ion-input>
 
           </div>
+
 
           <div>
 
@@ -490,7 +876,9 @@
 
           </div>
 
+
         </div>
+
 
         <ion-button
           type="submit"
@@ -506,6 +894,7 @@
             name="crescent">
           </ion-spinner>
 
+
           <ion-icon
             *ngIf="
               !savingAddress()
@@ -513,6 +902,7 @@
             slot="start"
             name="add-outline">
           </ion-icon>
+
 
           {{
             savingAddress()
@@ -526,16 +916,20 @@
 
     </section>
 
+
     <!-- MENU -->
 
-    <section class="menu-section">
+    <section
+      class="menu-section">
+
 
       <button
         type="button"
         class="menu-card"
         (click)="go('/orders')">
 
-        <div class="menu-icon">
+        <div
+          class="menu-icon">
 
           <ion-icon
             name="receipt-outline">
@@ -543,7 +937,9 @@
 
         </div>
 
-        <div class="menu-copy">
+
+        <div
+          class="menu-copy">
 
           <strong>
             My Orders
@@ -555,6 +951,7 @@
 
         </div>
 
+
         <ion-icon
           class="arrow"
           name="chevron-forward-outline">
@@ -562,12 +959,14 @@
 
       </button>
 
+
       <button
         type="button"
         class="menu-card"
         (click)="go('/notifications')">
 
-        <div class="menu-icon">
+        <div
+          class="menu-icon">
 
           <ion-icon
             name="notifications-outline">
@@ -575,7 +974,9 @@
 
         </div>
 
-        <div class="menu-copy">
+
+        <div
+          class="menu-copy">
 
           <strong>
             Notifications
@@ -587,6 +988,7 @@
 
         </div>
 
+
         <ion-icon
           class="arrow"
           name="chevron-forward-outline">
@@ -594,12 +996,14 @@
 
       </button>
 
+
       <button
         type="button"
         class="menu-card"
         (click)="go('/support')">
 
-        <div class="menu-icon">
+        <div
+          class="menu-icon">
 
           <ion-icon
             name="chatbubble-ellipses-outline">
@@ -607,7 +1011,9 @@
 
         </div>
 
-        <div class="menu-copy">
+
+        <div
+          class="menu-copy">
 
           <strong>
             Support
@@ -619,6 +1025,7 @@
 
         </div>
 
+
         <ion-icon
           class="arrow"
           name="chevron-forward-outline">
@@ -626,11 +1033,14 @@
 
       </button>
 
+
     </section>
+
 
     <!-- SIGN OUT -->
 
-    <section class="signout-card">
+    <section
+      class="signout-card">
 
       <div>
 
@@ -643,6 +1053,7 @@
         </p>
 
       </div>
+
 
       <ion-button
         fill="outline"
@@ -660,6 +1071,8 @@
 
     </section>
 
+
   </main>
+
 
 </ion-content>

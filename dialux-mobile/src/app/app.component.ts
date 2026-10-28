@@ -170,61 +170,40 @@ export class AppComponent
           '/reset-password.html';
 
 
-      /*
-       * Also support our own scheme:
-       *
-       * dialux://reset-password?token=...
-       */
-      const isCustomReset =
+      const isWebsitePayment =
         url.protocol ===
-          'dialux:' &&
+          'https:' &&
         url.hostname ===
-          'reset-password';
+          'dialux-phone-rental.onrender.com' &&
+        url.pathname ===
+          '/payment-return.html';
 
 
-      /*
-       * PayMongo mobile return:
-       *
-       * dialux://payment?orderId=...&payment=success
-       * dialux://payment?orderId=...&payment=cancelled
-       */
-      const isPaymentReturn =
+      const isCustomPayment =
         url.protocol ===
           'dialux:' &&
         url.hostname ===
           'payment';
 
 
-      if (isPaymentReturn) {
+      if (
+        isWebsitePayment ||
+        isCustomPayment
+      ) {
 
         const orderId =
-          String(
-            url.searchParams.get(
-              'orderId'
-            ) ||
-            ''
-          ).trim();
+          url.searchParams.get(
+            'orderId'
+          );
 
         const payment =
-          String(
-            url.searchParams.get(
-              'payment'
-            ) ||
-            ''
-          ).trim();
+          url.searchParams.get(
+            'payment'
+          ) ||
+          'success';
 
-        if (
-          !orderId ||
-          ![
-            'success',
-            'cancelled'
-          ].includes(
-            payment
-          )
-        ) {
-
+        if (!orderId) {
           return;
-
         }
 
         this.zone.run(
@@ -246,8 +225,19 @@ export class AppComponent
         );
 
         return;
-
       }
+
+
+      /*
+       * Also support our own scheme:
+       *
+       * dialux://reset-password?token=...
+       */
+      const isCustomReset =
+        url.protocol ===
+          'dialux:' &&
+        url.hostname ===
+          'reset-password';
 
 
       if (

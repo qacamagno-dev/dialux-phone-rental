@@ -1,0 +1,39 @@
+  {
+  "project_info": {
+    "project_number": "807409726791",
+    "project_id": "dailux-506211",
+    "storage_bucket": "dailux-506211.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:807409726791:android:4fad6d19c247a44265c862",
+        "android_client_info": {
+          "package_name": "com.dialux.phonerental"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "807409726791-spvai3mdu194n9l2tt2hoh3r5uan2mvf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCihGD7Tzi0lGDb4PbPynBxtMpOIwI8Owk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "807409726791-spvai3mdu194n9l2tt2hoh3r5uan2mvf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,8 +1,16 @@
-<ion-content [fullscreen]="true">
+<ion-content
+  [fullscreen]="true">
 
-  <main class="auth-page">
 
-    <section class="brand">
+  <main
+    class="auth-page">
+
+
+    <!-- BRAND -->
+
+    <section
+      class="brand">
+
 
       <button
         type="button"
@@ -15,34 +23,53 @@
 
       </button>
 
-      <div class="logo-mark">
+
+      <div
+        class="logo-mark">
+
         D
+
       </div>
+
 
       <h1>
         Welcome back
       </h1>
 
+
       <p>
+
         Sign in to continue renting
         with DiaLux.
+
       </p>
+
 
     </section>
 
-    <section class="auth-card">
+
+    <!-- LOGIN CARD -->
+
+    <section
+      class="auth-card">
+
+
+      <!-- EMAIL / PASSWORD -->
 
       <form
         (ngSubmit)="submit()">
+
 
         <ion-item
           lines="none"
           class="field">
 
+
           <ion-icon
             slot="start"
             name="mail-outline">
           </ion-icon>
+
 
           <ion-input
             label="Email"
@@ -55,16 +82,20 @@
             name="email">
           </ion-input>
 
+
         </ion-item>
+
 
         <ion-item
           lines="none"
           class="field">
 
+
           <ion-icon
             slot="start"
             name="lock-closed-outline">
           </ion-icon>
+
 
           <ion-input
             label="Password"
@@ -80,11 +111,13 @@
             name="password">
           </ion-input>
 
+
           <ion-button
             type="button"
             slot="end"
             fill="clear"
             (click)="togglePassword()">
+
 
             <ion-icon
               slot="icon-only"
@@ -95,49 +128,146 @@
               ">
             </ion-icon>
 
+
           </ion-button>
 
+
         </ion-item>
+
 
         <ion-button
           type="submit"
           expand="block"
           size="large"
           class="submit-button"
-          [disabled]="submitting()">
+          [disabled]="
+            submitting() ||
+            googleSubmitting()
+          ">
+
 
           <ion-spinner
-            *ngIf="submitting()"
+            *ngIf="
+              submitting()
+            "
             slot="start"
             name="crescent">
           </ion-spinner>
 
+
           {{
+
             submitting()
               ? 'Signing in...'
               : 'Sign in'
+
           }}
+
 
         </ion-button>
 
+
       </form>
 
-      <div class="signup-row">
+
+      <!-- DIVIDER -->
+
+      <div
+        class="auth-divider">
+
+
+        <span>
+        </span>
+
+
+        <p>
+          OR CONTINUE WITH
+        </p>
+
+
+        <span>
+        </span>
+
+
+      </div>
+
+
+      <!-- GOOGLE -->
+
+      <div
+        class="google-section">
+
+
+        <ion-spinner
+          *ngIf="
+            googleSubmitting()
+          "
+          name="crescent">
+        </ion-spinner>
+
+
+        <button
+          *ngIf="isNativePlatform"
+          type="button"
+          class="native-google-button"
+          [disabled]="
+            googleSubmitting() ||
+            submitting()
+          "
+          (click)="nativeGoogleLogin()">
+
+          <span
+            class="native-google-logo"
+            aria-hidden="true">
+            G
+          </span>
+
+          <span>
+            Continue with Google
+          </span>
+
+        </button>
+
+
+        <div
+          *ngIf="!isNativePlatform"
+          id="googleBtn"
+          [class.google-hidden]="
+            googleSubmitting()
+          ">
+        </div>
+
+
+      </div>
+
+
+      <!-- REGISTER -->
+
+      <div
+        class="signup-row">
+
 
         <span>
           New to DiaLux?
         </span>
 
+
         <button
           type="button"
           (click)="openRegister()">
+
           Create account
+
         </button>
+
 
       </div>
 
+
     </section>
 
+
   </main>
+
 
 </ion-content>

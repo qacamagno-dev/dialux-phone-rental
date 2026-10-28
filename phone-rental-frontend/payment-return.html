@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Returning to DiaLux…</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;background:linear-gradient(180deg,#eef4ff,#fff);font-family:Inter,system-ui,-apple-system,sans-serif;color:#0f172a;padding:24px}.card{width:min(100%,420px);background:#fff;border:1px solid #e2e8f0;border-radius:24px;padding:28px;text-align:center;box-shadow:0 20px 60px rgba(15,23,42,.10)}.logo{display:grid;width:64px;height:64px;margin:0 auto 16px;place-items:center;border-radius:20px;background:linear-gradient(135deg,#2563eb,#60a5fa);color:#fff;font-size:28px;font-weight:900}.spinner{width:34px;height:34px;margin:20px auto;border:3px solid #dbeafe;border-top-color:#2563eb;border-radius:50%;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}h1{margin:0 0 8px;font-size:24px}p{margin:0;color:#64748b;line-height:1.5}.actions{display:grid;gap:10px;margin-top:22px}.btn{display:block;padding:13px 18px;border-radius:14px;text-decoration:none;font-weight:800}.primary{background:#2563eb;color:#fff}.secondary{border:1px solid #dbe2ea;color:#334155;background:#fff}
+  </style>
+</head>
+<body>
+  <main class="card">
+    <div class="logo">D</div>
+    <h1>Returning to DiaLux</h1>
+    <p id="message">Opening your order in the app…</p>
+    <div class="spinner" aria-hidden="true"></div>
+    <div class="actions">
+      <a id="openApp" class="btn primary" href="#">Open DiaLux</a>
+      <a id="openWeb" class="btn secondary" href="/">View on website</a>
+    </div>
+  </main>
+  <script>
+    const params = new URLSearchParams(location.search);
+    const orderId = params.get('orderId') || '';
+    const payment = params.get('payment') || 'success';
+    const deepLink = `dialux://payment?orderId=${encodeURIComponent(orderId)}&payment=${encodeURIComponent(payment)}`;
+    const webLink = orderId ? `/order.html?id=${encodeURIComponent(orderId)}&payment=${encodeURIComponent(payment)}` : '/';
+    document.getElementById('openApp').href = deepLink;
+    document.getElementById('openWeb').href = webLink;
+    document.getElementById('message').textContent = payment === 'cancelled'
+      ? 'Payment was cancelled. Returning to your order…'
+      : 'Payment complete. Returning to your order…';
+    if (orderId) setTimeout(() => { location.href = deepLink; }, 120);
+  </script>
+</body>
+</html>

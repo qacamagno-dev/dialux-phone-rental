@@ -164,6 +164,121 @@ ion-content {
   font-weight: 700;
 }
 
+.auth-divider {
+  display: grid;
+
+  grid-template-columns:
+    1fr
+    auto
+    1fr;
+
+  align-items: center;
+
+  gap: 12px;
+
+  margin:
+    24px
+    0
+    18px;
+}
+
+.auth-divider span {
+  height: 1px;
+
+  background: #e2e8f0;
+}
+
+.auth-divider p {
+  margin: 0;
+
+  color: #94a3b8;
+
+  font-size: 0.72rem;
+  font-weight: 700;
+
+  letter-spacing: 0.06em;
+}
+
+.google-section {
+  display: flex;
+
+  min-height: 44px;
+
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+}
+
+#googleBtn {
+  display: flex;
+
+  width: 100%;
+
+  justify-content: center;
+}
+
+
+.native-google-button {
+  display: flex;
+  width: 100%;
+  min-height: 52px;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 0 18px;
+  border: 1px solid #dbe2ea;
+  border-radius: 14px;
+  background: #ffffff;
+  color: #0f172a;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 750;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+  cursor: pointer;
+  transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
+}
+
+.native-google-button:active {
+  transform: scale(0.985);
+}
+
+.native-google-button:disabled {
+  opacity: 0.58;
+  cursor: default;
+}
+
+.native-google-logo {
+  display: inline-block;
+  font-size: 1.35rem;
+  font-weight: 900;
+  line-height: 1;
+  background: conic-gradient(
+    from -45deg,
+    #4285f4 0deg 95deg,
+    #34a853 95deg 180deg,
+    #fbbc05 180deg 255deg,
+    #ea4335 255deg 360deg
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.google-hidden {
+  display: none !important;
+}
+
+:host ::ng-deep .google-unavailable {
+  margin: 0;
+
+  color: #64748b;
+
+  font-size: 0.85rem;
+
+  text-align: center;
+}
+
 .signup-row {
   display: flex;
 

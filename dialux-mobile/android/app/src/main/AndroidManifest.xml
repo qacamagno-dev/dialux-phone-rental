@@ -64,6 +64,45 @@
             </intent-filter>
 
 
+            <!-- DIALUX PAYMENT RETURN -->
+
+            <intent-filter>
+
+                <action
+                    android:name="android.intent.action.VIEW" />
+
+                <category
+                    android:name="android.intent.category.DEFAULT" />
+
+                <category
+                    android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:scheme="https"
+                    android:host="dialux-phone-rental.onrender.com"
+                    android:path="/payment-return.html" />
+
+            </intent-filter>
+
+
+            <intent-filter>
+
+                <action
+                    android:name="android.intent.action.VIEW" />
+
+                <category
+                    android:name="android.intent.category.DEFAULT" />
+
+                <category
+                    android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:scheme="dialux"
+                    android:host="payment" />
+
+            </intent-filter>
+
+
             <!-- OPTIONAL CUSTOM DIALUX SCHEME -->
 
             <intent-filter>
@@ -80,26 +119,6 @@
                 <data
                     android:scheme="dialux"
                     android:host="reset-password" />
-
-            </intent-filter>
-
-
-            <!-- PAYMONGO RETURN TO MOBILE APP -->
-
-            <intent-filter>
-
-                <action
-                    android:name="android.intent.action.VIEW" />
-
-                <category
-                    android:name="android.intent.category.DEFAULT" />
-
-                <category
-                    android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:scheme="dialux"
-                    android:host="payment" />
 
             </intent-filter>
 

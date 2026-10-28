@@ -18,11 +18,13 @@
 
 </ion-header>
 
+
 <ion-content>
 
   <main class="support-page">
 
-    <!-- CHAT -->
+
+    <!-- AI CHAT -->
 
     <section class="support-card">
 
@@ -50,6 +52,7 @@
 
       </div>
 
+
       <div class="chat">
 
         <div
@@ -68,6 +71,7 @@
           </div>
 
         </div>
+
 
         <div
           class="message-row"
@@ -88,6 +92,7 @@
         </div>
 
       </div>
+
 
       <div class="chatbox">
 
@@ -117,6 +122,282 @@
 
     </section>
 
+
+    <!-- FAQ -->
+
+    <section class="support-card">
+
+      <div class="card-heading">
+
+        <div class="heading-icon">
+
+          <ion-icon
+            name="help-circle-outline">
+          </ion-icon>
+
+        </div>
+
+        <div>
+
+          <h2>
+            Frequently Asked Questions
+          </h2>
+
+          <p>
+            Quick answers about renting with DiaLux.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="faq-list">
+
+
+        <details class="faq-item">
+
+          <summary>
+
+            <span>
+              How do I rent a device?
+            </span>
+
+            <ion-icon
+              name="chevron-down-outline">
+            </ion-icon>
+
+          </summary>
+
+          <div class="faq-answer">
+
+            Browse available devices,
+            select a daily, weekly, or monthly
+            rental plan, add the device to your
+            cart, then complete checkout and
+            payment.
+
+          </div>
+
+        </details>
+
+
+        <details class="faq-item">
+
+          <summary>
+
+            <span>
+              What payment methods are accepted?
+            </span>
+
+            <ion-icon
+              name="chevron-down-outline">
+            </ion-icon>
+
+          </summary>
+
+          <div class="faq-answer">
+
+            DiaLux supports GCash, Maya,
+            credit or debit card, Cash on
+            Delivery, and bank transfer.
+
+          </div>
+
+        </details>
+
+
+        <details class="faq-item">
+
+          <summary>
+
+            <span>
+              Is there a security deposit?
+            </span>
+
+            <ion-icon
+              name="chevron-down-outline">
+            </ion-icon>
+
+          </summary>
+
+          <div class="faq-answer">
+
+            Yes. A refundable security deposit
+            is required for rentals. The amount
+            depends on the rental plan and will
+            be reviewed after the device is
+            returned and inspected.
+
+          </div>
+
+        </details>
+
+
+        <details class="faq-item">
+
+          <summary>
+
+            <span>
+              How will I receive my device?
+            </span>
+
+            <ion-icon
+              name="chevron-down-outline">
+            </ion-icon>
+
+          </summary>
+
+          <div class="faq-answer">
+
+            Available delivery options may
+            include delivery, pickup, or
+            meet-up depending on your order.
+            You can track delivery updates from
+            My Orders.
+
+          </div>
+
+        </details>
+
+
+        <details class="faq-item">
+
+          <summary>
+
+            <span>
+              How do I return a rented device?
+            </span>
+
+            <ion-icon
+              name="chevron-down-outline">
+            </ion-icon>
+
+          </summary>
+
+          <div class="faq-answer">
+
+            Open your order and request a
+            return once the rental is eligible.
+            A rider may be assigned for the
+            return, then the device will be
+            inspected by DiaLux.
+
+          </div>
+
+        </details>
+
+
+        <details class="faq-item">
+
+          <summary>
+
+            <span>
+              When will my deposit be refunded?
+            </span>
+
+            <ion-icon
+              name="chevron-down-outline">
+            </ion-icon>
+
+          </summary>
+
+          <div class="faq-answer">
+
+            The deposit is handled after the
+            returned device has completed
+            inspection. Any applicable charges
+            or issues are reviewed before the
+            rental is completed.
+
+          </div>
+
+        </details>
+
+
+        <details class="faq-item">
+
+          <summary>
+
+            <span>
+              Can I change or reset my password?
+            </span>
+
+            <ion-icon
+              name="chevron-down-outline">
+            </ion-icon>
+
+          </summary>
+
+          <div class="faq-answer">
+
+            Yes. You can change your password
+            from Profile → Account Security.
+            If you forgot it, use the password
+            reset option and follow the link
+            sent to your registered email.
+
+          </div>
+
+        </details>
+
+
+        <details class="faq-item">
+
+          <summary>
+
+            <span>
+              Who can submit a device review?
+            </span>
+
+            <ion-icon
+              name="chevron-down-outline">
+            </ion-icon>
+
+          </summary>
+
+          <div class="faq-answer">
+
+            Only customers who have actually
+            rented the device can submit a
+            rating and review.
+
+          </div>
+
+        </details>
+
+
+        <details class="faq-item">
+
+          <summary>
+
+            <span>
+              What if I have an order or payment problem?
+            </span>
+
+            <ion-icon
+              name="chevron-down-outline">
+            </ion-icon>
+
+          </summary>
+
+          <div class="faq-answer">
+
+            You can ask DiaLux Assistant above
+            for quick help or submit a support
+            ticket below. Include your order
+            reference when available.
+
+          </div>
+
+        </details>
+
+
+      </div>
+
+    </section>
+
+
     <!-- CONTACT SUPPORT -->
 
     <section class="support-card">
@@ -145,9 +426,11 @@
 
       </div>
 
+
       <form
         class="support-form"
         (ngSubmit)="send()">
+
 
         <label>
           Subject
@@ -159,6 +442,7 @@
           name="subject"
           placeholder="Briefly describe your concern">
         </ion-input>
+
 
         <label>
           Category
@@ -197,11 +481,14 @@
 
         </ion-select>
 
+
         <label>
           Order reference
+
           <span>
             Optional
           </span>
+
         </label>
 
         <ion-input
@@ -210,6 +497,7 @@
           name="orderRef"
           placeholder="e.g. DLX-ABC123">
         </ion-input>
+
 
         <label>
           Message
@@ -224,12 +512,14 @@
           placeholder="Tell us what happened and how we can help.">
         </ion-textarea>
 
+
         <div class="message-count">
 
           {{ message.trim().length }}
           characters
 
         </div>
+
 
         <ion-button
           type="submit"
@@ -251,11 +541,13 @@
 
         </ion-button>
 
+
       </form>
 
     </section>
 
-    <!-- TICKETS -->
+
+    <!-- MY TICKETS -->
 
     <section
       class="support-card"
@@ -285,6 +577,9 @@
 
       </div>
 
+
+      <!-- LOADING -->
+
       <div
         class="ticket-state"
         *ngIf="ticketsLoading()">
@@ -298,6 +593,9 @@
         </span>
 
       </div>
+
+
+      <!-- ERROR -->
 
       <div
         class="ticket-state"
@@ -318,10 +616,15 @@
           size="small"
           fill="outline"
           (click)="loadTickets()">
+
           Retry
+
         </ion-button>
 
       </div>
+
+
+      <!-- EMPTY -->
 
       <div
         class="ticket-state"
@@ -345,6 +648,9 @@
 
       </div>
 
+
+      <!-- LIST -->
+
       <div
         class="ticket-list"
         *ngIf="
@@ -353,28 +659,36 @@
           tickets().length > 0
         ">
 
+
         <article
           class="ticket-card"
           *ngFor="
-            let ticket of tickets()
+            let ticket
+            of tickets()
           ">
+
 
           <div class="ticket-top">
 
             <div>
 
               <span class="ticket-ref">
+
                 {{ ticket.ref }}
+
               </span>
 
               <h3>
+
                 {{
                   ticket.subject ||
                   'Support request'
                 }}
+
               </h3>
 
             </div>
+
 
             <span
               class="ticket-status"
@@ -394,35 +708,38 @@
 
           </div>
 
+
           <div class="ticket-meta">
 
             <span>
+
               {{
                 categoryLabel(
                   ticket.category
                 )
               }}
+
             </span>
 
             <span
-              *ngIf="
-                ticket.orderRef
-              ">
+              *ngIf="ticket.orderRef">
+
               Order:
               {{ ticket.orderRef }}
+
             </span>
 
           </div>
+
 
           <p>
             {{ ticket.message }}
           </p>
 
+
           <div
             class="ticket-date"
-            *ngIf="
-              ticket.createdAt
-            ">
+            *ngIf="ticket.createdAt">
 
             <ion-icon
               name="time-outline">
@@ -436,11 +753,14 @@
 
           </div>
 
+
         </article>
+
 
       </div>
 
     </section>
+
 
   </main>
 

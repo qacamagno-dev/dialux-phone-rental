@@ -1,0 +1,824 @@
+<ion-header>
+
+  <ion-toolbar>
+
+    <ion-buttons
+      slot="start">
+
+      <ion-back-button
+        defaultHref="/tabs/orders">
+      </ion-back-button>
+
+    </ion-buttons>
+
+
+    <ion-title>
+      Order Tracking
+    </ion-title>
+
+  </ion-toolbar>
+
+</ion-header>
+
+
+<ion-content>
+
+
+  <ion-refresher
+    slot="fixed"
+    (ionRefresh)="refresh($event)">
+
+    <ion-refresher-content
+      pullingText="Pull to refresh"
+      refreshingSpinner="crescent">
+    </ion-refresher-content>
+
+  </ion-refresher>
+
+
+  <!-- LOADING -->
+
+  <div
+    class="state"
+    *ngIf="loading()">
+
+    <ion-spinner
+      name="crescent">
+    </ion-spinner>
+
+    <p>
+      Loading order...
+    </p>
+
+  </div>
+
+
+  <!-- ERROR -->
+
+  <div
+    class="state"
+    *ngIf="
+      !loading() &&
+      error()
+    ">
+
+    <ion-icon
+      name="alert-circle-outline">
+    </ion-icon>
+
+    <h2>
+      Couldn't load order
+    </h2>
+
+    <p>
+      {{ error() }}
+    </p>
+
+    <ion-button
+      (click)="load()">
+      Try Again
+    </ion-button>
+
+  </div>
+
+
+  <!-- ORDER -->
+
+  <main
+    class="order-page"
+    *ngIf="
+      !loading() &&
+      !error() &&
+      order() as current
+    ">
+
+
+    <!-- STATUS HERO -->
+
+    <section
+      class="status-card">
+
+      <div
+        class="status-icon">
+
+        <ion-icon
+          name="cube-outline">
+        </ion-icon>
+
+      </div>
+
+
+      <div
+        class="status-copy">
+
+        <span>
+          Current Status
+        </span>
+
+        <h1>
+          {{
+            statusLabel(
+              current.status
+            )
+          }}
+        </h1>
+
+        <p>
+          {{
+            current.invoiceNo ||
+            'DiaLux Rental'
+          }}
+        </p>
+
+      </div>
+
+
+      <span
+        class="status-pill"
+        [ngClass]="
+          statusClass(
+            current.status
+          )
+        ">
+
+        {{
+          statusLabel(
+            current.status
+          )
+        }}
+
+      </span>
+
+    </section>
+
+
+    <!-- RENTAL DATES -->
+
+    <section
+      class="summary-card">
+
+      <div
+        class="summary-heading">
+
+        <ion-icon
+          name="calendar-outline">
+        </ion-icon>
+
+        <h2>
+          Rental Period
+        </h2>
+
+      </div>
+
+
+      <div
+        class="date-grid">
+
+        <div>
+
+          <span>
+            Start
+          </span>
+
+          <strong>
+            {{
+              formatDate(
+                current.startDate
+              )
+            }}
+          </strong>
+
+        </div>
+
+
+        <ion-icon
+          class="date-arrow"
+          name="arrow-forward-outline">
+        </ion-icon>
+
+
+        <div>
+
+          <span>
+            End
+          </span>
+
+          <strong>
+            {{
+              formatDate(
+                current.endDate
+              )
+            }}
+          </strong>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- OUTBOUND DELIVERY TRACKING -->
+
+    <section
+      class="tracking-card"
+      *ngIf="
+        current.legs?.delivery
+          as delivery
+      ">
+
+      <div
+        class="section-heading">
+
+        <div>
+
+          <span>
+            DELIVERY
+          </span>
+
+          <h2>
+            Delivery Tracking
+          </h2>
+
+        </div>
+
+
+        <span
+          class="status-pill"
+          [ngClass]="
+            statusClass(
+              delivery.status
+            )
+          ">
+
+          {{
+            statusLabel(
+              delivery.status
+            )
+          }}
+
+        </span>
+
+      </div>
+
+
+      <div
+        class="rider-card"
+        *ngIf="
+          delivery.riderName
+        ">
+
+        <div
+          class="rider-icon">
+
+          <ion-icon
+            name="bicycle-outline">
+          </ion-icon>
+
+        </div>
+
+
+        <div
+          class="rider-copy">
+
+          <span>
+            Assigned rider
+          </span>
+
+          <strong>
+            {{
+              delivery.riderName
+            }}
+          </strong>
+
+          <p
+            *ngIf="
+              delivery.riderPhone
+            ">
+
+            {{
+              delivery.riderPhone
+            }}
+
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div
+        class="eta-row"
+        *ngIf="
+          delivery.eta
+        ">
+
+        <ion-icon
+          name="time-outline">
+        </ion-icon>
+
+        <div>
+
+          <span>
+            Estimated arrival
+          </span>
+
+          <strong>
+            {{
+              dateTime(
+                delivery.eta
+              )
+            }}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <div
+        class="timeline"
+        *ngIf="
+          delivery.checkpoints
+            ?.length
+        ">
+
+        <div
+          class="timeline-item"
+          *ngFor="
+            let checkpoint
+            of delivery.checkpoints;
+            let last = last
+          "
+          [class.last]="last">
+
+          <div
+            class="timeline-marker">
+
+            <span>
+            </span>
+
+          </div>
+
+
+          <div
+            class="timeline-copy">
+
+            <strong>
+              {{
+                checkpointLabel(
+                  checkpoint
+                )
+              }}
+            </strong>
+
+
+            <p
+              *ngIf="
+                checkpointNote(
+                  checkpoint
+                )
+              ">
+
+              {{
+                checkpointNote(
+                  checkpoint
+                )
+              }}
+
+            </p>
+
+
+            <small>
+              {{
+                checkpointDate(
+                  checkpoint
+                )
+              }}
+            </small>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div
+        class="tracking-empty"
+        *ngIf="
+          !delivery.checkpoints
+            ?.length
+        ">
+
+        <ion-icon
+          name="time-outline">
+        </ion-icon>
+
+        <p>
+          Waiting for the next
+          delivery update.
+        </p>
+
+      </div>
+
+    </section>
+
+
+    <!-- RETURN TRACKING -->
+
+    <section
+      class="tracking-card return-card"
+      *ngIf="
+        current.legs?.return
+          as returnLeg
+      ">
+
+      <div
+        class="section-heading">
+
+        <div>
+
+          <span>
+            RETURN
+          </span>
+
+          <h2>
+            Return Tracking
+          </h2>
+
+        </div>
+
+
+        <span
+          class="status-pill"
+          [ngClass]="
+            statusClass(
+              returnLeg.status
+            )
+          ">
+
+          {{
+            statusLabel(
+              returnLeg.status
+            )
+          }}
+
+        </span>
+
+      </div>
+
+
+      <div
+        class="rider-card"
+        *ngIf="
+          returnLeg.riderName
+        ">
+
+        <div
+          class="rider-icon">
+
+          <ion-icon
+            name="return-down-back-outline">
+          </ion-icon>
+
+        </div>
+
+
+        <div
+          class="rider-copy">
+
+          <span>
+            Return rider
+          </span>
+
+          <strong>
+            {{
+              returnLeg.riderName
+            }}
+          </strong>
+
+          <p
+            *ngIf="
+              returnLeg.riderPhone
+            ">
+
+            {{
+              returnLeg.riderPhone
+            }}
+
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div
+        class="eta-row"
+        *ngIf="
+          returnLeg.eta
+        ">
+
+        <ion-icon
+          name="time-outline">
+        </ion-icon>
+
+        <div>
+
+          <span>
+            Estimated update
+          </span>
+
+          <strong>
+            {{
+              dateTime(
+                returnLeg.eta
+              )
+            }}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <div
+        class="timeline"
+        *ngIf="
+          returnLeg.checkpoints
+            ?.length
+        ">
+
+        <div
+          class="timeline-item"
+          *ngFor="
+            let checkpoint
+            of returnLeg.checkpoints;
+            let last = last
+          "
+          [class.last]="last">
+
+          <div
+            class="timeline-marker">
+
+            <span>
+            </span>
+
+          </div>
+
+
+          <div
+            class="timeline-copy">
+
+            <strong>
+              {{
+                checkpointLabel(
+                  checkpoint
+                )
+              }}
+            </strong>
+
+
+            <p
+              *ngIf="
+                checkpointNote(
+                  checkpoint
+                )
+              ">
+
+              {{
+                checkpointNote(
+                  checkpoint
+                )
+              }}
+
+            </p>
+
+
+            <small>
+              {{
+                checkpointDate(
+                  checkpoint
+                )
+              }}
+            </small>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ITEMS -->
+
+    <section
+      class="summary-card">
+
+      <div
+        class="summary-heading">
+
+        <ion-icon
+          name="phone-portrait-outline">
+        </ion-icon>
+
+        <h2>
+          Rental Items
+        </h2>
+
+      </div>
+
+
+      <div
+        class="order-item"
+        *ngFor="
+          let item
+          of current.items
+        ">
+
+        <div
+          class="item-image">
+
+          <img
+            *ngIf="
+              itemImage(
+                item
+              )
+            "
+            [src]="
+              itemImage(
+                item
+              )
+            "
+            [alt]="
+              item.name ||
+              'Rental device'
+            "
+            (error)="
+              onItemImageError(
+                item
+              )
+            ">
+
+
+          <ion-icon
+            *ngIf="
+              !itemImage(
+                item
+              )
+            "
+            name="phone-portrait-outline">
+          </ion-icon>
+
+        </div>
+
+
+        <div
+          class="item-copy">
+
+          <strong>
+            {{
+              item.name ||
+              'Rental device'
+            }}
+          </strong>
+
+          <span>
+            {{
+              item.plan ||
+              'Rental'
+            }}
+            ·
+            Qty
+            {{
+              itemQuantity(
+                item
+              )
+            }}
+          </span>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- PAYMENT -->
+
+    <section
+      class="summary-card">
+
+      <div
+        class="summary-heading">
+
+        <ion-icon
+          name="card-outline">
+        </ion-icon>
+
+        <h2>
+          Payment
+        </h2>
+
+      </div>
+
+
+      <div
+        class="detail-row">
+
+        <span>
+          Method
+        </span>
+
+        <strong>
+          {{
+            paymentLabel(
+              current.payment?.method
+            )
+          }}
+        </strong>
+
+      </div>
+
+
+      <div
+        class="detail-row">
+
+        <span>
+          Payment status
+        </span>
+
+        <strong>
+          {{
+            paymentStatusLabel(
+              current.payment?.status
+            )
+          }}
+        </strong>
+
+      </div>
+
+
+      <div
+        class="detail-row"
+        *ngIf="
+          current.payment
+            ?.referenceNo
+        ">
+
+        <span>
+          Reference
+        </span>
+
+        <strong
+          class="reference">
+
+          {{
+            current.payment
+              ?.referenceNo
+          }}
+
+        </strong>
+
+      </div>
+
+
+      <div
+        class="detail-row total-row">
+
+        <span>
+          Total
+        </span>
+
+        <strong>
+          {{
+            money(
+              current.total
+            )
+          }}
+        </strong>
+
+      </div>
+
+    </section>
+
+
+    <p
+      class="auto-refresh">
+
+      <ion-icon
+        name="sync-outline">
+      </ion-icon>
+
+      Tracking updates automatically
+      while this page is open.
+
+    </p>
+
+
+  </main>
+
+</ion-content>

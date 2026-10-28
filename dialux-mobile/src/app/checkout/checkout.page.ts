@@ -509,7 +509,7 @@ export class CheckoutPage {
     }
 
     const returnUrl =
-      window.location.origin;
+      `${this.api.siteUrl}/payment-return.html?target=app`;
 
     this.api
       .post<any>(
@@ -519,9 +519,6 @@ export class CheckoutPage {
 
           method:
             this.paymentMethod,
-
-          client:
-            'mobile',
 
           returnUrl
         }

@@ -2,13 +2,15 @@
 
   <ion-toolbar>
 
-    <ion-buttons slot="start">
+    <ion-buttons
+      slot="start">
 
       <ion-back-button
         defaultHref="/tabs/devices">
       </ion-back-button>
 
     </ion-buttons>
+
 
     <ion-title>
       Device Details
@@ -20,6 +22,9 @@
 
 
 <ion-content>
+
+
+  <!-- LOADING -->
 
   <div
     class="state"
@@ -35,6 +40,8 @@
 
   </div>
 
+
+  <!-- ERROR -->
 
   <div
     class="state"
@@ -58,6 +65,8 @@
   </div>
 
 
+  <!-- PRODUCT -->
+
   <main
     class="device-page"
     *ngIf="
@@ -66,9 +75,11 @@
       product() as p
     ">
 
+
     <!-- IMAGE -->
 
-    <section class="image-card">
+    <section
+      class="image-card">
 
       <img
         [src]="
@@ -87,9 +98,11 @@
 
     <!-- PRODUCT INFO -->
 
-    <section class="device-heading">
+    <section
+      class="device-heading">
 
-      <div class="tags">
+      <div
+        class="tags">
 
         <span
           *ngIf="p.brand">
@@ -109,7 +122,10 @@
 
           {{
             (p.stock || 0) > 0
-              ? (p.stock + ' available')
+              ? (
+                  p.stock +
+                  ' available'
+                )
               : 'Out of stock'
           }}
 
@@ -117,15 +133,72 @@
 
       </div>
 
+
       <h1>
         {{ p.name }}
       </h1>
 
+
+      <!-- RATING SUMMARY -->
+
+      <div
+        class="heading-rating"
+        *ngIf="
+          reviewCount() > 0
+        ">
+
+        <div
+          class="mini-stars">
+
+          <ion-icon
+            *ngFor="
+              let star
+              of stars
+            "
+            [name]="
+              starFilled(
+                star,
+                averageRating()
+              )
+                ? 'star'
+                : 'star-outline'
+            ">
+          </ion-icon>
+
+        </div>
+
+        <strong>
+          {{
+            averageRating()
+              | number:'1.1-1'
+          }}
+        </strong>
+
+        <span>
+          {{
+            reviewCount()
+          }}
+          {{
+            reviewCount() === 1
+              ? 'review'
+              : 'reviews'
+          }}
+        </span>
+
+      </div>
+
+
       <p
         class="description"
-        *ngIf="p.description">
+        *ngIf="
+          p.description ||
+          p.desc
+        ">
 
-        {{ p.description }}
+        {{
+          p.description ||
+          p.desc
+        }}
 
       </p>
 
@@ -134,19 +207,27 @@
 
     <!-- PRICES -->
 
-    <section class="price-grid">
+    <section
+      class="price-grid">
+
 
       <button
         type="button"
         class="price-card"
         [class.selected]="
-          isSelected('Daily')
+          isSelected(
+            'Daily'
+          )
         "
         [class.disabled]="
-          !isPlanAvailable('Daily')
+          !isPlanAvailable(
+            'Daily'
+          )
         "
         (click)="
-          selectPlan('Daily')
+          selectPlan(
+            'Daily'
+          )
         ">
 
         <span>
@@ -154,7 +235,11 @@
         </span>
 
         <strong>
-          {{ money(p.daily) }}
+          {{
+            money(
+              p.daily
+            )
+          }}
         </strong>
 
         <small>
@@ -163,7 +248,9 @@
 
         <ion-icon
           *ngIf="
-            isSelected('Daily')
+            isSelected(
+              'Daily'
+            )
           "
           name="checkmark-circle">
         </ion-icon>
@@ -175,13 +262,19 @@
         type="button"
         class="price-card"
         [class.selected]="
-          isSelected('Weekly')
+          isSelected(
+            'Weekly'
+          )
         "
         [class.disabled]="
-          !isPlanAvailable('Weekly')
+          !isPlanAvailable(
+            'Weekly'
+          )
         "
         (click)="
-          selectPlan('Weekly')
+          selectPlan(
+            'Weekly'
+          )
         ">
 
         <span>
@@ -189,7 +282,11 @@
         </span>
 
         <strong>
-          {{ money(p.weekly) }}
+          {{
+            money(
+              p.weekly
+            )
+          }}
         </strong>
 
         <small>
@@ -198,7 +295,9 @@
 
         <ion-icon
           *ngIf="
-            isSelected('Weekly')
+            isSelected(
+              'Weekly'
+            )
           "
           name="checkmark-circle">
         </ion-icon>
@@ -210,13 +309,19 @@
         type="button"
         class="price-card"
         [class.selected]="
-          isSelected('Monthly')
+          isSelected(
+            'Monthly'
+          )
         "
         [class.disabled]="
-          !isPlanAvailable('Monthly')
+          !isPlanAvailable(
+            'Monthly'
+          )
         "
         (click)="
-          selectPlan('Monthly')
+          selectPlan(
+            'Monthly'
+          )
         ">
 
         <span>
@@ -224,7 +329,11 @@
         </span>
 
         <strong>
-          {{ money(p.monthly) }}
+          {{
+            money(
+              p.monthly
+            )
+          }}
         </strong>
 
         <small>
@@ -233,21 +342,26 @@
 
         <ion-icon
           *ngIf="
-            isSelected('Monthly')
+            isSelected(
+              'Monthly'
+            )
           "
           name="checkmark-circle">
         </ion-icon>
 
       </button>
 
+
     </section>
 
 
     <!-- SELECTED RENTAL -->
 
-    <section class="selected-rental-card">
+    <section
+      class="selected-rental-card">
 
-      <div class="selected-icon">
+      <div
+        class="selected-icon">
 
         <ion-icon
           name="calendar-outline">
@@ -255,7 +369,9 @@
 
       </div>
 
-      <div class="selected-copy">
+
+      <div
+        class="selected-copy">
 
         <span>
           Selected rental plan
@@ -267,22 +383,32 @@
 
       </div>
 
-      <div class="selected-price">
+
+      <div
+        class="selected-price">
 
         <strong>
-          {{ money(selectedPrice()) }}
+          {{
+            money(
+              selectedPrice()
+            )
+          }}
         </strong>
 
         <span>
+
           {{
-            selectedPlan() === 'Daily'
+            selectedPlan() ===
+            'Daily'
               ? '/ day'
               : (
-                  selectedPlan() === 'Weekly'
+                  selectedPlan() ===
+                  'Weekly'
                     ? '/ week'
                     : '/ month'
                 )
           }}
+
         </span>
 
       </div>
@@ -306,20 +432,25 @@
         </span>
 
         <strong>
+
           {{
             money(
-              selectedPlan() === 'Daily'
+              selectedPlan() ===
+              'Daily'
                 ? 500
                 : (
-                    selectedPlan() === 'Weekly'
+                    selectedPlan() ===
+                    'Weekly'
                       ? 2500
                       : 5000
                   )
             )
           }}
+
         </strong>
 
       </div>
+
 
       <ion-icon
         name="shield-checkmark-outline">
@@ -340,10 +471,12 @@
         Specifications
       </h2>
 
+
       <div
         class="spec-row"
         *ngFor="
-          let spec of specsList()
+          let spec
+          of specsList()
         ">
 
         <span>
@@ -371,10 +504,12 @@
         What's Included
       </h2>
 
+
       <div
         class="included-item"
         *ngFor="
-          let item of includedItems()
+          let item
+          of includedItems()
         ">
 
         <ion-icon
@@ -390,13 +525,592 @@
     </section>
 
 
-    <div class="action-space">
+    <!-- REVIEWS -->
+
+    <section
+      class="reviews-card">
+
+      <div
+        class="reviews-heading">
+
+        <div>
+
+          <span
+            class="section-eyebrow">
+            CUSTOMER FEEDBACK
+          </span>
+
+          <h2>
+            Ratings & Reviews
+          </h2>
+
+        </div>
+
+
+        <div
+          class="rating-number"
+          *ngIf="
+            reviewCount() > 0
+          ">
+
+          <strong>
+            {{
+              averageRating()
+                | number:'1.1-1'
+            }}
+          </strong>
+
+          <span>
+            / 5
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <!-- EMPTY RATING SUMMARY -->
+
+      <div
+        class="no-rating"
+        *ngIf="
+          !reviewsLoading() &&
+          reviewCount() === 0
+        ">
+
+        <ion-icon
+          name="star-outline">
+        </ion-icon>
+
+        <div>
+
+          <strong>
+            No reviews yet
+          </strong>
+
+          <p>
+            Be the first verified renter
+            to review this device.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <!-- SUMMARY -->
+
+      <div
+        class="rating-summary"
+        *ngIf="
+          reviewCount() > 0
+        ">
+
+        <div
+          class="rating-main">
+
+          <strong>
+            {{
+              averageRating()
+                | number:'1.1-1'
+            }}
+          </strong>
+
+
+          <div
+            class="summary-copy">
+
+            <div
+              class="summary-stars">
+
+              <ion-icon
+                *ngFor="
+                  let star
+                  of stars
+                "
+                [name]="
+                  starFilled(
+                    star,
+                    averageRating()
+                  )
+                    ? 'star'
+                    : 'star-outline'
+                ">
+              </ion-icon>
+
+            </div>
+
+
+            <span>
+
+              Based on
+              {{ reviewCount() }}
+              {{
+                reviewCount() === 1
+                  ? 'review'
+                  : 'reviews'
+              }}
+
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <div
+          class="rating-bars">
+
+          <div
+            class="rating-bar-row"
+            *ngFor="
+              let star
+              of [5, 4, 3, 2, 1]
+            ">
+
+            <span
+              class="star-label">
+
+              {{ star }}
+
+              <ion-icon
+                name="star">
+              </ion-icon>
+
+            </span>
+
+
+            <div
+              class="rating-track">
+
+              <div
+                class="rating-fill"
+                [style.width.%]="
+                  ratingPercent(
+                    star
+                  )
+                ">
+              </div>
+
+            </div>
+
+
+            <span
+              class="rating-bar-count">
+
+              {{
+                ratingCount(
+                  star
+                )
+              }}
+
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- REVIEW FORM -->
+
+      <div
+        class="review-form"
+        *ngIf="
+          auth.isLoggedIn()
+        ">
+
+        <div
+          class="review-form-heading">
+
+          <div>
+
+            <h3>
+
+              {{
+                editingOwnReview()
+                  ? 'Update Your Review'
+                  : 'Write a Review'
+              }}
+
+            </h3>
+
+            <p>
+              Reviews can only be submitted
+              by customers who rented this
+              device.
+            </p>
+
+          </div>
+
+
+          <span
+            class="verified-label">
+
+            <ion-icon
+              name="shield-checkmark-outline">
+            </ion-icon>
+
+            Verified renters
+
+          </span>
+
+        </div>
+
+
+        <label>
+          Your rating
+        </label>
+
+
+        <div
+          class="rating-picker">
+
+          <button
+            type="button"
+            *ngFor="
+              let star
+              of stars
+            "
+            [attr.aria-label]="
+              star +
+              ' star rating'
+            "
+            (click)="
+              selectRating(
+                star
+              )
+            ">
+
+            <ion-icon
+              [name]="
+                starFilled(
+                  star,
+                  selectedRating()
+                )
+                  ? 'star'
+                  : 'star-outline'
+              ">
+            </ion-icon>
+
+          </button>
+
+        </div>
+
+
+        <span
+          class="rating-selected"
+          *ngIf="
+            selectedRating() > 0
+          ">
+
+          {{
+            selectedRating()
+          }}
+          out of 5 stars
+
+        </span>
+
+
+        <label>
+          Review
+        </label>
+
+
+        <ion-textarea
+          class="review-textarea"
+          [(ngModel)]="reviewComment"
+          name="reviewComment"
+          maxlength="1000"
+          rows="4"
+          autoGrow="true"
+          placeholder="Tell other customers about your experience with this device.">
+        </ion-textarea>
+
+
+        <div
+          class="review-form-footer">
+
+          <span>
+            {{
+              reviewComment.length
+            }}
+            / 1000
+          </span>
+
+
+          <ion-button
+            [disabled]="
+              submittingReview() ||
+              selectedRating() === 0
+            "
+            (click)="
+              submitReview()
+            ">
+
+            <ion-spinner
+              *ngIf="
+                submittingReview()
+              "
+              slot="start"
+              name="crescent">
+            </ion-spinner>
+
+
+            <ion-icon
+              *ngIf="
+                !submittingReview()
+              "
+              slot="start"
+              name="star-outline">
+            </ion-icon>
+
+
+            {{
+              submittingReview()
+                ? 'Saving...'
+                : (
+                    editingOwnReview()
+                      ? 'Update Review'
+                      : 'Submit Review'
+                  )
+            }}
+
+          </ion-button>
+
+        </div>
+
+      </div>
+
+
+      <!-- LOGGED OUT -->
+
+      <div
+        class="review-login"
+        *ngIf="
+          !auth.isLoggedIn()
+        ">
+
+        <ion-icon
+          name="person-circle-outline">
+        </ion-icon>
+
+        <div>
+
+          <strong>
+            Want to leave a review?
+          </strong>
+
+          <p>
+            Sign in first. Only customers
+            who rented this device can
+            submit a rating.
+          </p>
+
+        </div>
+
+        <ion-button
+          size="small"
+          fill="outline"
+          routerLink="/login">
+
+          Sign In
+
+        </ion-button>
+
+      </div>
+
+
+      <!-- LOADING -->
+
+      <div
+        class="reviews-state"
+        *ngIf="
+          reviewsLoading()
+        ">
+
+        <ion-spinner
+          name="crescent">
+        </ion-spinner>
+
+        <span>
+          Loading reviews...
+        </span>
+
+      </div>
+
+
+      <!-- REVIEW ERROR -->
+
+      <div
+        class="reviews-state error"
+        *ngIf="
+          !reviewsLoading() &&
+          reviewsError()
+        ">
+
+        <ion-icon
+          name="alert-circle-outline">
+        </ion-icon>
+
+        <span>
+          {{ reviewsError() }}
+        </span>
+
+      </div>
+
+
+      <!-- REVIEW LIST -->
+
+      <div
+        class="review-list"
+        *ngIf="
+          !reviewsLoading() &&
+          !reviewsError() &&
+          reviews().length > 0
+        ">
+
+
+        <article
+          class="review-item"
+          *ngFor="
+            let review
+            of reviews()
+          "
+          [class.own-review]="
+            isReviewMine(
+              review
+            )
+          ">
+
+
+          <div
+            class="review-top">
+
+            <div
+              class="reviewer">
+
+              <div
+                class="review-avatar">
+
+                {{
+                  displayReviewerName(
+                    review
+                  )
+                    .charAt(0)
+                    .toUpperCase()
+                }}
+
+              </div>
+
+
+              <div>
+
+                <strong>
+
+                  {{
+                    displayReviewerName(
+                      review
+                    )
+                  }}
+
+                </strong>
+
+                <span>
+
+                  {{
+                    review.createdAt
+                      | date:
+                        'MMM d, y'
+                  }}
+
+                </span>
+
+              </div>
+
+            </div>
+
+
+            <span
+              class="your-review"
+              *ngIf="
+                isReviewMine(
+                  review
+                )
+              ">
+
+              Your review
+
+            </span>
+
+          </div>
+
+
+          <div
+            class="review-stars">
+
+            <ion-icon
+              *ngFor="
+                let star
+                of stars
+              "
+              [name]="
+                starFilled(
+                  star,
+                  review.rating
+                )
+                  ? 'star'
+                  : 'star-outline'
+              ">
+            </ion-icon>
+
+          </div>
+
+
+          <p
+            *ngIf="
+              review.comment
+            ">
+
+            {{ review.comment }}
+
+          </p>
+
+
+          <span
+            class="verified-rental">
+
+            <ion-icon
+              name="checkmark-circle">
+            </ion-icon>
+
+            Verified rental
+
+          </span>
+
+
+        </article>
+
+
+      </div>
+
+
+    </section>
+
+
+    <div
+      class="action-space">
     </div>
+
 
   </main>
 
+
 </ion-content>
 
+
+<!-- BOTTOM ACTIONS -->
 
 <div
   class="bottom-actions"
@@ -406,74 +1120,80 @@
     product() as p
   ">
 
-  <ion-button
-    class="wishlist-button"
-    fill="outline"
-    [disabled]="
-      addingWishlist() ||
-      orderingNow()
-    "
-    (click)="
-      addToWishlist()
-    ">
 
-    <ion-spinner
-      *ngIf="
-        addingWishlist()
+  <div
+    class="bottom-row">
+
+
+    <ion-button
+      class="wishlist-button"
+      fill="outline"
+      [disabled]="
+        addingWishlist() ||
+        orderingNow()
       "
-      name="crescent">
-    </ion-spinner>
+      (click)="
+        addToWishlist()
+      ">
 
-    <ion-icon
-      *ngIf="
-        !addingWishlist()
+      <ion-spinner
+        *ngIf="
+          addingWishlist()
+        "
+        name="crescent">
+      </ion-spinner>
+
+      <ion-icon
+        *ngIf="
+          !addingWishlist()
+        "
+        slot="icon-only"
+        name="heart-outline">
+      </ion-icon>
+
+    </ion-button>
+
+
+    <ion-button
+      class="cart-button"
+      fill="outline"
+      [disabled]="
+        addingCart() ||
+        orderingNow() ||
+        (p.stock || 0) <= 0
       "
-      slot="icon-only"
-      name="heart-outline">
-    </ion-icon>
+      (click)="
+        addToCart()
+      ">
 
-  </ion-button>
+      <ion-spinner
+        *ngIf="
+          addingCart()
+        "
+        slot="start"
+        name="crescent">
+      </ion-spinner>
 
+      <ion-icon
+        *ngIf="
+          !addingCart()
+        "
+        slot="start"
+        name="cart-outline">
+      </ion-icon>
 
-  <ion-button
-    class="cart-button"
-    fill="outline"
-    [disabled]="
-      addingCart() ||
-      orderingNow() ||
-      (p.stock || 0) <= 0
-    "
-    (click)="
-      addToCart()
-    ">
-
-    <ion-spinner
-      *ngIf="
+      {{
         addingCart()
-      "
-      slot="start"
-      name="crescent">
-    </ion-spinner>
+          ? 'Adding...'
+          : 'Add to Cart'
+      }}
 
-    <ion-icon
-      *ngIf="
-        !addingCart()
-      "
-      slot="start"
-      name="cart-outline">
-    </ion-icon>
-
-    {{
-      addingCart()
-        ? 'Adding...'
-        : 'Add to Cart'
-    }}
-
-  </ion-button>
+    </ion-button>
 
 
-  <ion-button
-    class="order-now-button"
+    <ion-button
+      class="order-now-button"
+    expand="block"
     [disabled]="
       orderingNow() ||
       addingCart() ||
@@ -505,6 +1225,10 @@
         : 'Order Now'
     }}
 
-  </ion-button>
+    </ion-button>
+
+
+  </div>
+
 
 </div>

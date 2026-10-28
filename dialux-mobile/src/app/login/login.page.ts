@@ -18,7 +18,6 @@ import {
 
 import {
   SocialLogin,
-  type GoogleLoginOptions,
   type GoogleLoginResponseOnline
 } from '@capgo/capacitor-social-login';
 
@@ -51,6 +50,9 @@ export class LoginPage {
   googleSubmitting =
     signal<boolean>(false);
 
+  readonly isNativePlatform =
+    Capacitor.isNativePlatform();
+
   private nativeGoogleReady =
     false;
 
@@ -72,8 +74,6 @@ export class LoginPage {
     ) {
 
       void this.prepareNativeGoogle();
-
-      this.mountNativeGoogleButton();
 
       return;
     }
@@ -261,73 +261,7 @@ export class LoginPage {
   }
 
 
-  private mountNativeGoogleButton():
-    void {
-
-    const container =
-      document.getElementById(
-        'googleBtn'
-      );
-
-
-    if (!container) {
-
-      return;
-    }
-
-
-    container.replaceChildren();
-
-
-    const button =
-      document.createElement(
-        'button'
-      );
-
-
-    button.type =
-      'button';
-
-
-    button.className =
-      'native-google-button';
-
-
-    button.innerHTML = `
-      <span class="native-google-logo">
-        G
-      </span>
-
-      <span>
-        Continue with Google
-      </span>
-    `;
-
-
-    button.addEventListener(
-      'click',
-      () => {
-
-        this.zone.run(
-          () => {
-
-            void this.nativeGoogleLogin();
-
-          }
-        );
-
-      }
-    );
-
-
-    container.appendChild(
-      button
-    );
-
-  }
-
-
-  private async nativeGoogleLogin():
+  async nativeGoogleLogin():
     Promise<void> {
 
     if (
@@ -372,7 +306,7 @@ export class LoginPage {
           provider:
             'google',
 
-          options: {} as GoogleLoginOptions
+          options: {}
 
         });
 

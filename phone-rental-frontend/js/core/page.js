@@ -20,6 +20,7 @@ import {
 import {
   restoreSession,
   initAcctMenu,
+  initIdleLogout,
   renderAcctButton,
 } from './auth.js';
 
@@ -366,6 +367,15 @@ export async function bootPage(
    * Restore logged-in account.
    */
   await restoreSession();
+
+  /*
+   * Web sessions automatically expire after five minutes with no user
+   * activity. If the restored session is already stale, stop booting this
+   * page while auth.js clears the account and redirects to the home page.
+   */
+  if (!initIdleLogout()) {
+    return;
+  }
 
   /*
    * If a staff member tries entering a customer shopping page,

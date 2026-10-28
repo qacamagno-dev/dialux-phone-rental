@@ -46,6 +46,7 @@ async function onGoogleCredential(response) {
   try {
     const data = await authApi.googleLogin(credential);
     setSession(data.user, data.token);
+    beginFreshIdleSession();
     await mergeGuestCartIntoServer();
     updateCartBadge();
     updateWishBadge();
@@ -102,6 +103,163 @@ export async function mountGoogleButton(containerId = 'googleBtn') {
   box.dataset.rendered = 'true';
 }
 
+/* ---------------- 5-minute web inactivity logout ---------------- */
+
+// Web-session inactivity timeout requested for DiaLux. This is deliberately
+// client-side only: the API token stays in localStorage, while this timestamp
+// lets every browser tab agree on when the account was last active.
+const IDLE_TIMEOUT_MS = 5 * 60 * 1000;
+const IDLE_ACTIVITY_KEY = 'dialux:lastWebActivityAt';
+const IDLE_WRITE_THROTTLE_MS = 1000;
+
+let idleTimer = null;
+let idleListenersBound = false;
+let lastIdleWrite = 0;
+
+function readLastActivity() {
+  const value = Number(localStorage.getItem(IDLE_ACTIVITY_KEY));
+  return Number.isFinite(value) && value > 0 ? value : 0;
+}
+
+function writeLastActivity(time = Date.now(), { force = false } = {}) {
+  if (!state.user) return;
+
+  if (!force && time - lastIdleWrite < IDLE_WRITE_THROTTLE_MS) {
+    return;
+  }
+
+  lastIdleWrite = time;
+  localStorage.setItem(IDLE_ACTIVITY_KEY, String(time));
+}
+
+function clearIdleTimer() {
+  if (idleTimer) {
+    window.clearTimeout(idleTimer);
+    idleTimer = null;
+  }
+}
+
+function scheduleIdleCheck() {
+  clearIdleTimer();
+
+  if (!state.user) return;
+
+  const lastActivity = readLastActivity() || Date.now();
+  const remaining = IDLE_TIMEOUT_MS - (Date.now() - lastActivity);
+
+  if (remaining <= 0) {
+    logoutForInactivity();
+    return;
+  }
+
+  idleTimer = window.setTimeout(checkIdleTimeout, remaining + 100);
+}
+
+function checkIdleTimeout() {
+  if (!state.user) {
+    clearIdleTimer();
+    return;
+  }
+
+  const lastActivity = readLastActivity();
+
+  // Existing sessions created before this feature do not yet have a
+  // timestamp. Give them a fresh five-minute window instead of kicking
+  // them out immediately on deployment.
+  if (!lastActivity) {
+    writeLastActivity(Date.now(), { force: true });
+    scheduleIdleCheck();
+    return;
+  }
+
+  if (Date.now() - lastActivity >= IDLE_TIMEOUT_MS) {
+    logoutForInactivity();
+    return;
+  }
+
+  scheduleIdleCheck();
+}
+
+function noteUserActivity() {
+  if (!state.user) return;
+
+  const now = Date.now();
+  writeLastActivity(now);
+
+  // Always reset the in-memory timer immediately. The localStorage write is
+  // throttled to avoid hammering storage during pointer movement/scrolling.
+  clearIdleTimer();
+  idleTimer = window.setTimeout(checkIdleTimeout, IDLE_TIMEOUT_MS + 100);
+}
+
+function bindIdleListeners() {
+  if (idleListenersBound) return;
+  idleListenersBound = true;
+
+  const passive = { passive: true };
+
+  document.addEventListener('pointerdown', noteUserActivity, passive);
+  document.addEventListener('pointermove', noteUserActivity, passive);
+  document.addEventListener('touchstart', noteUserActivity, passive);
+  document.addEventListener('scroll', noteUserActivity, passive);
+  document.addEventListener('keydown', noteUserActivity);
+
+  // Background tabs may have timers throttled by the browser. Re-check as
+  // soon as the user returns to the tab so five minutes cannot be bypassed.
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && state.user) {
+      checkIdleTimeout();
+    }
+  });
+
+  // Activity in one DiaLux tab keeps the same signed-in browser session alive
+  // in the other tabs. Logging out in one tab also logs out the others.
+  window.addEventListener('storage', (event) => {
+    if (event.key === IDLE_ACTIVITY_KEY && event.newValue && state.user) {
+      scheduleIdleCheck();
+      return;
+    }
+
+    if (event.key === 'authToken' && !event.newValue && state.user) {
+      finishLogout('Signed out in another tab');
+    }
+  });
+}
+
+function beginFreshIdleSession() {
+  if (!state.user) return;
+  writeLastActivity(Date.now(), { force: true });
+  scheduleIdleCheck();
+}
+
+/**
+ * Start the five-minute inactivity policy after restoreSession().
+ * Returns false when the restored session was already idle for five minutes
+ * and logout/redirect has begun, allowing bootPage() to stop rendering.
+ */
+export function initIdleLogout() {
+  bindIdleListeners();
+
+  if (!state.user) {
+    clearIdleTimer();
+    return true;
+  }
+
+  const lastActivity = readLastActivity();
+
+  if (lastActivity && Date.now() - lastActivity >= IDLE_TIMEOUT_MS) {
+    logoutForInactivity();
+    return false;
+  }
+
+  if (!lastActivity) {
+    writeLastActivity(Date.now(), { force: true });
+  }
+
+  scheduleIdleCheck();
+  return true;
+}
+
 /* ---------------- session ---------------- */
 
 export function isSignedIn() { return Boolean(state.user); }
@@ -130,6 +288,8 @@ export function setSession(user, token) {
 export function clearSession() {
   state.user = null;
   setToken(null);
+  localStorage.removeItem(IDLE_ACTIVITY_KEY);
+  clearIdleTimer();
   renderAcctButton();
 }
 
@@ -207,6 +367,7 @@ export function initAcctMenu({ authHref = '/index.html#auth' } = {}) {
 export async function doLogin(email, password) {
   const data = await authApi.login(email.trim().toLowerCase(), password);
   setSession(data.user, data.token);
+  beginFreshIdleSession();
   await mergeGuestCartIntoServer();
   updateCartBadge();
   updateWishBadge();
@@ -216,13 +377,14 @@ export async function doLogin(email, password) {
 export async function doRegister(name, email, password) {
   const data = await authApi.register(name.trim(), email.trim().toLowerCase(), password);
   setSession(data.user, data.token);
+  beginFreshIdleSession();
   await mergeGuestCartIntoServer();
   updateCartBadge();
   updateWishBadge();
   return data.user;
 }
 
-export function doLogout() {
+function finishLogout(message) {
   clearSession();
   clearGuestCart();
   clearGuestWishlist();
@@ -239,8 +401,16 @@ export function doLogout() {
   updateWishBadge();
   renderNotifications();
   closeAcctMenu();
-  toast('Signed out');
+  toast(message);
   setTimeout(() => { location.href = '/'; }, 400);
+}
+
+function logoutForInactivity() {
+  finishLogout('Signed out after 5 minutes of inactivity');
+}
+
+export function doLogout() {
+  finishLogout('Signed out');
 }
 
 /* ---------------- password reset ---------------- */
