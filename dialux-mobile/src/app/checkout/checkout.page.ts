@@ -520,6 +520,9 @@ export class CheckoutPage {
           method:
             this.paymentMethod,
 
+          client:
+            'mobile',
+
           returnUrl
         }
       )
